@@ -213,7 +213,7 @@ export default function AgendaPage() {
             </div>
           ) : (
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6`}>
-              {visibleMonths.map((month, index) => {
+              {visibleMonths.map((month) => {
                 const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`;
                 const fluxosDoMes = fluxosPorMes[monthKey] || [];
                 const totalMes = calcularTotalMes(monthKey);
