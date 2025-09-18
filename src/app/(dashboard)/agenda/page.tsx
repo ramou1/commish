@@ -17,6 +17,19 @@ import {
 
 import { fluxosIniciais, FluxoComissao, addFluxoMock, coresPastel } from '@/constants/fluxos-mock';
 
+interface NovoFluxoFormData {
+  cnpj: string;
+  nomeEmpresa: string;
+  ramo: string;
+  valor: string;
+  recorrencia: 'unica' | 'semanal' | 'mensal' | '';
+  dataInicio: string;
+  quantidadeParcelas: number;
+  dataFim: string;
+  color?: string;
+  documento?: File | null;
+}
+
 export default function AgendaPage() {
   const [fluxos, setFluxos] = useState<FluxoComissao[]>(fluxosIniciais);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -100,7 +113,7 @@ export default function AgendaPage() {
   const columnCount = getColumnCount();
   const visibleMonths = months.slice(currentMonthIndex, currentMonthIndex + columnCount);
 
-  const handleNovoFluxo = (formData: any) => {
+  const handleNovoFluxo = (formData: NovoFluxoFormData) => {
     const novoId = (Math.max(0, ...fluxos.map(f => Number(f.id) || 0)) + 1).toString();
 
     // Atribuir cor automaticamente se não fornecida
