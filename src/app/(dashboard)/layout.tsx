@@ -13,16 +13,17 @@ import {
   Menu, 
   X,
   Bell,
-  User,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  UserIcon
 } from 'lucide-react';
+import { User } from '@/types/user';
 
 interface MenuItem {
   id: string;
   label: string;
   href: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   disabled?: boolean;
 }
 
@@ -72,7 +73,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     // Verificar se o usuário está logado
@@ -165,7 +166,7 @@ export default function DashboardLayout({
           <div className="flex-shrink-0 p-3 border-t border-gray-100">
             <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-gray-600" />
+                <UserIcon className="w-4 h-4 text-gray-600" />
               </div>
               {!sidebarCollapsed && (
                 <div className="flex-1 min-w-0">
@@ -249,7 +250,7 @@ export default function DashboardLayout({
               <div className="flex-shrink-0 p-3 border-t border-gray-100">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-gray-600" />
+                    <UserIcon className="w-4 h-4 text-gray-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
@@ -301,7 +302,7 @@ export default function DashboardLayout({
               <div className="relative group">
                 <button className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 transition-colors">
                   <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-gray-600" />
+                    <UserIcon className="w-4 h-4 text-gray-600" />
                   </div>
                   <div className="hidden sm:block text-left">
                     <p className="text-sm font-medium text-gray-900">

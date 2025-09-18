@@ -9,14 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Building } from 'lucide-react';
-
-// Tipos
-interface CadastroData {
-  nomeCompleto: string;
-  cpf: string;
-  tipo: string;
-  ramo: string;
-}
+import { CadastroData } from '@/types/user';
 
 const ramos = [
   { value: 'imoveis', label: 'Imóveis' },
@@ -30,7 +23,7 @@ const ramos = [
 export default function CadastroPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<CadastroData>({
-    nomeCompleto: '',
+    nome: '',
     cpf: '',
     tipo: 'vendedor',
     ramo: ''
@@ -63,7 +56,7 @@ export default function CadastroPage() {
     // Simular cadastro bem-sucedido
     localStorage.setItem('user', JSON.stringify({
       email: 'usuario@exemplo.com', // Simular email
-      nome: formData.nomeCompleto,
+      nome: formData.nome,
       cpf: formData.cpf,
       tipo: formData.tipo,
       ramo: formData.ramo
@@ -78,7 +71,7 @@ export default function CadastroPage() {
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
-        return formData.nomeCompleto.trim() !== '' && formData.cpf.trim() !== '';
+        return formData.nome.trim() !== '' && formData.cpf.trim() !== '';
       case 2:
         return formData.tipo !== '';
       case 3:
@@ -174,8 +167,8 @@ export default function CadastroPage() {
                     id="nome"
                     type="text"
                     placeholder="Digite seu nome completo"
-                    value={formData.nomeCompleto}
-                    onChange={(e) => handleInputChange('nomeCompleto', e.target.value)}
+                    value={formData.nome}
+                    onChange={(e) => handleInputChange('nome', e.target.value)}
                     className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                   />
                 </div>
@@ -238,7 +231,7 @@ export default function CadastroPage() {
                   <div className="mt-6 p-4 bg-gray-50 border border-gray-100 rounded-lg">
                     <h4 className="font-medium text-gray-900 mb-3 text-sm">Resumo do cadastro:</h4>
                     <div className="space-y-2 text-xs">
-                      <p><span className="font-medium text-gray-700">Nome:</span> <span className="text-gray-600">{formData.nomeCompleto}</span></p>
+                      <p><span className="font-medium text-gray-700">Nome:</span> <span className="text-gray-600">{formData.nome}</span></p>
                       <p><span className="font-medium text-gray-700">CPF:</span> <span className="text-gray-600">{formData.cpf}</span></p>
                       <p><span className="font-medium text-gray-700">Tipo:</span> <span className="text-gray-600">Vendedor</span></p>
                       <p><span className="font-medium text-gray-700">Ramo:</span> <span className="text-gray-600">{ramos.find(r => r.value === formData.ramo)?.label}</span></p>

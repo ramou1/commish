@@ -16,19 +16,7 @@ import {
 } from 'lucide-react';
 
 import { fluxosIniciais, FluxoComissao, addFluxoMock, coresPastel } from '@/constants/fluxos-mock';
-
-interface NovoFluxoFormData {
-  cnpj: string;
-  nomeEmpresa: string;
-  ramo: string;
-  valor: string;
-  recorrencia: 'unica' | 'semanal' | 'mensal' | '';
-  dataInicio: string;
-  quantidadeParcelas: number;
-  dataFim: string;
-  color?: string;
-  documento?: File | null;
-}
+import { NovoFluxoFormData } from '@/types';
 
 export default function AgendaPage() {
   const [fluxos, setFluxos] = useState<FluxoComissao[]>(fluxosIniciais);

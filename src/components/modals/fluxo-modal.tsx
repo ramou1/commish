@@ -8,19 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ramos as ramoOptions } from '@/constants/ramos';
 import { coresPastel } from '@/constants/fluxos-mock';
+import { NovoFluxoFormData } from '@/types';
 
-interface NovoFluxoFormData {
-  cnpj: string;
-  nomeEmpresa: string;
-  ramo: string;
-  valor: string;
-  recorrencia: 'unica' | 'semanal' | 'mensal' | '';
-  dataInicio: string;
-  quantidadeParcelas: number;
-  dataFim: string;
-  color?: string;
-  documento?: File | null;
-}
 
 interface NovoFluxoFormProps {
   onSubmit: (data: NovoFluxoFormData) => void;
