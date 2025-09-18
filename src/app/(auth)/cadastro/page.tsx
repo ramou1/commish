@@ -191,14 +191,28 @@ export default function CadastroPage() {
               <div className="space-y-4">
                 <div className="text-center">
                   <p className="text-gray-600 mb-6 text-sm">Você é:</p>
-                  <div className="bg-gray-50 border border-gray-100 rounded-lg p-6">
-                    <div className="flex items-center justify-center space-x-3">
-                      <Briefcase className="w-5 h-5 text-gray-700" />
-                      <span className="text-gray-900 font-medium">Vendedor</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Opção Vendedor */}
+                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-6 cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center justify-center space-x-3">
+                        <Briefcase className="w-5 h-5 text-gray-700" />
+                        <span className="text-gray-900 font-medium">Vendedor</span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+                        Gerencie suas comissões e antecipe recebimentos
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-600 mt-3 leading-relaxed">
-                      Gerencie suas comissões e antecipe recebimentos
-                    </p>
+
+                    {/* Opção Empresa */}
+                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-6 cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center justify-center space-x-3">
+                        <Building className="w-5 h-5 text-gray-700" />
+                        <span className="text-gray-900 font-medium">Empresa</span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+                        Gerencie pagamentos de comissões e fluxos financeiros
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

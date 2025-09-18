@@ -10,6 +10,7 @@ export interface FluxoComissao {
 }
 
 export interface NovoFluxoFormData {
+  descricao?: string;
   cnpj: string;
   nomeEmpresa: string;
   ramo: string;

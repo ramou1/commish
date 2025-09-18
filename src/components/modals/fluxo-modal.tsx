@@ -10,7 +10,6 @@ import { ramos as ramoOptions } from '@/constants/ramos';
 import { coresPastel } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types';
 
-
 interface NovoFluxoFormProps {
   onSubmit: (data: NovoFluxoFormData) => void;
   onCancel: () => void;
@@ -19,6 +18,7 @@ interface NovoFluxoFormProps {
 
 export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFluxoFormProps) {
   const [formData, setFormData] = useState<NovoFluxoFormData>({
+    descricao: '', // Novo campo adicionado
     cnpj: '',
     nomeEmpresa: '',
     ramo: '',
@@ -192,6 +192,14 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         <h3 className="text-lg font-medium text-gray-900">Resumo do Fluxo</h3>
         
         <div className="bg-gray-50 p-4 rounded-md space-y-3">
+          {/* Descrição - adicionada no resumo */}
+          {formData.descricao && (
+            <div className="flex justify-between">
+              <span className="text-sm font-medium text-gray-700">Descrição:</span>
+              <span className="text-sm text-gray-900">{formData.descricao}</span>
+            </div>
+          )}
+          
           <div className="flex justify-between">
             <span className="text-sm font-medium text-gray-700">CNPJ:</span>
             <span className="text-sm text-gray-900">{formData.cnpj}</span>
@@ -301,6 +309,24 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="descricao" className="text-sm font-medium text-gray-700">
+          Descrição (opcional)
+        </Label>
+        <Input
+          id="descricao"
+          type="text"
+          placeholder="Ex: Comissão de venda do apartamento XYZ"
+          value={formData.descricao}
+          onChange={(e) => handleInputChange('descricao', e.target.value)}
+          className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+          disabled={isLoading}
+        />
+        <p className="text-xs text-gray-500">
+          Adicione uma descrição para identificar facilmente este fluxo
+        </p>
+      </div>
+
       {/* CNPJ */}
       <div className="space-y-2">
         <Label htmlFor="cnpj" className="text-sm font-medium text-gray-700">
@@ -343,29 +369,29 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         )}
       </div>
 
-      {/* Valor */}
-      <div className="space-y-2">
-        <Label htmlFor="valor" className="text-sm font-medium text-gray-700">
-          Valor a Receber
-        </Label>
-        <Input
-          id="valor"
-          type="text"
-          placeholder="R$ 0,00"
-          value={formData.valor}
-          onChange={(e) => handleCurrencyChange(e.target.value)}
-          className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
-            errors.valor ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
-          }`}
-          disabled={isLoading}
-        />
-        {errors.valor && (
-          <p className="text-xs text-red-500">{errors.valor}</p>
-        )}
-      </div>
-
-      {/* Recorrência e Ramo */}
+      {/* Valor a Receber e Recorrência na mesma linha */}
       <div className="grid grid-cols-2 gap-4">
+        {/* Valor a Receber */}
+        <div className="space-y-2">
+          <Label htmlFor="valor" className="text-sm font-medium text-gray-700">
+            Valor a Receber
+          </Label>
+          <Input
+            id="valor"
+            type="text"
+            placeholder="R$ 0,00"
+            value={formData.valor}
+            onChange={(e) => handleCurrencyChange(e.target.value)}
+            className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
+              errors.valor ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+            }`}
+            disabled={isLoading}
+          />
+          {errors.valor && (
+            <p className="text-xs text-red-500">{errors.valor}</p>
+          )}
+        </div>
+
         {/* Recorrência */}
         <div className="space-y-2">
           <Label htmlFor="recorrencia" className="text-sm font-medium text-gray-700">
@@ -391,33 +417,11 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
             <p className="text-xs text-red-500">{errors.recorrencia}</p>
           )}
         </div>
-
-        {/* Ramo */}
-        <div className="space-y-2">
-          <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">
-            Ramo (opcional)
-          </Label>
-          <Select
-            value={formData.ramo}
-            onValueChange={(value) => handleInputChange('ramo', value)}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500">
-              <SelectValue placeholder="Selecione o ramo" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border border-gray-200">
-              {ramoOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value} className="hover:bg-gray-50">
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
-      {/* Data de Início e Quantidade de Parcelas */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Data de Início, Quantidade de Parcelas e Ramo na mesma linha */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Data de Início */}
         <div className="space-y-2">
           <Label htmlFor="dataInicio" className="text-sm font-medium text-gray-700">
             {formData.recorrencia === 'unica' ? 'Data da Cobrança' : 'Data de Início'}
@@ -437,10 +441,11 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
           )}
         </div>
 
+        {/* Quantidade de Parcelas */}
         {formData.recorrencia !== 'unica' && (
           <div className="space-y-2">
             <Label htmlFor="quantidadeParcelas" className="text-sm font-medium text-gray-700">
-              Quantidade de Parcelas
+              Qtd de Parcelas
             </Label>
             <Input
               id="quantidadeParcelas"
@@ -464,6 +469,29 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
             )}
           </div>
         )}
+
+        {/* Ramo */}
+        <div className="space-y-2">
+          <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">
+            Ramo (opcional)
+          </Label>
+          <Select
+            value={formData.ramo}
+            onValueChange={(value) => handleInputChange('ramo', value)}
+            disabled={isLoading}
+          >
+            <SelectTrigger className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500">
+              <SelectValue placeholder="Selecione o ramo" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-gray-200">
+              {ramoOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value} className="hover:bg-gray-50">
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Upload de Documento */}
