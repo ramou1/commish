@@ -14,6 +14,7 @@ export interface FluxoComissao {
   ramo?: string;
   documentoNome?: string;
   documentoUrl?: string;
+  descricao?: string;
 }
 
 // Paleta de cores usada para identificar clientes
@@ -39,7 +40,8 @@ export const fluxosIniciais: FluxoComissao[] = [
     status: 'ativo',
     proximoPagamento: new Date('2025-10-15'),
     color: colors[0],
-    cnpj: '12.345.678/0001-90'
+    cnpj: '12.345.678/0001-90',
+    descricao: 'Comissão de venda do apartamento no Residencial Jardins'
   },
   {
     id: '2',
@@ -75,7 +77,8 @@ export const fluxosIniciais: FluxoComissao[] = [
     status: 'ativo',
     proximoPagamento: new Date('2025-10-13'),
     color: colors[2],
-    cnpj: '11.222.333/0001-44'
+    cnpj: '11.222.333/0001-44',
+    descricao: 'Comissão mensal por indicações de clientes'
   },
   {
     id: '4',
@@ -135,7 +138,8 @@ export const fluxosIniciais: FluxoComissao[] = [
     status: 'ativo',
     proximoPagamento: new Date('2025-10-21'),
     color: colors[4],
-    cnpj: '22.333.444/0001-55'
+    cnpj: '22.333.444/0001-55',
+    descricao: 'Comissão por vendas de imóveis comerciais - projeto empresarial'
   },
   {
     id: '6',

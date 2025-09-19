@@ -122,6 +122,7 @@ export default function AgendaPage() {
       cnpj: formData.cnpj,
       ramo: formData.ramo,
       documentoNome: formData.documento ? formData.documento.name : undefined,
+      descricao: formData.descricao,
     };
 
     // Atualiza mock global (apenas para demo) e estado local
@@ -247,7 +248,7 @@ export default function AgendaPage() {
                         fluxosDoMes.map((fluxo) => (
                           <div
                             key={fluxo.id}
-                            className="rounded-md p-3 border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition"
+                            className="rounded-md p-3 shadow-sm cursor-pointer hover:shadow-md transition"
                               onClick={() => setSelectedFluxo(fluxo)}
                               style={{ 
                                 backgroundColor: fluxo.color || '#f9fafb',

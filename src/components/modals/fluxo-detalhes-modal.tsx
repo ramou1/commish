@@ -29,12 +29,14 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
         </div>
 
         <div className="p-6 space-y-4">
+          
+          
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-500">Empresa</p>
               <p className="text-base font-medium text-gray-900">{fluxo.nomeEmpresa}</p>
               {fluxo.cnpj && (
-                <p className="text-sm text-gray-700 mt-1">{fluxo.cnpj}</p>
+                <p className="text-sm text-gray-800 mt-1">{fluxo.cnpj}</p>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -95,6 +97,13 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
               </div>
             )}
           </div>
+
+          {fluxo.descricao && (
+            <div className="bg-gray-50 p-3 rounded-md">
+              <p className="text-sm text-gray-500 mb-1">Descrição</p>
+              <p className="text-sm text-gray-900">{fluxo.descricao}</p>
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" className="border-gray-200 text-gray-700" onClick={onClose}>
