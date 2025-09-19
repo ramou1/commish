@@ -18,6 +18,8 @@ import {
   UserIcon
 } from 'lucide-react';
 import { User } from '@/types/user';
+import { ProfileProvider } from '@/contexts/ProfileContext';
+import { ProfileSelector } from '@/components/ui/profile-selector';
 
 interface MenuItem {
   id: string;
@@ -112,7 +114,8 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)]">
+    <ProfileProvider>
+      <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)]">
       {/* Sidebar para desktop */}
       <div className={`hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 transition-all duration-300 ${
         sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'
@@ -292,6 +295,9 @@ export default function DashboardLayout({
 
             {/* Ações do header */}
             <div className="flex items-center space-x-4">
+              {/* Seletor de perfil */}
+              <ProfileSelector />
+
               {/* Notificações */}
               <button className="text-gray-400 hover:text-gray-600 relative">
                 <Bell className="w-5 h-5" />
@@ -341,6 +347,7 @@ export default function DashboardLayout({
           </div>
         </main>
       </div>
-    </div>
+      </div>
+    </ProfileProvider>
   );
 }
