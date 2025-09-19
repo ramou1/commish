@@ -2,7 +2,7 @@
 
 export interface FluxoComissao {
   id: string;
-  deQuemReceber: string;
+  nomeEmpresa: string;
   valor: number;
   recorrencia: 'unica' | 'semanal' | 'mensal';
   dataInicio: Date;
@@ -10,10 +10,14 @@ export interface FluxoComissao {
   status: 'ativo' | 'pendente' | 'finalizado';
   proximoPagamento: Date;
   color?: string;
+  cnpj?: string;
+  ramo?: string;
+  documentoNome?: string;
+  documentoUrl?: string;
 }
 
 // Paleta de cores usada para identificar clientes
-export const coresPastel = [
+export const colors = [
   '#FFD6E7',
   '#D4F0F0',
   '#E2F0CB',
@@ -27,146 +31,159 @@ export const coresPastel = [
 export const fluxosIniciais: FluxoComissao[] = [
   {
     id: '1',
-    deQuemReceber: 'Imobiliária Santos',
+    nomeEmpresa: 'Imobiliária Santos',
     valor: 2500,
     recorrencia: 'unica',
     dataInicio: new Date('2025-01-01'),
     dataFim: new Date('2025-12-31'),
     status: 'ativo',
     proximoPagamento: new Date('2025-10-15'),
-    color: coresPastel[0]
+    color: colors[0],
+    cnpj: '12.345.678/0001-90'
   },
   {
     id: '2',
-    deQuemReceber: 'Corretora XYZ',
+    nomeEmpresa: 'Corretora XYZ',
     valor: 800,
     recorrencia: 'semanal',
     dataInicio: new Date('2025-09-01'),
     dataFim: new Date('2025-09-30'),
     status: 'ativo',
     proximoPagamento: new Date('2025-09-20'),
-    color: coresPastel[1]
+    color: colors[1],
+    cnpj: '98.765.432/0001-10'
   },
   {
     id: '20',
-    deQuemReceber: 'Corretora XYZ',
+    nomeEmpresa: 'Corretora XYZ',
     valor: 800,
     recorrencia: 'semanal',
     dataInicio: new Date('2025-09-01'),
     dataFim: new Date('2025-09-30'),
     status: 'ativo',
     proximoPagamento: new Date('2025-09-27'),
-    color: coresPastel[1]
+    color: colors[1],
+    cnpj: '98.765.432/0001-10'
   },
   {
     id: '3',
-    deQuemReceber: 'Imobiliária R&R',
+    nomeEmpresa: 'Imobiliária R&R',
     valor: 1000,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-09-01'),
     dataFim: new Date('2025-12-31'),
     status: 'ativo',
     proximoPagamento: new Date('2025-10-13'),
-    color: coresPastel[2]
+    color: colors[2],
+    cnpj: '11.222.333/0001-44'
   },
   {
     id: '4',
-    deQuemReceber: 'Corretora Porto',
+    nomeEmpresa: 'Corretora Porto',
     valor: 500,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-01'),
     dataFim: new Date('2025-12-31'),
     status: 'ativo',
     proximoPagamento: new Date('2025-10-16'),
-    color: coresPastel[3]
+    color: colors[3],
+    cnpj: '55.666.777/0001-88'
   },
   {
     id: '40',
-    deQuemReceber: 'Corretora Porto',
+    nomeEmpresa: 'Corretora Porto',
     valor: 500,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-01'),
     dataFim: new Date('2025-12-31'),
     status: 'ativo',
     proximoPagamento: new Date('2025-11-16'),
-    color: coresPastel[3]
+    color: colors[3],
+    cnpj: '55.666.777/0001-88'
   },
   {
     id: '41',
-    deQuemReceber: 'Corretora Porto',
+    nomeEmpresa: 'Corretora Porto',
     valor: 500,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-01'),
     dataFim: new Date('2025-12-31'),
     status: 'ativo',
     proximoPagamento: new Date('2025-12-16'),
-    color: coresPastel[3]
+    color: colors[3],
+    cnpj: '55.666.777/0001-88'
   },
   {
     id: '10',
-    deQuemReceber: 'Imobiliária R&R',
+    nomeEmpresa: 'Imobiliária R&R',
     valor: 1000,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-09-01'),
     dataFim: new Date('2025-12-31'),
     status: 'ativo',
     proximoPagamento: new Date('2025-11-13'),
-    color: coresPastel[2]
+    color: colors[2],
+    cnpj: '11.222.333/0001-44'
   },
   {
     id: '5',
-    deQuemReceber: 'Corretora SP',
+    nomeEmpresa: 'Corretora SP',
     valor: 2300,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-21'),
     dataFim: new Date('2026-02-21'),
     status: 'ativo',
     proximoPagamento: new Date('2025-10-21'),
-    color: coresPastel[4]
+    color: colors[4],
+    cnpj: '22.333.444/0001-55'
   },
   {
     id: '6',
-    deQuemReceber: 'Corretora SP',
+    nomeEmpresa: 'Corretora SP',
     valor: 2300,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-21'),
     dataFim: new Date('2026-02-21'),
     status: 'ativo',
     proximoPagamento: new Date('2025-11-21'),
-    color: coresPastel[4]
+    color: colors[4],
+    cnpj: '22.333.444/0001-55'
   },
   {
     id: '7',
-    deQuemReceber: 'Corretora SP',
+    nomeEmpresa: 'Corretora SP',
     valor: 2300,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-21'),
     dataFim: new Date('2026-02-21'),
     status: 'ativo',
     proximoPagamento: new Date('2025-12-21'),
-    color: coresPastel[4]
+    color: colors[4],
+    cnpj: '22.333.444/0001-55'
   },
   {
     id: '8',
-    deQuemReceber: 'Corretora SP',
+    nomeEmpresa: 'Corretora SP',
     valor: 2300,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-21'),
     dataFim: new Date('2026-02-21'),
     status: 'ativo',
     proximoPagamento: new Date('2026-01-21'),
-    color: coresPastel[4]
+    color: colors[4],
+    cnpj: '22.333.444/0001-55'
   },
   {
     id: '99',
-    deQuemReceber: 'Corretora SP',
+    nomeEmpresa: 'Corretora SP',
     valor: 2300,
     recorrencia: 'mensal',
     dataInicio: new Date('2025-10-21'),
     dataFim: new Date('2026-02-21'),
     status: 'ativo',
     proximoPagamento: new Date('2026-02-21'),
-    color: coresPastel[4]
+    color: colors[4],
+    cnpj: '22.333.444/0001-55'
   },
 ];
 

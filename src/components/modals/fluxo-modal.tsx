@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ramos as ramoOptions } from '@/constants/ramos';
-import { coresPastel } from '@/constants/fluxos-mock';
+import { colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types';
 
 interface NovoFluxoFormProps {
@@ -532,7 +532,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
       <div className="space-y-2">
         <Label className="text-sm font-medium text-gray-700">Cor</Label>
         <div className="flex flex-wrap gap-3">
-          {coresPastel.map((cor) => {
+          {colors.map((cor) => {
             const selecionada = formData.color === cor;
             return (
               <button

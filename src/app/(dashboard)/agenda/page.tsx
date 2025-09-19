@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { NovoFluxoForm } from '@/components/modals/fluxo-modal';
+import { FluxoDetalhesModal } from '@/components/modals/fluxo-detalhes-modal';
 import { 
   Plus, 
   Filter,
@@ -15,13 +16,14 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-import { fluxosIniciais, FluxoComissao, addFluxoMock, coresPastel } from '@/constants/fluxos-mock';
+import { fluxosIniciais, FluxoComissao, addFluxoMock, colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types';
 
 export default function AgendaPage() {
   const [fluxos, setFluxos] = useState<FluxoComissao[]>(fluxosIniciais);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
+  const [selectedFluxo, setSelectedFluxo] = useState<FluxoComissao | null>(null);
 
   // Calcular apenas os meses que têm fluxos ativos
   const months = useMemo(() => {
@@ -105,11 +107,11 @@ export default function AgendaPage() {
     const novoId = (Math.max(0, ...fluxos.map(f => Number(f.id) || 0)) + 1).toString();
 
     // Atribuir cor automaticamente se não fornecida
-    const corAuto = coresPastel[fluxos.length % coresPastel.length];
+    const corAuto = colors[fluxos.length % colors.length];
 
     const novoFluxo: FluxoComissao = {
       id: novoId,
-      deQuemReceber: formData.nomeEmpresa,
+      nomeEmpresa: formData.nomeEmpresa,
       valor: Number(String(formData.valor).replace(/\D/g, '')) / 100,
       recorrencia: formData.recorrencia as 'unica' | 'semanal' | 'mensal',
       dataInicio: new Date(formData.dataInicio),
@@ -117,6 +119,9 @@ export default function AgendaPage() {
       status: 'ativo',
       proximoPagamento: new Date(formData.dataInicio),
       color: formData.color || corAuto,
+      cnpj: formData.cnpj,
+      ramo: formData.ramo,
+      documentoNome: formData.documento ? formData.documento.name : undefined,
     };
 
     // Atualiza mock global (apenas para demo) e estado local
@@ -242,7 +247,8 @@ export default function AgendaPage() {
                         fluxosDoMes.map((fluxo) => (
                           <div
                             key={fluxo.id}
-                            className="rounded-md p-3 border border-gray-100 shadow-sm"
+                            className="rounded-md p-3 border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition"
+                              onClick={() => setSelectedFluxo(fluxo)}
                               style={{ 
                                 backgroundColor: fluxo.color || '#f9fafb',
                                 borderLeft: `4px solid ${fluxo.color ? fluxo.color : '#d1d5db'}`
@@ -250,7 +256,7 @@ export default function AgendaPage() {
                           >
                             <div className="flex justify-between items-start mb-2">
                               <span className="font-medium text-gray-900 text-sm">
-                                {fluxo.deQuemReceber}
+                                {fluxo.nomeEmpresa}
                               </span>
                               <Badge
                                 variant="outline"
@@ -312,6 +318,16 @@ export default function AgendaPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal de detalhes do fluxo */}
+      {selectedFluxo && (
+        <FluxoDetalhesModal
+          fluxo={selectedFluxo}
+          onClose={() => setSelectedFluxo(null)}
+          formatarMoeda={formatarMoeda}
+          formatarData={formatarData}
+        />
       )}
     </div>
   );

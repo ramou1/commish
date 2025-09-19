@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Commish - Sistema de Gestão de Comissões
 
-## Getting Started
+Sistema web para gestão e acompanhamento de fluxos de comissão, permitindo que vendedores e empresas organizem seus recebimentos de forma inteligente e antecipem valores com taxas transparentes.
 
-First, run the development server:
+## 🚀 Funcionalidades Principais
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Gestão de Comissões**: Organize e acompanhe todos os fluxos de comissão em uma agenda visual
+- **Antecipação Inteligente**: Antecipe recebimentos com as melhores taxas do mercado
+- **Dashboard Completo**: Visualize performance e planeje crescimento
+- **Autenticação Segura**: Sistema de login e cadastro com validação completa
+- **Interface Intuitiva**: Design moderno e responsivo para melhor experiência
+
+## 🏗️ Arquitetura do Projeto
+
+```
+src/
+├── app/                  # Páginas e rotas da aplicação Next.js
+│   ├── (auth)/           # Páginas de autenticação (login/cadastro)
+│   └── (dashboard)/      # Páginas do dashboard principal
+├── components/           # Componentes reutilizáveis da UI
+│   ├── modals/           # Componentes de modal (formulários)
+│   └── ui/               # Componentes base (botões, inputs, etc.)
+├── constants/            # Dados mockados e constantes da aplicação
+├── lib/                  # Utilitários e funções auxiliares
+└── types/                # Definições de interfaces
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📱 Páginas Principais
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Landing Page** (`/`) - Página inicial com apresentação do sistema
+- **Login** (`/login`) - Autenticação de usuários existentes
+- **Cadastro** (`/cadastro`) - Registro de novos usuários
+- **Agenda** (`/agenda`) - Visualização e gestão de fluxos de comissão
+- **Orçamento** (`/orcamento`) - Cálculos e simulações (em desenvolvimento)
+- **Clientes** (`/clientes`) - Gestão de clientes (em desenvolvimento)
+- **Contratos** (`/contratos`) - Gestão de contratos (em desenvolvimento)
+- **Cadastros** (`/cadastros`) - Configurações gerais (em desenvolvimento)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tecnologias Utilizadas
 
-## Learn More
+- **Next.js 15** - Framework React com App Router
+- **TypeScript** - Tipagem estática para maior robustez
+- **Tailwind CSS** - Estilização utilitária e responsiva
+- **Radix UI** - Componentes acessíveis e customizáveis
+- **React Hook Form** - Gerenciamento de formulários
+- **Zod** - Validação de schemas
+- **Lucide React** - Ícones modernos
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Como Executar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Instalar dependências
+npm install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Executar em modo de desenvolvimento
+npm run dev
 
-## Deploy on Vercel
+# Build para produção
+npm run build
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Executar build de produção
+npm start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Acesse [http://localhost:3000](http://localhost:3000) para visualizar a aplicação.
+
+## 📡 APIs Necessárias
+
+### Autenticação
+- `POST /api/auth/login` - Autenticação de usuário
+- `POST /api/auth/register` - Cadastro de novo usuário
+- `POST /api/auth/logout` - Logout do usuário
+- `GET /api/auth/me` - Obter dados do usuário logado
+
+### Fluxos de Comissão
+- `GET /api/fluxos` - Listar fluxos do usuário
+- `POST /api/fluxos` - Criar novo fluxo de comissão
+- `PUT /api/fluxos/:id` - Atualizar fluxo existente
+- `DELETE /api/fluxos/:id` - Excluir fluxo
+- `GET /api/fluxos/:id` - Obter detalhes de um fluxo
+
+### Antecipação
+- `POST /api/antecipacao/simular` - Simular antecipação de comissão
+- `POST /api/antecipacao/solicitar` - Solicitar antecipação
+- `GET /api/antecipacao/historico` - Histórico de antecipações
+
+### Relatórios
+- `GET /api/relatorios/dashboard` - Dados para dashboard
+- `GET /api/relatorios/performance` - Relatório de performance
+- `GET /api/relatorios/exportar` - Exportar relatórios
+
+### Configurações
+- `GET /api/configuracoes/ramos` - Listar ramos de atividade
+- `PUT /api/configuracoes/perfil` - Atualizar perfil do usuário
+- `POST /api/upload/documento` - Upload de documentos
+
+
