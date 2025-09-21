@@ -16,7 +16,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-import { fluxosIniciais, FluxoComissao, addFluxoMock, colors } from '@/constants/fluxos-mock';
+import { fluxosIniciais, FluxoComissao, colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types';
 import { 
   criarDataLocal, 
@@ -153,7 +153,6 @@ export default function AgendaView() {
         descricao: formData.descricao,
       };
 
-      addFluxoMock(novoFluxo);
       setFluxos(prev => [...prev, novoFluxo]);
     } else {
       // Para fluxos recorrentes, criar um card para cada parcela
@@ -173,7 +172,6 @@ export default function AgendaView() {
         descricao: formData.descricao,
       }));
 
-      novosFluxos.forEach(fluxo => addFluxoMock(fluxo));
       setFluxos(prev => [...prev, ...novosFluxos]);
     }
 

@@ -139,7 +139,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
     }
 
     if (!formData.dataInicio) {
-      newErrors.dataInicio = 'Data de início é obrigatória';
+      newErrors.dataInicio = 'Data é obrigatória';
     }
 
     if (formData.recorrencia !== 'unica' && formData.quantidadeParcelas < 1) {
