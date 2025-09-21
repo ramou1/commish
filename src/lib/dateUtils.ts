@@ -1,19 +1,22 @@
 // src/lib/dateUtils.ts
 import { 
-  parseISO, 
   format, 
   addWeeks, 
   addMonths, 
   startOfWeek, 
   endOfWeek, 
-  isSameWeek,
-  isSameMonth,
   eachWeekOfInterval,
   eachMonthOfInterval,
   startOfMonth,
   endOfMonth
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+
+// Interface para o tipo de fluxo usado nas funções
+interface FluxoData {
+  status: 'ativo' | 'pendente' | 'finalizado';
+  proximoPagamento: Date | string;
+}
 
 // Função para criar data local sem problemas de timezone
 export const criarDataLocal = (dataString: string): Date => {
@@ -79,8 +82,8 @@ export const gerarDatasPagamento = (
 };
 
 // Função para agrupar fluxos por semana
-export const agruparFluxosPorSemana = (fluxos: any[]) => {
-  const agrupados: { [key: string]: any[] } = {};
+export const agruparFluxosPorSemana = (fluxos: FluxoData[]) => {
+  const agrupados: { [key: string]: FluxoData[] } = {};
   
   fluxos.forEach(fluxo => {
     if (fluxo.status === 'ativo') {
@@ -102,8 +105,8 @@ export const agruparFluxosPorSemana = (fluxos: any[]) => {
 };
 
 // Função para agrupar fluxos por mês
-export const agruparFluxosPorMes = (fluxos: any[]) => {
-  const agrupados: { [key: string]: any[] } = {};
+export const agruparFluxosPorMes = (fluxos: FluxoData[]) => {
+  const agrupados: { [key: string]: FluxoData[] } = {};
   
   fluxos.forEach(fluxo => {
     if (fluxo.status === 'ativo') {
@@ -124,7 +127,7 @@ export const agruparFluxosPorMes = (fluxos: any[]) => {
 };
 
 // Função para obter todas as semanas que têm fluxos
-export const obterSemanasComFluxos = (fluxos: any[]) => {
+export const obterSemanasComFluxos = (fluxos: FluxoData[]) => {
   const fluxosAtivos = fluxos.filter(f => f.status === 'ativo');
   
   if (fluxosAtivos.length === 0) return [];
@@ -148,7 +151,7 @@ export const obterSemanasComFluxos = (fluxos: any[]) => {
 };
 
 // Função para obter todos os meses que têm fluxos
-export const obterMesesComFluxos = (fluxos: any[]) => {
+export const obterMesesComFluxos = (fluxos: FluxoData[]) => {
   const fluxosAtivos = fluxos.filter(f => f.status === 'ativo');
   
   if (fluxosAtivos.length === 0) return [];
