@@ -77,6 +77,19 @@ export default function AgendaView() {
       }
     });
     
+    // Ordenar fluxos por data dentro de cada mês
+    Object.keys(grouped).forEach(monthKey => {
+      grouped[monthKey].sort((a, b) => {
+        const dateA = a.proximoPagamento instanceof Date 
+          ? a.proximoPagamento 
+          : new Date(a.proximoPagamento);
+        const dateB = b.proximoPagamento instanceof Date 
+          ? b.proximoPagamento 
+          : new Date(b.proximoPagamento);
+        return dateA.getTime() - dateB.getTime();
+      });
+    });
+    
     return grouped;
   };
 
