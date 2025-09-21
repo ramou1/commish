@@ -19,9 +19,12 @@ src/
 │   └── (dashboard)/      # Páginas do dashboard principal
 ├── components/           # Componentes reutilizáveis da UI
 │   ├── modals/           # Componentes de modal (formulários)
+│   │   ├── fluxo-new-modal.tsx        # Modal para criar novo fluxo
+│   │   └── fluxo-details-modal.tsx    # Modal para exibir detalhes do fluxo
 │   └── ui/               # Componentes base (botões, inputs, etc.)
 ├── constants/            # Dados mockados e constantes da aplicação
 ├── lib/                  # Utilitários e funções auxiliares
+│   └── dateUtils.ts      # Utilitários para manipulação de datas com date-fns
 └── types/                # Definições de interfaces
 ```
 
@@ -44,7 +47,55 @@ src/
 - **Radix UI** - Componentes acessíveis e customizáveis
 - **React Hook Form** - Gerenciamento de formulários
 - **Zod** - Validação de schemas
+- **date-fns** - Biblioteca moderna para manipulação de datas
 - **Lucide React** - Ícones modernos
+
+## 🧩 Componentes Principais
+
+### **Modais de Fluxo**
+
+#### **fluxo-new-modal.tsx**
+Modal para criação de novos fluxos de comissão com:
+- **Formulário completo**: CNPJ, razão social, valor, recorrência, datas
+- **Validação em tempo real**: Campos obrigatórios e formatos corretos
+- **Cálculo automático**: Data final e valor por parcela
+- **Upload de documentos**: Anexos opcionais (PDF, JPG, PNG, DOC, DOCX)
+- **Seleção de cores**: Identificação visual dos fluxos
+- **Resumo prévia**: Confirmação antes da criação
+
+#### **fluxo-details-modal.tsx**
+Modal para visualização detalhada de fluxos existentes com:
+- **Informações completas**: Todos os dados do fluxo
+- **Histórico de pagamentos**: Cronologia de recebimentos
+- **Ações disponíveis**: Editar, excluir, marcar como pago
+- **Documentos anexos**: Visualização de arquivos enviados
+
+### **Utilitários de Data**
+
+#### **lib/dateUtils.ts**
+Biblioteca centralizada para manipulação de datas com date-fns:
+- **`criarDataLocal()`**: Criação de datas sem problemas de timezone
+- **`formatarDataBrasil()`**: Formatação no padrão brasileiro (dd/MM/yyyy)
+- **`formatarMesAno()`**: Formatação de meses em português
+- **`calcularDataFinal()`**: Cálculo de datas finais para recorrências
+- **`gerarDatasPagamento()`**: Geração automática de datas de pagamento
+- **`agruparFluxosPorMes()`**: Agrupamento de fluxos por período
+- **`obterMesesComFluxos()`**: Identificação de meses com atividade
+
+## 📅 Funcionalidades de Data
+
+O projeto utiliza o **date-fns** para funcionalidades avançadas de manipulação de datas:
+
+- **Criação automática de cards**: Para fluxos semanais/mensais, o sistema gera automaticamente todos os cards necessários
+- **Cálculo inteligente de recorrência**: Adição automática de semanas/meses baseado na data de início
+- **Formatação brasileira**: Suporte completo ao português brasileiro para datas e meses
+- **Resolução de problemas de UTC**: Tratamento correto de fuso horário para evitar "dia anterior"
+- **Agrupamento por período**: Organização automática de fluxos por semana/mês
+
+### Exemplos de uso:
+- **Fluxo semanal (4 parcelas)**: Sistema cria 4 cards (uma para cada semana)
+- **Fluxo mensal (3 parcelas)**: Sistema cria 3 cards (uma para cada mês)
+- **Formatação**: Datas exibidas como "26/09/2025" e meses como "setembro 2025"
 
 ## 🚀 Como Executar
 

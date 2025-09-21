@@ -1,4 +1,4 @@
-// src/components/modals/fluxo-modal.tsx
+// src/components/modals/fluxo-new-modal.tsx
 'use client'
 
 import { useState, useMemo } from 'react';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ramos as ramoOptions } from '@/constants/ramos';
 import { colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types';
+import { calcularDataFinal } from '@/lib/dateUtils';
 
 interface NovoFluxoFormProps {
   onSubmit: (data: NovoFluxoFormData) => void;
@@ -36,28 +37,17 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
   type FormErrors = Partial<Record<keyof NovoFluxoFormData, string>>;
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // Calcular data final baseada na quantidade de parcelas
+  // Calcular data final baseada na quantidade de parcelas usando date-fns
   const dataFimCalculada = useMemo(() => {
     if (!formData.dataInicio || !formData.quantidadeParcelas || formData.recorrencia === 'unica') {
       return formData.dataInicio; // Para cobrança única, data fim = data início
     }
 
-    const dataInicio = new Date(formData.dataInicio);
-    const quantidade = formData.quantidadeParcelas;
-    
-    if (formData.recorrencia === 'mensal') {
-      const dataFim = new Date(dataInicio);
-      dataFim.setMonth(dataFim.getMonth() + quantidade - 1);
-      return dataFim.toISOString().split('T')[0];
-    }
-    
-    if (formData.recorrencia === 'semanal') {
-      const dataFim = new Date(dataInicio);
-      dataFim.setDate(dataFim.getDate() + (quantidade - 1) * 7);
-      return dataFim.toISOString().split('T')[0];
-    }
-
-    return formData.dataInicio;
+    return calcularDataFinal(
+      formData.dataInicio,
+      formData.recorrencia as 'unica' | 'semanal' | 'mensal',
+      formData.quantidadeParcelas
+    );
   }, [formData.dataInicio, formData.quantidadeParcelas, formData.recorrencia]);
 
   // Calcular valor por parcela
@@ -186,6 +176,12 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
     setShowSummary(false);
   };
 
+  // Função para formatar data corretamente sem problemas de fuso horário
+  const formatarDataParaResumo = (dataString: string) => {
+    const [ano, mes, dia] = dataString.split('-');
+    return new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia)).toLocaleDateString('pt-BR');
+  };
+
   if (showSummary) {
     return (
       <div className="space-y-4">
@@ -250,7 +246,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
           <div className="flex justify-between">
             <span className="text-sm font-medium text-gray-700">Data de Início:</span>
             <span className="text-sm text-gray-900">
-              {new Date(formData.dataInicio).toLocaleDateString('pt-BR')}
+              {formatarDataParaResumo(formData.dataInicio)}
             </span>
           </div>
 
@@ -258,7 +254,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
             <div className="flex justify-between">
               <span className="text-sm font-medium text-gray-700">Data Final:</span>
               <span className="text-sm text-gray-900">
-                {new Date(dataFimCalculada).toLocaleDateString('pt-BR')}
+                {formatarDataParaResumo(dataFimCalculada)}
               </span>
             </div>
           )}
@@ -311,7 +307,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="descricao" className="text-sm font-medium text-gray-700">
-          Descrição (opcional)
+          Descrição (Opcional)
         </Label>
         <Input
           id="descricao"
@@ -419,28 +415,8 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         </div>
       </div>
 
-      {/* Data de Início, Quantidade de Parcelas e Ramo na mesma linha */}
+      {/* Quantidade de Parcelas, Data de Início e Ramo na mesma linha */}
       <div className="grid grid-cols-3 gap-4">
-        {/* Data de Início */}
-        <div className="space-y-2">
-          <Label htmlFor="dataInicio" className="text-sm font-medium text-gray-700">
-            {formData.recorrencia === 'unica' ? 'Data da Cobrança' : 'Data de Início'}
-          </Label>
-          <Input
-            id="dataInicio"
-            type="date"
-            value={formData.dataInicio}
-            onChange={(e) => handleInputChange('dataInicio', e.target.value)}
-            className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
-              errors.dataInicio ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
-            }`}
-            disabled={isLoading}
-          />
-          {errors.dataInicio && (
-            <p className="text-xs text-red-500">{errors.dataInicio}</p>
-          )}
-        </div>
-
         {/* Quantidade de Parcelas */}
         {formData.recorrencia !== 'unica' && (
           <div className="space-y-2">
@@ -462,18 +438,41 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
             {errors.quantidadeParcelas && (
               <p className="text-xs text-red-500">{errors.quantidadeParcelas}</p>
             )}
-            {formData.valor && formData.quantidadeParcelas > 1 && (
-              <p className="text-xs text-gray-500">
-                Valor por parcela: {valorPorParcela}
-              </p>
-            )}
+            {/* Espaço reservado para o valor por parcela - sempre ocupa o mesmo espaço */}
+            <div className="h-5">
+              {formData.valor && formData.quantidadeParcelas > 1 && (
+                <p className="text-xs text-gray-500">
+                  Valor por parcela: {valorPorParcela}
+                </p>
+              )}
+            </div>
           </div>
         )}
+
+        {/* Data de Início */}
+        <div className="space-y-2">
+          <Label htmlFor="dataInicio" className="text-sm font-medium text-gray-700">
+            {formData.recorrencia === 'unica' ? 'Data da Cobrança' : 'Data de Início'}
+          </Label>
+          <Input
+            id="dataInicio"
+            type="date"
+            value={formData.dataInicio}
+            onChange={(e) => handleInputChange('dataInicio', e.target.value)}
+            className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
+              errors.dataInicio ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+            }`}
+            disabled={isLoading}
+          />
+          {errors.dataInicio && (
+            <p className="text-xs text-red-500">{errors.dataInicio}</p>
+          )}
+        </div>
 
         {/* Ramo */}
         <div className="space-y-2">
           <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">
-            Ramo (opcional)
+            Ramo (Opcional)
           </Label>
           <Select
             value={formData.ramo}
@@ -496,10 +495,10 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
 
       {/* Upload de Documento */}
       <div className="space-y-2">
-        <Label htmlFor="documento" className="text-sm font-medium text-gray-700">
+        <Label className="text-sm font-medium text-gray-700">
           Anexo (Opcional)
         </Label>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-w-md">
           <input
             id="documento"
             type="file"
@@ -512,13 +511,13 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
             type="button"
             variant="outline"
             onClick={() => document.getElementById('documento')?.click()}
-            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50 flex-shrink-0"
             disabled={isLoading}
           >
             {formData.documento ? 'Alterar Arquivo' : 'Selecionar Arquivo'}
           </Button>
           {formData.documento && (
-            <span className="text-sm text-gray-600 truncate max-w-48">
+            <span className="text-sm text-gray-600 truncate flex-1">
               {formData.documento.name}
             </span>
           )}

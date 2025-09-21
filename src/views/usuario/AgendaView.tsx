@@ -5,8 +5,8 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { NovoFluxoForm } from '@/components/modals/fluxo-modal';
-import { FluxoDetalhesModal } from '@/components/modals/fluxo-detalhes-modal';
+import { NovoFluxoForm } from '@/components/modals/fluxo-new-modal';
+import { FluxoDetalhesModal } from '@/components/modals/fluxo-details-modal';
 import { 
   Plus, 
   Filter,
@@ -18,6 +18,11 @@ import {
 
 import { fluxosIniciais, FluxoComissao, addFluxoMock, colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types';
+import { 
+  criarDataLocal, 
+  calcularDataFinal,
+  gerarDatasPagamento
+} from '@/lib/dateUtils';
 
 export default function AgendaView() {
   const [fluxos, setFluxos] = useState<FluxoComissao[]>(fluxosIniciais);
@@ -37,7 +42,9 @@ export default function AgendaView() {
     const monthsSet = new Set<string>();
     
     activeFluxos.forEach(fluxo => {
-      const paymentDate = new Date(fluxo.proximoPagamento);
+      const paymentDate = fluxo.proximoPagamento instanceof Date 
+        ? fluxo.proximoPagamento 
+        : new Date(fluxo.proximoPagamento);
       const monthKey = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}`;
       monthsSet.add(monthKey);
     });
@@ -59,7 +66,9 @@ export default function AgendaView() {
     
     fluxos.forEach(fluxo => {
       if (fluxo.status === 'ativo') {
-        const paymentDate = new Date(fluxo.proximoPagamento);
+        const paymentDate = fluxo.proximoPagamento instanceof Date 
+          ? fluxo.proximoPagamento 
+          : new Date(fluxo.proximoPagamento);
         const monthKey = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}`;
         if (!grouped[monthKey]) {
           grouped[monthKey] = [];
@@ -109,25 +118,65 @@ export default function AgendaView() {
     // Atribuir cor automaticamente se não fornecida
     const corAuto = colors[fluxos.length % colors.length];
 
-    const novoFluxo: FluxoComissao = {
-      id: novoId,
-      nomeEmpresa: formData.nomeEmpresa,
-      valor: Number(String(formData.valor).replace(/\D/g, '')) / 100,
-      recorrencia: formData.recorrencia as 'unica' | 'semanal' | 'mensal',
-      dataInicio: new Date(formData.dataInicio),
-      dataFim: formData.recorrencia === 'unica' ? new Date(formData.dataInicio) : new Date(formData.dataFim),
-      status: 'ativo',
-      proximoPagamento: new Date(formData.dataInicio),
-      color: formData.color || corAuto,
-      cnpj: formData.cnpj,
-      ramo: formData.ramo,
-      documentoNome: formData.documento ? formData.documento.name : undefined,
-      descricao: formData.descricao,
-    };
+    const dataInicioLocal = criarDataLocal(formData.dataInicio);
+    
+    // Calcular data final usando date-fns
+    const dataFimCalculada = calcularDataFinal(
+      formData.dataInicio,
+      formData.recorrencia as 'unica' | 'semanal' | 'mensal',
+      formData.quantidadeParcelas
+    );
+    const dataFimLocal = criarDataLocal(dataFimCalculada);
 
-    // Atualiza mock global (apenas para demo) e estado local
-    addFluxoMock(novoFluxo);
-    setFluxos(prev => [...prev, novoFluxo]);
+    // Para fluxos recorrentes, gerar todas as datas de pagamento
+    const datasPagamento = gerarDatasPagamento(
+      formData.dataInicio,
+      formData.recorrencia as 'semanal' | 'mensal',
+      formData.quantidadeParcelas
+    );
+
+    // Criar um fluxo para cada data de pagamento (exceto cobrança única)
+    if (formData.recorrencia === 'unica') {
+      const novoFluxo: FluxoComissao = {
+        id: novoId,
+        nomeEmpresa: formData.nomeEmpresa,
+        valor: Number(String(formData.valor).replace(/\D/g, '')) / 100,
+        recorrencia: formData.recorrencia as 'unica' | 'semanal' | 'mensal',
+        dataInicio: dataInicioLocal,
+        dataFim: dataFimLocal,
+        status: 'ativo',
+        proximoPagamento: dataInicioLocal,
+        color: formData.color || corAuto,
+        cnpj: formData.cnpj,
+        ramo: formData.ramo,
+        documentoNome: formData.documento ? formData.documento.name : undefined,
+        descricao: formData.descricao,
+      };
+
+      addFluxoMock(novoFluxo);
+      setFluxos(prev => [...prev, novoFluxo]);
+    } else {
+      // Para fluxos recorrentes, criar um card para cada parcela
+      const novosFluxos: FluxoComissao[] = datasPagamento.map((dataPagamento, index) => ({
+        id: `${novoId}_${index + 1}`,
+        nomeEmpresa: formData.nomeEmpresa,
+        valor: Number(String(formData.valor).replace(/\D/g, '')) / 100,
+        recorrencia: formData.recorrencia as 'unica' | 'semanal' | 'mensal',
+        dataInicio: dataInicioLocal,
+        dataFim: dataFimLocal,
+        status: 'ativo' as const,
+        proximoPagamento: dataPagamento,
+        color: formData.color || corAuto,
+        cnpj: formData.cnpj,
+        ramo: formData.ramo,
+        documentoNome: formData.documento ? formData.documento.name : undefined,
+        descricao: formData.descricao,
+      }));
+
+      novosFluxos.forEach(fluxo => addFluxoMock(fluxo));
+      setFluxos(prev => [...prev, ...novosFluxos]);
+    }
+
     setIsModalOpen(false);
   };
 
@@ -139,14 +188,16 @@ export default function AgendaView() {
   };
 
   const formatarData = (data: Date) => {
+    // Corrigir problema de fuso horário criando uma nova data no fuso horário local
+    const dataLocal = new Date(data.getFullYear(), data.getMonth(), data.getDate());
     return new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
-    }).format(data);
+    }).format(dataLocal);
   };
 
-  const formatarMesAno = (data: Date) => {
+  const formatarMesAnoBrasil = (data: Date) => {
     return new Intl.DateTimeFormat('pt-BR', {
       month: 'long',
       year: 'numeric'
@@ -231,7 +282,7 @@ export default function AgendaView() {
                   >
                     <div className="mb-4">
                       <h3 className="font-semibold text-gray-900 text-lg">
-                        {formatarMesAno(month)}
+                        {formatarMesAnoBrasil(month)}
                       </h3>
                       <p className="text-sm text-gray-500">
                         {fluxosDoMes.length} recebimento{fluxosDoMes.length !== 1 ? 's' : ''}
