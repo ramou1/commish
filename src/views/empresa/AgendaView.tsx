@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 
 import { clientesPagamento, ClientePagamento } from '@/constants/empresa-mock';
-import { colors } from '@/constants/fluxos-mock';
 
 export default function AgendaView() {
   const [clientes] = useState<ClientePagamento[]>(clientesPagamento);
@@ -184,7 +183,7 @@ export default function AgendaView() {
       recorrencia: 'unica' as const,
       dataInicio: cliente.dataVencimento,
       dataFim: cliente.dataVencimento,
-      status: cliente.status === 'pago' ? 'concluido' : 'ativo',
+      status: (cliente.status === 'pago' ? 'finalizado' : 'ativo') as 'pendente' | 'ativo' | 'finalizado',
       proximoPagamento: cliente.dataVencimento,
       color: cliente.color,
       cnpj: cliente.cnpj,

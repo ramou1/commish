@@ -5,8 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 import { FluxoComissao } from '@/constants/fluxos-mock';
 
+interface FluxoComissaoExtended extends FluxoComissao {
+  cpf?: string;
+  tipo?: 'empresa' | 'pessoa';
+}
+
 interface FluxoDetalhesModalProps {
-  fluxo: FluxoComissao;
+  fluxo: FluxoComissaoExtended;
   onClose: () => void;
   formatarMoeda: (valor: number) => string;
   formatarData: (data: Date) => string;
@@ -36,11 +41,11 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-500">
-                {(fluxo as any).tipo === 'pessoa' ? 'Pessoa' : 'Empresa'}
+                {fluxo.tipo === 'pessoa' ? 'Pessoa' : 'Empresa'}
               </p>
               <p className="text-base font-medium text-gray-900">{fluxo.nomeEmpresa}</p>
-              {(fluxo as any).cpf && (
-                <p className="text-sm text-gray-800 mt-1">CPF: {(fluxo as any).cpf}</p>
+              {fluxo.cpf && (
+                <p className="text-sm text-gray-800 mt-1">CPF: {fluxo.cpf}</p>
               )}
               {fluxo.cnpj && (
                 <p className="text-sm text-gray-800 mt-1">CNPJ: {fluxo.cnpj}</p>
@@ -113,7 +118,7 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           )}
 
           <div className="flex justify-end gap-2 pt-2">
-            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'concluido' && (
+            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'finalizado' && (
               <Button 
                 className="bg-green-600 hover:bg-green-700 text-white" 
                 onClick={onMarkAsPaid}
