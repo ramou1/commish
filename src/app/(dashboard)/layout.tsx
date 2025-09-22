@@ -192,12 +192,12 @@ export default function DashboardLayout({
           <div className="fixed inset-0 z-40 flex">
             {/* Overlay */}
             <div
-              className="fixed inset-0 bg-black bg-opacity-25"
+              className="fixed inset-0 bg-black/25"
               onClick={closeSidebar}
             />
 
             {/* Sidebar */}
-            <div className="relative flex flex-col w-64 bg-white">
+            <div className="relative flex flex-col w-80 bg-white">
               {/* Header com botão fechar */}
               <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
                 <h1 className="text-lg font-semibold tracking-tight text-gray-900">Commish</h1>
@@ -287,7 +287,7 @@ export default function DashboardLayout({
             </div>
 
             {/* Breadcrumb */}
-            <div className="flex-1">
+            <div className="flex-1 hidden lg:block">
               <h1 className="text-lg font-semibold text-gray-900 capitalize">
                 {pathname.replace('/', '') || 'Dashboard'}
               </h1>
