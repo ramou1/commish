@@ -99,10 +99,12 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
       if (cnpjNumerico.length === 14) {
         setLoadingCNPJ(true);
         try {
-          const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjNumerico}`);
-          const data = await response.json();
-          
-          if (data.razao_social) {
+            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjNumerico}`);
+            const data = await response.json();
+            
+            console.log('Dados retornados da API (BrasilAPI):', data);
+            
+            if (data.razao_social) {
             handleInputChange('nomeEmpresa', data.razao_social);
           } else {
             console.log('CNPJ não encontrado ou dados inválidos:', data);

@@ -191,6 +191,14 @@ export default function AgendaView() {
     setIsModalOpen(false);
   };
 
+  // Função para marcar como pago (visualização de usuário)
+  const handleMarkAsPaid = (fluxoId: string) => {
+    // Aqui você implementaria a lógica para marcar como pago
+    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
+    console.log('Marcando como pago (usuário):', fluxoId);
+    setSelectedFluxo(null);
+  };
+
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -220,7 +228,7 @@ export default function AgendaView() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Agenda</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Agenda - Visão Usuário</h1>
           <p className="text-gray-600 text-sm mt-1">
             Gerencie seus fluxos de comissão e acompanhe recebimentos
           </p>
@@ -389,6 +397,8 @@ export default function AgendaView() {
           onClose={() => setSelectedFluxo(null)}
           formatarMoeda={formatarMoeda}
           formatarData={formatarData}
+          onMarkAsPaid={() => handleMarkAsPaid(selectedFluxo.id)}
+          showMarkAsPaidButton={true}
         />
       )}
     </div>

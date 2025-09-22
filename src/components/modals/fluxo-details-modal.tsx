@@ -10,9 +10,11 @@ interface FluxoDetalhesModalProps {
   onClose: () => void;
   formatarMoeda: (valor: number) => string;
   formatarData: (data: Date) => string;
+  onMarkAsPaid?: () => void;
+  showMarkAsPaidButton?: boolean;
 }
 
-export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData }: FluxoDetalhesModalProps) {
+export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData, onMarkAsPaid, showMarkAsPaidButton }: FluxoDetalhesModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
@@ -33,10 +35,15 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-gray-500">Empresa</p>
+              <p className="text-sm text-gray-500">
+                {(fluxo as any).tipo === 'pessoa' ? 'Pessoa' : 'Empresa'}
+              </p>
               <p className="text-base font-medium text-gray-900">{fluxo.nomeEmpresa}</p>
+              {(fluxo as any).cpf && (
+                <p className="text-sm text-gray-800 mt-1">CPF: {(fluxo as any).cpf}</p>
+              )}
               {fluxo.cnpj && (
-                <p className="text-sm text-gray-800 mt-1">{fluxo.cnpj}</p>
+                <p className="text-sm text-gray-800 mt-1">CNPJ: {fluxo.cnpj}</p>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -106,6 +113,14 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           )}
 
           <div className="flex justify-end gap-2 pt-2">
+            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'concluido' && (
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white" 
+                onClick={onMarkAsPaid}
+              >
+                Marcar como Pago
+              </Button>
+            )}
             <Button variant="outline" className="border-gray-200 text-gray-700" onClick={onClose}>
               Fechar
             </Button>
