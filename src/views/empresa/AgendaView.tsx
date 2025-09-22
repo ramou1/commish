@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FluxoDetalhesModal } from '@/components/modals/fluxo-details-modal';
+import { NovoFluxoEmpresaForm } from '@/components/modals/fluxo-empresa-modal';
 import { 
   Filter,
   Download,
@@ -13,7 +14,9 @@ import {
   ChevronRight,
   AlertCircle,
   CheckCircle,
-  Clock
+  Clock,
+  Plus,
+  X
 } from 'lucide-react';
 
 import { clientesPagamento, ClientePagamento } from '@/constants/empresa-mock';
@@ -22,6 +25,7 @@ export default function AgendaView() {
   const [clientes] = useState<ClientePagamento[]>(clientesPagamento);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedCliente, setSelectedCliente] = useState<ClientePagamento | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Calcular apenas os meses que têm pagamentos (incluindo pagos para visualização)
   const months = useMemo(() => {
@@ -203,6 +207,14 @@ export default function AgendaView() {
     setSelectedCliente(null);
   };
 
+  // Função para criar novo fluxo
+  const handleNovoFluxo = (formData: ClientePagamento) => {
+    // Aqui você implementaria a lógica para criar novo fluxo
+    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
+    console.log('Criando novo fluxo:', formData);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -222,11 +234,11 @@ export default function AgendaView() {
             <Download className="w-4 h-4 mr-2" />
             Exportar
           </Button>
-          {/* Botão Criar Fluxo desabilitado */}
           <Button 
-            disabled
-            className="bg-gray-400 cursor-not-allowed h-9 text-white"
+            onClick={() => setIsModalOpen(true)}
+            className="bg-gray-900 hover:bg-gray-800 h-9 text-white"
           >
+            <Plus className="w-4 h-4 mr-2" />
             Criar Fluxo
           </Button>
         </div>
@@ -402,6 +414,31 @@ export default function AgendaView() {
           onMarkAsPaid={() => handleMarkAsPaid(selectedCliente.id)}
           showMarkAsPaidButton={true}
         />
+      )}
+
+      {/* Modal de Novo Fluxo */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Criar Novo Fluxo</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsModalOpen(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="p-6">
+              <NovoFluxoEmpresaForm
+                onSubmit={handleNovoFluxo}
+                onCancel={() => setIsModalOpen(false)}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
