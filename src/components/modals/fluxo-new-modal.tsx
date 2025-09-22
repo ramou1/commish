@@ -33,6 +33,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
   });
 
   const [showSummary, setShowSummary] = useState(false);
+  const [loadingCNPJ, setLoadingCNPJ] = useState(false);
 
   type FormErrors = Partial<Record<keyof NovoFluxoFormData, string>>;
   const [errors, setErrors] = useState<FormErrors>({});
@@ -88,10 +89,30 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
     return numericValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
   };
 
-  const handleCNPJChange = (value: string) => {
+  const handleCNPJChange = async (value: string) => {
     const formatted = formatCNPJ(value);
     if (formatted.length <= 18) {
       handleInputChange('cnpj', formatted);
+      
+      // Buscar dados da empresa quando CNPJ estiver completo (14 dígitos)
+      const cnpjNumerico = value.replace(/\D/g, '');
+      if (cnpjNumerico.length === 14) {
+        setLoadingCNPJ(true);
+        try {
+          const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjNumerico}`);
+          const data = await response.json();
+          
+          if (data.razao_social) {
+            handleInputChange('nomeEmpresa', data.razao_social);
+          } else {
+            console.log('CNPJ não encontrado ou dados inválidos:', data);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar dados do CNPJ:', error);
+        } finally {
+          setLoadingCNPJ(false);
+        }
+      }
     }
   };
 
@@ -328,19 +349,29 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         <Label htmlFor="cnpj" className="text-sm font-medium text-gray-700">
           CNPJ
         </Label>
-        <Input
-          id="cnpj"
-          type="text"
-          placeholder="00.000.000/0000-00"
-          value={formData.cnpj}
-          onChange={(e) => handleCNPJChange(e.target.value)}
-          className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
-            errors.cnpj ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
-          }`}
-          disabled={isLoading}
-        />
+        <div className="relative">
+          <Input
+            id="cnpj"
+            type="text"
+            placeholder="00.000.000/0000-00"
+            value={formData.cnpj}
+            onChange={(e) => handleCNPJChange(e.target.value)}
+            className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
+              errors.cnpj ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+            }`}
+            disabled={isLoading}
+          />
+          {loadingCNPJ && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+            </div>
+          )}
+        </div>
         {errors.cnpj && (
           <p className="text-xs text-red-500">{errors.cnpj}</p>
+        )}
+        {loadingCNPJ && (
+          <p className="text-xs text-blue-500">Buscando dados da empresa...</p>
         )}
       </div>
 
