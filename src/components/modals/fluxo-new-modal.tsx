@@ -366,7 +366,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
       </div>
 
       {/* Valor a Receber e Recorrência na mesma linha */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Valor a Receber */}
         <div className="space-y-2">
           <Label htmlFor="valor" className="text-sm font-medium text-gray-700">
@@ -416,10 +416,10 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
       </div>
 
       {/* Quantidade de Parcelas, Data de Início e Ramo na mesma linha */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Quantidade de Parcelas */}
         {formData.recorrencia !== 'unica' && (
-          <div className="space-y-2">
+          <div className="space-y-2 sm:col-span-2 lg:col-span-1">
             <Label htmlFor="quantidadeParcelas" className="text-sm font-medium text-gray-700">
               Qtd de Parcelas
             </Label>
@@ -450,7 +450,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         )}
 
         {/* Data de Início */}
-        <div className="space-y-2">
+        <div className="space-y-2 sm:col-span-1">
           <Label htmlFor="dataInicio" className="text-sm font-medium text-gray-700">
             {formData.recorrencia === 'unica' ? 'Data da Cobrança' : 'Data de Início'}
           </Label>
@@ -470,7 +470,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         </div>
 
         {/* Ramo */}
-        <div className="space-y-2">
+        <div className="space-y-2 sm:col-span-1">
           <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">
             Ramo (Opcional)
           </Label>
