@@ -20,6 +20,7 @@ import {
 import { User } from '@/types/user';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import { ProfileSelector } from '@/components/ui/profile-selector';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MenuItem {
   id: string;
@@ -75,26 +76,22 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading, logout } = useAuth();
 
   useEffect(() => {
-    // Verificar se o usuário está logado
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      router.push('/login');
-      return;
-    }
-    
-    try {
-      setUser(JSON.parse(userData));
-    } catch {
+    // Se não está carregando e não há usuário, redirecionar para login
+    if (!loading && !user) {
       router.push('/login');
     }
-  }, [router]);
+  }, [user, loading, router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/login');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
 
   const closeSidebar = () => setSidebarOpen(false);
@@ -105,12 +102,18 @@ export default function DashboardLayout({
     return fullName.split(' ')[0];
   };
 
-  if (!user) {
+  // Mostrar loading enquanto verifica autenticação
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
       </div>
     );
+  }
+
+  // Se não há usuário e não está carregando, não renderizar nada (será redirecionado)
+  if (!user) {
+    return null;
   }
 
   return (
@@ -174,7 +177,7 @@ export default function DashboardLayout({
               {!sidebarCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    {user.nome || 'Usuário'}
+                    {user.nome || user.displayName || 'Usuário'}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     {user.email}
@@ -257,7 +260,7 @@ export default function DashboardLayout({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {user.nome || 'Usuário'}
+                      {user.nome || user.displayName || 'Usuário'}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
                       {user.email}
@@ -312,7 +315,7 @@ export default function DashboardLayout({
                   </div>
                   <div className="hidden sm:block text-left">
                     <p className="text-sm font-medium text-gray-900">
-                      {getFirstName(user.nome)}
+                      {getFirstName(user.nome || user.displayName || 'Usuário')}
                     </p>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400" />

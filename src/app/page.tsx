@@ -15,17 +15,18 @@ import {
   Users,
   CheckCircle
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function HomePage() {
   const router = useRouter();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Verificar se o usuário já está logado
-    const userData = localStorage.getItem('user');
-    if (userData) {
+    // Se não está carregando e há usuário logado, redirecionar para agenda
+    if (!loading && user) {
       router.push('/agenda');
     }
-  }, [router]);
+  }, [user, loading, router]);
 
   const features = [
     {

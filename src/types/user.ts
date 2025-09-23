@@ -18,6 +18,8 @@ export interface LoginData {
 export interface CadastroData {
     nome: string;
     cpf: string;
+    email: string;
+    senha: string;
     tipo: string;
     ramo: string;
 }

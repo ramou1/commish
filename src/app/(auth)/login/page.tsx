@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginData {
   email: string;
@@ -17,6 +18,7 @@ interface LoginData {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { signIn, signInWithGoogle } = useAuth();
   const [formData, setFormData] = useState<LoginData>({
     email: '',
     senha: ''
@@ -24,6 +26,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<LoginData>>({});
+  const [authError, setAuthError] = useState('');
 
   const handleInputChange = (field: keyof LoginData, value: string) => {
     setFormData(prev => ({
@@ -36,6 +39,10 @@ export default function LoginPage() {
         ...prev,
         [field]: ''
       }));
+    }
+    // Limpar erro de autenticação
+    if (authError) {
+      setAuthError('');
     }
   };
 
@@ -64,26 +71,31 @@ export default function LoginPage() {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setAuthError('');
 
     try {
-      // Simular chamada de API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Aqui você faria a integração com sua API de autenticação
-      console.log('Dados de login:', formData);
-      
-      // Simular login bem-sucedido
-      localStorage.setItem('user', JSON.stringify({
-        email: formData.email,
-        nome: 'Usuário Teste'
-      }));
-      
-      // Redirecionar para dashboard
+      await signIn(formData.email, formData.senha);
+      // Redirecionar para dashboard após login bem-sucedido
       router.push('/agenda');
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro no login:', error);
-      setErrors({ email: 'Email ou senha incorretos' });
+      setAuthError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setAuthError('');
+
+    try {
+      await signInWithGoogle();
+      // Redirecionar para dashboard após login bem-sucedido
+      router.push('/agenda');
+    } catch (error: any) {
+      console.error('Erro no login com Google:', error);
+      setAuthError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -109,6 +121,13 @@ export default function LoginPage() {
             <CardTitle className="text-xl font-semibold text-center text-gray-900">Entrar</CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Exibir erro de autenticação */}
+            {authError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{authError}</p>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email */}
               <div className="space-y-2">
@@ -204,6 +223,7 @@ export default function LoginPage() {
             <Button
               type="button"
               variant="outline"
+              onClick={handleGoogleSignIn}
               className="w-full h-10 border-gray-200 hover:bg-gray-50 flex items-center justify-center space-x-2 mb-8"
               disabled={isLoading}
             >

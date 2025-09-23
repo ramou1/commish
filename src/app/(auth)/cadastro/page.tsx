@@ -3,13 +3,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Building } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Building, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { CadastroData } from '@/types/user';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ramos = [
   { value: 'imoveis', label: 'Imóveis' },
@@ -21,21 +23,32 @@ const ramos = [
 ];
 
 export default function CadastroPage() {
+  const router = useRouter();
+  const { signUp, signInWithGoogle } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<CadastroData>({
     nome: '',
     cpf: '',
+    email: '',
+    senha: '',
     tipo: 'vendedor',
     ramo: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
 
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   const handleInputChange = (field: keyof CadastroData, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+    // Limpar erro de autenticação
+    if (authError) {
+      setAuthError('');
+    }
   };
 
   const handleNext = () => {
@@ -50,22 +63,42 @@ export default function CadastroPage() {
     }
   };
 
-  const handleSubmit = () => {
-    console.log('Dados do cadastro:', formData);
-    
-    // Simular cadastro bem-sucedido
-    localStorage.setItem('user', JSON.stringify({
-      email: 'usuario@exemplo.com', // Simular email
-      nome: formData.nome,
-      cpf: formData.cpf,
-      tipo: formData.tipo,
-      ramo: formData.ramo
-    }));
-    
-    alert('Cadastro realizado com sucesso!');
-    
-    // Redirecionar para dashboard
-    window.location.href = '/agenda';
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setAuthError('');
+
+    try {
+      await signUp(formData.email, formData.senha, {
+        nome: formData.nome,
+        cpf: formData.cpf,
+        tipo: formData.tipo,
+        ramo: formData.ramo
+      });
+      
+      // Redirecionar para dashboard após cadastro bem-sucedido
+      router.push('/agenda');
+    } catch (error: any) {
+      console.error('Erro no cadastro:', error);
+      setAuthError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setAuthError('');
+
+    try {
+      await signInWithGoogle();
+      // Redirecionar para dashboard após login bem-sucedido
+      router.push('/agenda');
+    } catch (error: any) {
+      console.error('Erro no login com Google:', error);
+      setAuthError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const isStepValid = () => {
@@ -73,8 +106,10 @@ export default function CadastroPage() {
       case 1:
         return formData.nome.trim() !== '' && formData.cpf.trim() !== '';
       case 2:
-        return formData.tipo !== '';
+        return formData.email.trim() !== '' && formData.senha.trim() !== '' && formData.senha.length >= 6;
       case 3:
+        return formData.tipo !== '';
+      case 4:
         return formData.ramo !== '';
       default:
         return false;
@@ -93,8 +128,8 @@ export default function CadastroPage() {
     }
   };
 
-  const stepIcons = [User, Briefcase, Building];
-  const stepTitles = ['Dados Pessoais', 'Tipo de Usuário', 'Área de Atuação'];
+  const stepIcons = [User, Mail, Briefcase, Building];
+  const stepTitles = ['Dados Pessoais', 'Credenciais', 'Tipo de Usuário', 'Área de Atuação'];
 
   return (
     <div className="min-h-screen bg-white font-[family-name:var(--font-geist-sans)] flex items-center justify-center p-6">
@@ -158,6 +193,13 @@ export default function CadastroPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Exibir erro de autenticação */}
+            {authError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{authError}</p>
+              </div>
+            )}
+            
             {/* Step 1: Dados Pessoais */}
             {currentStep === 1 && (
               <div className="space-y-4">
@@ -186,30 +228,94 @@ export default function CadastroPage() {
               </div>
             )}
 
-            {/* Step 2: Tipo de Usuário */}
+            {/* Step 2: Credenciais */}
             {currentStep === 2 && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      className="mt-2 pl-10 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="senha" className="text-sm font-medium text-gray-700">Senha</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="senha"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={formData.senha}
+                      onChange={(e) => handleInputChange('senha', e.target.value)}
+                      className="mt-2 pl-10 pr-10 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">A senha deve ter pelo menos 6 caracteres</p>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Tipo de Usuário */}
+            {currentStep === 3 && (
               <div className="space-y-4">
                 <div className="text-center">
                   <p className="text-gray-600 mb-6 text-sm">Você é:</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Opção Vendedor */}
-                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-6 cursor-pointer hover:bg-gray-100 transition-colors">
+                    <div 
+                      className={`border rounded-lg p-6 cursor-pointer transition-colors ${
+                        formData.tipo === 'vendedor' 
+                          ? 'bg-gray-900 border-gray-900 text-white' 
+                          : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleInputChange('tipo', 'vendedor')}
+                    >
                       <div className="flex items-center justify-center space-x-3">
-                        <Briefcase className="w-5 h-5 text-gray-700" />
-                        <span className="text-gray-900 font-medium">Vendedor</span>
+                        <Briefcase className={`w-5 h-5 ${formData.tipo === 'vendedor' ? 'text-white' : 'text-gray-700'}`} />
+                        <span className={`font-medium ${formData.tipo === 'vendedor' ? 'text-white' : 'text-gray-900'}`}>Vendedor</span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+                      <p className={`text-xs mt-3 leading-relaxed ${
+                        formData.tipo === 'vendedor' ? 'text-gray-200' : 'text-gray-600'
+                      }`}>
                         Gerencie suas comissões e antecipe recebimentos
                       </p>
                     </div>
 
                     {/* Opção Empresa */}
-                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-6 cursor-pointer hover:bg-gray-100 transition-colors">
+                    <div 
+                      className={`border rounded-lg p-6 cursor-pointer transition-colors ${
+                        formData.tipo === 'empresa' 
+                          ? 'bg-gray-900 border-gray-900 text-white' 
+                          : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleInputChange('tipo', 'empresa')}
+                    >
                       <div className="flex items-center justify-center space-x-3">
-                        <Building className="w-5 h-5 text-gray-700" />
-                        <span className="text-gray-900 font-medium">Empresa</span>
+                        <Building className={`w-5 h-5 ${formData.tipo === 'empresa' ? 'text-white' : 'text-gray-700'}`} />
+                        <span className={`font-medium ${formData.tipo === 'empresa' ? 'text-white' : 'text-gray-900'}`}>Empresa</span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+                      <p className={`text-xs mt-3 leading-relaxed ${
+                        formData.tipo === 'empresa' ? 'text-gray-200' : 'text-gray-600'
+                      }`}>
                         Gerencie pagamentos de comissões e fluxos financeiros
                       </p>
                     </div>
@@ -218,8 +324,8 @@ export default function CadastroPage() {
               </div>
             )}
 
-            {/* Step 3: Ramo de Atuação */}
-            {currentStep === 3 && (
+            {/* Step 4: Ramo de Atuação */}
+            {currentStep === 4 && (
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">Seu Ramo de Atuação</Label>
@@ -247,7 +353,8 @@ export default function CadastroPage() {
                     <div className="space-y-2 text-xs">
                       <p><span className="font-medium text-gray-700">Nome:</span> <span className="text-gray-600">{formData.nome}</span></p>
                       <p><span className="font-medium text-gray-700">CPF:</span> <span className="text-gray-600">{formData.cpf}</span></p>
-                      <p><span className="font-medium text-gray-700">Tipo:</span> <span className="text-gray-600">Vendedor</span></p>
+                      <p><span className="font-medium text-gray-700">Email:</span> <span className="text-gray-600">{formData.email}</span></p>
+                      <p><span className="font-medium text-gray-700">Tipo:</span> <span className="text-gray-600">{formData.tipo === 'vendedor' ? 'Vendedor' : 'Empresa'}</span></p>
                       <p><span className="font-medium text-gray-700">Ramo:</span> <span className="text-gray-600">{ramos.find(r => r.value === formData.ramo)?.label}</span></p>
                     </div>
                   </div>
@@ -303,7 +410,9 @@ export default function CadastroPage() {
           <Button
             type="button"
             variant="outline"
+            onClick={handleGoogleSignIn}
             className="w-full h-10 border-gray-200 hover:bg-gray-50 flex items-center justify-center space-x-2"
+            disabled={isLoading}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

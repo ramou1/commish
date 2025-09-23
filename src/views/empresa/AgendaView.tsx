@@ -227,18 +227,18 @@ export default function AgendaView() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="h-9 border-gray-200 text-gray-700">
-            <Filter className="w-4 h-4 mr-2" />
+            <Filter className="w-4 h-4" />
             Filtros
           </Button>
           <Button variant="outline" size="sm" className="h-9 border-gray-200 text-gray-700">
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="w-4 h-4" />
             Exportar
           </Button>
           <Button 
             onClick={() => setIsModalOpen(true)}
             className="bg-gray-900 hover:bg-gray-800 h-9 text-white"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-4 h-4" />
             Criar Fluxo
           </Button>
         </div>
