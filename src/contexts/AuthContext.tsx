@@ -13,6 +13,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
+import { UserData } from '@/types/user';
 
 // Tipo estendido para incluir dados do Firestore
 interface ExtendedUser extends User {
@@ -28,7 +29,7 @@ interface AuthContextType {
   user: ExtendedUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, userData: any) => Promise<void>;
+  signUp: (email: string, password: string, userData: UserData) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -68,12 +69,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (error: any) {
-      throw new Error(getAuthErrorMessage(error.code));
+    } catch (error: unknown) {
+      const firebaseError = error as { code: string };
+      throw new Error(getAuthErrorMessage(firebaseError.code));
     }
   };
 
-  const signUp = async (email: string, password: string, userData: any) => {
+  const signUp = async (email: string, password: string, userData: UserData) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -86,8 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
-    } catch (error: any) {
-      throw new Error(getAuthErrorMessage(error.code));
+    } catch (error: unknown) {
+      const firebaseError = error as { code: string };
+      throw new Error(getAuthErrorMessage(firebaseError.code));
     }
   };
 
@@ -110,15 +113,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           updatedAt: new Date().toISOString()
         });
       }
-    } catch (error: any) {
-      throw new Error(getAuthErrorMessage(error.code));
+    } catch (error: unknown) {
+      const firebaseError = error as { code: string };
+      throw new Error(getAuthErrorMessage(firebaseError.code));
     }
   };
 
   const logout = async () => {
     try {
       await signOut(auth);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      console.error('Erro ao fazer logout:', error);
       throw new Error('Erro ao fazer logout');
     }
   };

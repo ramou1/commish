@@ -77,9 +77,10 @@ export default function CadastroPage() {
       
       // Redirecionar para dashboard após cadastro bem-sucedido
       router.push('/agenda');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no cadastro:', error);
-      setAuthError(error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setAuthError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -93,9 +94,10 @@ export default function CadastroPage() {
       await signInWithGoogle();
       // Redirecionar para dashboard após login bem-sucedido
       router.push('/agenda');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no login com Google:', error);
-      setAuthError(error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setAuthError(errorMessage);
     } finally {
       setIsLoading(false);
     }

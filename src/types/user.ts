@@ -23,3 +23,10 @@ export interface CadastroData {
     tipo: string;
     ramo: string;
 }
+
+export interface UserData {
+    nome: string;
+    cpf: string;
+    tipo: string;
+    ramo: string;
+}

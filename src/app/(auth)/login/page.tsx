@@ -77,9 +77,10 @@ export default function LoginPage() {
       await signIn(formData.email, formData.senha);
       // Redirecionar para dashboard após login bem-sucedido
       router.push('/agenda');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no login:', error);
-      setAuthError(error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setAuthError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -93,9 +94,10 @@ export default function LoginPage() {
       await signInWithGoogle();
       // Redirecionar para dashboard após login bem-sucedido
       router.push('/agenda');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no login com Google:', error);
-      setAuthError(error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setAuthError(errorMessage);
     } finally {
       setIsLoading(false);
     }

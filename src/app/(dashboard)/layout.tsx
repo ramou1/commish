@@ -17,7 +17,6 @@ import {
   ChevronDown,
   UserIcon
 } from 'lucide-react';
-import { User } from '@/types/user';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import { ProfileSelector } from '@/components/ui/profile-selector';
 import { useAuth } from '@/contexts/AuthContext';
