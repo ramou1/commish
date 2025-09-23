@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.tsx
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { 
   User, 
   signInWithEmailAndPassword, 
@@ -39,15 +39,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userDataCache, setUserDataCache] = useState<Record<string, any>>({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Buscar dados adicionais do usuário no Firestore
+        // Verificar cache primeiro para resposta mais rápida
+        if (userDataCache[user.uid]) {
+          setUser({ ...user, ...userDataCache[user.uid] } as ExtendedUser);
+          setLoading(false);
+        }
+
+        // Buscar dados adicionais do usuário no Firestore em background
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
+            // Atualizar cache
+            setUserDataCache(prev => ({ ...prev, [user.uid]: userData }));
             // Adicionar dados do Firestore ao objeto user
             setUser({ ...user, ...userData } as ExtendedUser);
           } else {
@@ -59,23 +68,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setUser(null);
+        setUserDataCache({}); // Limpar cache ao fazer logout
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [userDataCache]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error: unknown) {
       const firebaseError = error as { code: string };
       throw new Error(getAuthErrorMessage(firebaseError.code));
     }
-  };
+  }, []);
 
-  const signUp = async (email: string, password: string, userData: UserData) => {
+  const signUp = useCallback(async (email: string, password: string, userData: UserData) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -92,9 +102,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const firebaseError = error as { code: string };
       throw new Error(getAuthErrorMessage(firebaseError.code));
     }
-  };
+  }, []);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -117,26 +127,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const firebaseError = error as { code: string };
       throw new Error(getAuthErrorMessage(firebaseError.code));
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await signOut(auth);
     } catch (error: unknown) {
       console.error('Erro ao fazer logout:', error);
       throw new Error('Erro ao fazer logout');
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    logout
+  }), [user, loading, signIn, signUp, signInWithGoogle, logout]);
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      signIn,
-      signUp,
-      signInWithGoogle,
-      logout
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

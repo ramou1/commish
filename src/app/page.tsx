@@ -1,8 +1,6 @@
 // src/app/page.tsx
 'use client'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,18 +13,7 @@ import {
   Users,
   CheckCircle
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-
 export default function HomePage() {
-  const router = useRouter();
-  const { user, loading } = useAuth();
-
-  useEffect(() => {
-    // Se não está carregando e há usuário logado, redirecionar para agenda
-    if (!loading && user) {
-      router.push('/agenda');
-    }
-  }, [user, loading, router]);
 
   const features = [
     {
@@ -89,14 +76,14 @@ export default function HomePage() {
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/cadastro">
-                  <Button size="lg" className="bg-gray-900 hover:bg-gray-800 text-white border-0 h-11 px-8 rounded-md font-medium">
+                <Link href="/cadastro" prefetch={true}>
+                  <Button size="lg" className="bg-gray-900 hover:bg-gray-800 text-white border-0 h-11 px-8 rounded-md font-medium transition-all duration-200">
                     Começar Agora
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </Link>
-                <Link href="/login">
-                  <Button variant="outline" size="lg" className="h-11 px-8 rounded-md font-medium border-gray-200 hover:bg-gray-50">
+                <Link href="/login" prefetch={true}>
+                  <Button variant="outline" size="lg" className="h-11 px-8 rounded-md font-medium border-gray-200 hover:bg-gray-50 transition-all duration-200">
                     Já tenho conta
                   </Button>
                 </Link>
@@ -174,8 +161,8 @@ export default function HomePage() {
                   Faça parte da comunidade que está revolucionando 
                   a gestão de comissões na América Latina.
                 </p>
-                <Link href="/cadastro">
-                  <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white border-0 h-10 rounded-md font-medium">
+                <Link href="/cadastro" prefetch={true}>
+                  <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white border-0 h-10 rounded-md font-medium transition-all duration-200">
                     Criar conta gratuita
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
@@ -196,8 +183,8 @@ export default function HomePage() {
             Comece agora mesmo e veja como é fácil ter controle total dos seus recebimentos.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/cadastro">
-              <Button size="lg" className="bg-gray-900 hover:bg-gray-800 text-white border-0 h-11 px-8 rounded-md font-medium">
+            <Link href="/cadastro" prefetch={true}>
+              <Button size="lg" className="bg-gray-900 hover:bg-gray-800 text-white border-0 h-11 px-8 rounded-md font-medium transition-all duration-200">
                 Começar gratuitamente
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
