@@ -14,9 +14,9 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { 
   ExtendedUser, 
-  UserDataCache, 
   UserProfile,
-  TipoUsuario 
+  TipoUsuario,
+  DadosVendedor
 } from '@/types/user';
 
 interface AuthContextType {
@@ -33,25 +33,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userDataCache, setUserDataCache] = useState<Record<string, UserDataCache>>({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Verificar cache primeiro para resposta mais rápida
-        if (userDataCache[user.uid]) {
-          setUser({ ...user, ...userDataCache[user.uid] } as ExtendedUser);
-          setLoading(false);
-        }
-
-        // Buscar dados adicionais do usuário no Firestore em background
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            // Atualizar cache
-            setUserDataCache(prev => ({ ...prev, [user.uid]: userData }));
-            // Adicionar dados do Firestore ao objeto user
             setUser({ ...user, ...userData } as ExtendedUser);
           } else {
             setUser(user);
@@ -62,13 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setUser(null);
-        setUserDataCache({}); // Limpar cache ao fazer logout
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [userDataCache]);
+  }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -88,7 +76,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
         email: user.email,
-        ...userData,
+        tipo: userData.tipo,
+        ramo: userData.ramo,
+        dadosPessoais: userData.dadosPessoais,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
@@ -110,9 +100,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await setDoc(doc(db, 'users', user.uid), {
           uid: user.uid,
           email: user.email,
-          nome: user.displayName || '',
           tipo: 'vendedor' as TipoUsuario, // Padrão
           ramo: '',
+          dadosPessoais: {
+            nome: user.displayName || '',
+            cpf: ''
+          } as DadosVendedor,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         });

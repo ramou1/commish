@@ -9,31 +9,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Building, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { CadastroData } from '@/types/user';
+import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { TipoUsuario, RamoNegocio } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
-const ramos = [
-  { value: 'imoveis', label: 'Imóveis' },
-  { value: 'automoveis', label: 'Automóveis' },
-  { value: 'seguros', label: 'Seguros' },
-  { value: 'planos-saude', label: 'Planos de Saúde' },
-  { value: 'vendedor-digital', label: 'Vendedor Digital' },
-  { value: 'outros', label: 'Outros' }
-];
 
 export default function CadastroPage() {
   const router = useRouter();
   const { signUp, signInWithGoogle } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<CadastroData>({
+  const [formData, setFormData] = useState({
+    tipo: 'vendedor' as TipoUsuario,
+    ramo: '',
     nome: '',
     cpf: '',
     email: '',
-    senha: '',
-    tipo: 'vendedor',
-    ramo: ''
+    senha: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +33,7 @@ export default function CadastroPage() {
 
   const totalSteps = 4;
 
-  const handleInputChange = (field: keyof CadastroData, value: string) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -70,10 +62,11 @@ export default function CadastroPage() {
 
     try {
       await signUp(formData.email, formData.senha, {
-        nome: formData.nome,
-        cpf: formData.cpf,
         tipo: formData.tipo,
-        ramo: formData.ramo
+        ramo: formData.ramo as RamoNegocio,
+        dadosPessoais: formData.tipo === 'vendedor' 
+          ? { nome: formData.nome, cpf: formData.cpf }
+          : { razaoSocial: formData.nome, cnpj: formData.cpf }
       });
       
       // Redirecionar para dashboard após cadastro bem-sucedido
@@ -107,13 +100,13 @@ export default function CadastroPage() {
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
-        return formData.nome.trim() !== '' && formData.cpf.trim() !== '';
-      case 2:
-        return formData.email.trim() !== '' && formData.senha.trim() !== '' && formData.senha.length >= 6;
-      case 3:
         return formData.tipo === 'vendedor' || formData.tipo === 'empresa';
-      case 4:
+      case 2:
+        return formData.nome.trim() !== '' && formData.cpf.trim() !== '';
+      case 3:
         return formData.ramo !== '';
+      case 4:
+        return formData.email.trim() !== '' && formData.senha.trim() !== '' && formData.senha.length >= 6;
       default:
         return false;
     }
@@ -131,8 +124,8 @@ export default function CadastroPage() {
     }
   };
 
-  const stepIcons = [User, Mail, Briefcase, Building];
-  const stepTitles = ['Dados Pessoais', 'Credenciais', 'Tipo de Usuário', 'Área de Atuação'];
+  const stepIcons = [User, User, Briefcase, Mail];
+  const stepTitles = ['Tipo de Usuário', 'Dados Pessoais', 'Área de Atuação', 'Credenciais'];
 
   return (
     <div className="min-h-screen bg-white font-[family-name:var(--font-geist-sans)] flex items-center justify-center p-6">
@@ -196,43 +189,133 @@ export default function CadastroPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Exibir erro de autenticação */}
-            {authError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{authError}</p>
-              </div>
-            )}
             
-            {/* Step 1: Dados Pessoais */}
+            {/* Step 1: Tipo de Usuário */}
             {currentStep === 1 && (
               <div className="space-y-4">
-                <div>
-                  <Label htmlFor="nome" className="text-sm font-medium text-gray-700">Nome Completo</Label>
-                  <Input
-                    id="nome"
-                    type="text"
-                    placeholder="Digite seu nome completo"
-                    value={formData.nome}
-                    onChange={(e) => handleInputChange('nome', e.target.value)}
-                    className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cpf" className="text-sm font-medium text-gray-700">CPF</Label>
-                  <Input
-                    id="cpf"
-                    type="text"
-                    placeholder="000.000.000-00"
-                    value={formData.cpf}
-                    onChange={(e) => handleCPFChange(e.target.value)}
-                    className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
-                  />
+                <div className="text-center">
+                  <p className="text-gray-600 mb-6 text-sm">Você é:</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Opção Vendedor */}
+                    <div 
+                      className={`border rounded-lg p-6 cursor-pointer transition-colors ${
+                        formData.tipo === 'vendedor' 
+                          ? 'bg-gray-900 border-gray-900 text-white' 
+                          : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleInputChange('tipo', 'vendedor')}
+                    >
+                      <div className="text-center">
+                        <div className="text-2xl mb-2">👤</div>
+                        <h3 className="font-semibold text-lg mb-2">Vendedor</h3>
+                        <p className="text-sm opacity-75">Pessoa física que vende produtos ou serviços</p>
+                      </div>
+                    </div>
+
+                    {/* Opção Empresa */}
+                    <div 
+                      className={`border rounded-lg p-6 cursor-pointer transition-colors ${
+                        formData.tipo === 'empresa' 
+                          ? 'bg-gray-900 border-gray-900 text-white' 
+                          : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                      }`}
+                      onClick={() => handleInputChange('tipo', 'empresa')}
+                    >
+                      <div className="text-center">
+                        <div className="text-2xl mb-2">🏢</div>
+                        <h3 className="font-semibold text-lg mb-2">Empresa</h3>
+                        <p className="text-sm opacity-75">Pessoa jurídica que oferece produtos ou serviços</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Step 2: Credenciais */}
+            {/* Step 2: Dados Pessoais */}
             {currentStep === 2 && (
+              <div className="space-y-4">
+                {formData.tipo === 'vendedor' ? (
+                  <>
+                    <div>
+                      <Label htmlFor="nome" className="text-sm font-medium text-gray-700">Nome Completo</Label>
+                      <Input
+                        id="nome"
+                        type="text"
+                        placeholder="Digite seu nome completo"
+                        value={formData.nome}
+                        onChange={(e) => handleInputChange('nome', e.target.value)}
+                        className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="cpf" className="text-sm font-medium text-gray-700">CPF</Label>
+                      <Input
+                        id="cpf"
+                        type="text"
+                        placeholder="000.000.000-00"
+                        value={formData.cpf}
+                        onChange={(e) => handleCPFChange(e.target.value)}
+                        className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <Label htmlFor="razaoSocial" className="text-sm font-medium text-gray-700">Razão Social</Label>
+                      <Input
+                        id="razaoSocial"
+                        type="text"
+                        placeholder="Digite a razão social da empresa"
+                        value={formData.nome}
+                        onChange={(e) => handleInputChange('nome', e.target.value)}
+                        className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="cnpj" className="text-sm font-medium text-gray-700">CNPJ</Label>
+                      <Input
+                        id="cnpj"
+                        type="text"
+                        placeholder="00.000.000/0000-00"
+                        value={formData.cpf}
+                        onChange={(e) => handleCPFChange(e.target.value)}
+                        className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Step 3: Área de Atuação */}
+            {currentStep === 3 && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">Sua Área de Atuação</Label>
+                  <Select
+                    value={formData.ramo}
+                    onValueChange={(value) => handleInputChange('ramo', value)}
+                  >
+                    <SelectTrigger className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0">
+                      <SelectValue placeholder="Selecione sua área de atuação" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="imóveis">Imóveis</SelectItem>
+                      <SelectItem value="automóveis">Automóveis</SelectItem>
+                      <SelectItem value="seguros">Seguros</SelectItem>
+                      <SelectItem value="planos de saúde">Planos de Saúde</SelectItem>
+                      <SelectItem value="vendedor digital">Vendedor Digital</SelectItem>
+                      <SelectItem value="outros">Outros</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Credenciais */}
+            {currentStep === 4 && (
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
@@ -277,94 +360,6 @@ export default function CadastroPage() {
               </div>
             )}
 
-            {/* Step 3: Tipo de Usuário */}
-            {currentStep === 3 && (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <p className="text-gray-600 mb-6 text-sm">Você é:</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Opção Vendedor */}
-                    <div 
-                      className={`border rounded-lg p-6 cursor-pointer transition-colors ${
-                        formData.tipo === 'vendedor' 
-                          ? 'bg-gray-900 border-gray-900 text-white' 
-                          : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
-                      }`}
-                      onClick={() => handleInputChange('tipo', 'vendedor')}
-                    >
-                      <div className="flex items-center justify-center space-x-3">
-                        <Briefcase className={`w-5 h-5 ${formData.tipo === 'vendedor' ? 'text-white' : 'text-gray-700'}`} />
-                        <span className={`font-medium ${formData.tipo === 'vendedor' ? 'text-white' : 'text-gray-900'}`}>Vendedor</span>
-                      </div>
-                      <p className={`text-xs mt-3 leading-relaxed ${
-                        formData.tipo === 'vendedor' ? 'text-gray-200' : 'text-gray-600'
-                      }`}>
-                        Gerencie suas comissões e antecipe recebimentos
-                      </p>
-                    </div>
-
-                    {/* Opção Empresa */}
-                    <div 
-                      className={`border rounded-lg p-6 cursor-pointer transition-colors ${
-                        formData.tipo === 'empresa' 
-                          ? 'bg-gray-900 border-gray-900 text-white' 
-                          : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
-                      }`}
-                      onClick={() => handleInputChange('tipo', 'empresa')}
-                    >
-                      <div className="flex items-center justify-center space-x-3">
-                        <Building className={`w-5 h-5 ${formData.tipo === 'empresa' ? 'text-white' : 'text-gray-700'}`} />
-                        <span className={`font-medium ${formData.tipo === 'empresa' ? 'text-white' : 'text-gray-900'}`}>Empresa</span>
-                      </div>
-                      <p className={`text-xs mt-3 leading-relaxed ${
-                        formData.tipo === 'empresa' ? 'text-gray-200' : 'text-gray-600'
-                      }`}>
-                        Gerencie pagamentos de comissões e fluxos financeiros
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: Ramo de Atuação */}
-            {currentStep === 4 && (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">Seu Ramo de Atuação</Label>
-                  <Select
-                    value={formData.ramo}
-                    onValueChange={(value) => handleInputChange('ramo', value)}
-                  >
-                    <SelectTrigger className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0">
-                      <SelectValue placeholder="Selecione seu ramo de atuação" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ramos.map((ramo) => (
-                        <SelectItem key={ramo.value} value={ramo.value}>
-                          {ramo.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {/* Preview dos dados */}
-                {formData.ramo && (
-                  <div className="mt-6 p-4 bg-gray-50 border border-gray-100 rounded-lg">
-                    <h4 className="font-medium text-gray-900 mb-3 text-sm">Resumo do cadastro:</h4>
-                    <div className="space-y-2 text-xs">
-                      <p><span className="font-medium text-gray-700">Nome:</span> <span className="text-gray-600">{formData.nome}</span></p>
-                      <p><span className="font-medium text-gray-700">CPF:</span> <span className="text-gray-600">{formData.cpf}</span></p>
-                      <p><span className="font-medium text-gray-700">Email:</span> <span className="text-gray-600">{formData.email}</span></p>
-                      <p><span className="font-medium text-gray-700">Tipo:</span> <span className="text-gray-600">{formData.tipo === 'vendedor' ? 'Vendedor' : 'Empresa'}</span></p>
-                      <p><span className="font-medium text-gray-700">Ramo:</span> <span className="text-gray-600">{ramos.find(r => r.value === formData.ramo)?.label}</span></p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Botões de navegação */}
             <div className="flex justify-between pt-6">
               <Button
@@ -403,6 +398,13 @@ export default function CadastroPage() {
                 </Button>
               )}
             </div>
+
+            {/* Exibir erro de autenticação */}
+            {authError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{authError}</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -20,6 +20,19 @@ import {
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import { ProfileSelector } from '@/components/ui/profile-selector';
 import { useAuth } from '@/contexts/AuthContext';
+import { ExtendedUser, DadosVendedor, DadosEmpresa } from '@/types/user';
+
+// Helper function to get user name from dadosPessoais
+function getUserName(user: ExtendedUser): string | undefined {
+  if (user.dadosPessoais) {
+    if ('nome' in user.dadosPessoais) {
+      return (user.dadosPessoais as DadosVendedor).nome;
+    } else if ('razaoSocial' in user.dadosPessoais) {
+      return (user.dadosPessoais as DadosEmpresa).razaoSocial;
+    }
+  }
+  return undefined;
+}
 
 interface MenuItem {
   id: string;
@@ -176,7 +189,7 @@ export default function DashboardLayout({
               {!sidebarCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    {user.nome || user.displayName || 'Usuário'}
+                    {getUserName(user) || user.displayName || 'Usuário'}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     {user.email}
@@ -259,7 +272,7 @@ export default function DashboardLayout({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {user.nome || user.displayName || 'Usuário'}
+                      {getUserName(user) || user.displayName || 'Usuário'}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
                       {user.email}
@@ -314,7 +327,7 @@ export default function DashboardLayout({
                   </div>
                   <div className="hidden sm:block text-left">
                     <p className="text-sm font-medium text-gray-900">
-                      {getFirstName(user.nome || user.displayName || 'Usuário')}
+                      {getFirstName(getUserName(user) || user.displayName || 'Usuário')}
                     </p>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
