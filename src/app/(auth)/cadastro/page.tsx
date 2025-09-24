@@ -206,7 +206,6 @@ export default function CadastroPage() {
                       onClick={() => handleInputChange('tipo', 'vendedor')}
                     >
                       <div className="text-center">
-                        <div className="text-2xl mb-2">👤</div>
                         <h3 className="font-semibold text-lg mb-2">Vendedor</h3>
                         <p className="text-sm opacity-75">Pessoa física que vende produtos ou serviços</p>
                       </div>
@@ -222,7 +221,6 @@ export default function CadastroPage() {
                       onClick={() => handleInputChange('tipo', 'empresa')}
                     >
                       <div className="text-center">
-                        <div className="text-2xl mb-2">🏢</div>
                         <h3 className="font-semibold text-lg mb-2">Empresa</h3>
                         <p className="text-sm opacity-75">Pessoa jurídica que oferece produtos ou serviços</p>
                       </div>
