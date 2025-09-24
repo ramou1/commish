@@ -111,7 +111,7 @@ export default function CadastroPage() {
       case 2:
         return formData.email.trim() !== '' && formData.senha.trim() !== '' && formData.senha.length >= 6;
       case 3:
-        return formData.tipo !== '';
+        return formData.tipo === 'vendedor' || formData.tipo === 'empresa';
       case 4:
         return formData.ramo !== '';
       default:

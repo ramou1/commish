@@ -3,7 +3,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { 
-  User, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
@@ -13,23 +12,18 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { UserData } from '@/types/user';
-
-// Tipo estendido para incluir dados do Firestore
-interface ExtendedUser extends User {
-  nome?: string;
-  cpf?: string;
-  tipo?: string;
-  ramo?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { 
+  ExtendedUser, 
+  UserDataCache, 
+  UserProfile,
+  TipoUsuario 
+} from '@/types/user';
 
 interface AuthContextType {
   user: ExtendedUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, userData: UserData) => Promise<void>;
+  signUp: (email: string, password: string, userData: UserProfile) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -39,7 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userDataCache, setUserDataCache] = useState<Record<string, any>>({});
+  const [userDataCache, setUserDataCache] = useState<Record<string, UserDataCache>>({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -85,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, userData: UserData) => {
+  const signUp = useCallback(async (email: string, password: string, userData: UserProfile) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -117,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           uid: user.uid,
           email: user.email,
           nome: user.displayName || '',
-          tipo: 'vendedor', // Padrão
+          tipo: 'vendedor' as TipoUsuario, // Padrão
           ramo: '',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
