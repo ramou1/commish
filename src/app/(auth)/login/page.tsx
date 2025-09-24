@@ -1,7 +1,7 @@
 // src/app/(auth)/login/page.tsx
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<LoginData>>({});
   const [authError, setAuthError] = useState('');
+  const isSubmittingRef = useRef(false);
 
   const handleInputChange = (field: keyof LoginData, value: string) => {
     setFormData(prev => ({
@@ -70,7 +71,9 @@ export default function LoginPage() {
     e.preventDefault();
     
     if (!validateForm()) return;
+    if (isSubmittingRef.current) return; // Prevenir cliques duplos
 
+    isSubmittingRef.current = true;
     setIsLoading(true);
     setAuthError('');
 
@@ -78,16 +81,20 @@ export default function LoginPage() {
       await signIn(formData.email, formData.senha);
       // Redirecionar para dashboard após login bem-sucedido
       router.push('/agenda');
+      // Não definir setIsLoading(false) aqui - deixar o loading até a navegação
     } catch (error: unknown) {
       console.error('Erro no login:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       setAuthError(errorMessage);
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Só parar o loading em caso de erro
+      isSubmittingRef.current = false; // Reset apenas em caso de erro
     }
   };
 
   const handleGoogleSignIn = async () => {
+    if (isSubmittingRef.current) return; // Prevenir cliques duplos
+    
+    isSubmittingRef.current = true;
     setIsLoading(true);
     setAuthError('');
 
@@ -95,12 +102,13 @@ export default function LoginPage() {
       await signInWithGoogle();
       // Redirecionar para dashboard após login bem-sucedido
       router.push('/agenda');
+      // Não definir setIsLoading(false) aqui - deixar o loading até a navegação
     } catch (error: unknown) {
       console.error('Erro no login com Google:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       setAuthError(errorMessage);
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Só parar o loading em caso de erro
+      isSubmittingRef.current = false; // Reset apenas em caso de erro
     }
   };
 

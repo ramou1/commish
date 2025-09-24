@@ -1,7 +1,7 @@
 // src/app/(auth)/cadastro/page.tsx
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,6 +30,7 @@ export default function CadastroPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  const isSubmittingRef = useRef(false);
 
   const totalSteps = 4;
 
@@ -57,6 +58,9 @@ export default function CadastroPage() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmittingRef.current) return; // Prevenir cliques duplos
+    
+    isSubmittingRef.current = true;
     setIsLoading(true);
     setAuthError('');
 
@@ -71,16 +75,20 @@ export default function CadastroPage() {
       
       // Redirecionar para dashboard após cadastro bem-sucedido
       router.push('/agenda');
+      // Não definir setIsLoading(false) aqui - deixar o loading até a navegação
     } catch (error: unknown) {
       console.error('Erro no cadastro:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       setAuthError(errorMessage);
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Só parar o loading em caso de erro
+      isSubmittingRef.current = false; // Reset apenas em caso de erro
     }
   };
 
   const handleGoogleSignIn = async () => {
+    if (isSubmittingRef.current) return; // Prevenir cliques duplos
+    
+    isSubmittingRef.current = true;
     setIsLoading(true);
     setAuthError('');
 
@@ -88,12 +96,13 @@ export default function CadastroPage() {
       await signInWithGoogle();
       // Redirecionar para dashboard após login bem-sucedido
       router.push('/agenda');
+      // Não definir setIsLoading(false) aqui - deixar o loading até a navegação
     } catch (error: unknown) {
       console.error('Erro no login com Google:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       setAuthError(errorMessage);
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Só parar o loading em caso de erro
+      isSubmittingRef.current = false; // Reset apenas em caso de erro
     }
   };
 
