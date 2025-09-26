@@ -1,7 +1,7 @@
 // src/views/usuario/AgendaView.tsx
 'use client'
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,22 +17,53 @@ import {
 } from 'lucide-react';
 
 import { fluxosIniciais, FluxoComissao, colors } from '@/constants/fluxos-mock';
-import { NovoFluxoFormData } from '@/types';
+import { NovoFluxoFormData } from '@/types/fluxo';
 import { 
   criarDataLocal, 
   calcularDataFinal,
   gerarDatasPagamento
 } from '@/lib/dateUtils';
+import { useAuth } from '@/contexts/AuthContext';
+import { createFluxo, getFluxosByUserId } from '@/lib/firebase';
+import { convertFormDataToFirebase, convertFirebaseFluxosToComissao } from '@/lib/fluxoUtils';
 
 export default function AgendaView() {
+  const { user } = useAuth();
   const [fluxos, setFluxos] = useState<FluxoComissao[]>(fluxosIniciais);
+  const [firebaseFluxos, setFirebaseFluxos] = useState<FluxoComissao[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedFluxo, setSelectedFluxo] = useState<FluxoComissao | null>(null);
 
+  // Carregar fluxos do Firebase quando o usuário estiver logado
+  useEffect(() => {
+    const loadFirebaseFluxos = async () => {
+      if (user?.uid) {
+        try {
+          setIsLoading(true);
+          const firebaseData = await getFluxosByUserId(user.uid);
+          const convertedFluxos = convertFirebaseFluxosToComissao(firebaseData);
+          setFirebaseFluxos(convertedFluxos);
+        } catch (error) {
+          console.error('Erro ao carregar fluxos do Firebase:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadFirebaseFluxos();
+  }, [user?.uid]);
+
+  // Combinar fluxos do mock com os do Firebase
+  const allFluxos = useMemo(() => {
+    return [...fluxosIniciais, ...firebaseFluxos];
+  }, [firebaseFluxos]);
+
   // Calcular apenas os meses que têm fluxos ativos
   const months = useMemo(() => {
-    const activeFluxos = fluxos.filter(f => f.status === 'ativo');
+    const activeFluxos = allFluxos.filter(f => f.status === 'ativo');
     
     if (activeFluxos.length === 0) {
       return [];
@@ -58,13 +89,13 @@ export default function AgendaView() {
       .sort((a, b) => a.getTime() - b.getTime());
 
     return monthsArray;
-  }, [fluxos]);
+  }, [allFluxos]);
 
   // Função para agrupar fluxos por mês
   const groupFluxosByMonth = () => {
     const grouped: { [key: string]: FluxoComissao[] } = {};
     
-    fluxos.forEach(fluxo => {
+    allFluxos.forEach(fluxo => {
       if (fluxo.status === 'ativo') {
         const paymentDate = fluxo.proximoPagamento instanceof Date 
           ? fluxo.proximoPagamento 
@@ -125,70 +156,74 @@ export default function AgendaView() {
   const columnCount = getColumnCount();
   const visibleMonths = months.slice(currentMonthIndex, currentMonthIndex + columnCount);
 
-  const handleNovoFluxo = (formData: NovoFluxoFormData) => {
-    const novoId = (Math.max(0, ...fluxos.map(f => Number(f.id) || 0)) + 1).toString();
-
-    // Atribuir cor automaticamente se não fornecida
-    const corAuto = colors[fluxos.length % colors.length];
-
-    const dataInicioLocal = criarDataLocal(formData.dataInicio);
-    
-    // Calcular data final usando date-fns
-    const dataFimCalculada = calcularDataFinal(
-      formData.dataInicio,
-      formData.recorrencia as 'unica' | 'semanal' | 'mensal',
-      formData.quantidadeParcelas
-    );
-    const dataFimLocal = criarDataLocal(dataFimCalculada);
-
-    // Para fluxos recorrentes, gerar todas as datas de pagamento
-    const datasPagamento = gerarDatasPagamento(
-      formData.dataInicio,
-      formData.recorrencia as 'semanal' | 'mensal',
-      formData.quantidadeParcelas
-    );
-
-    // Criar um fluxo para cada data de pagamento (exceto cobrança única)
-    if (formData.recorrencia === 'unica') {
-      const novoFluxo: FluxoComissao = {
-        id: novoId,
-        nomeEmpresa: formData.nomeEmpresa,
-        valor: Number(String(formData.valor).replace(/\D/g, '')) / 100,
-        recorrencia: formData.recorrencia as 'unica' | 'semanal' | 'mensal',
-        dataInicio: dataInicioLocal,
-        dataFim: dataFimLocal,
-        status: 'ativo',
-        proximoPagamento: dataInicioLocal,
-        color: formData.color || corAuto,
-        cnpj: formData.cnpj,
-        ramo: formData.ramo,
-        documentoNome: formData.documento ? formData.documento.name : undefined,
-        descricao: formData.descricao,
-      };
-
-      setFluxos(prev => [...prev, novoFluxo]);
-    } else {
-      // Para fluxos recorrentes, criar um card para cada parcela
-      const novosFluxos: FluxoComissao[] = datasPagamento.map((dataPagamento, index) => ({
-        id: `${novoId}_${index + 1}`,
-        nomeEmpresa: formData.nomeEmpresa,
-        valor: Number(String(formData.valor).replace(/\D/g, '')) / 100,
-        recorrencia: formData.recorrencia as 'unica' | 'semanal' | 'mensal',
-        dataInicio: dataInicioLocal,
-        dataFim: dataFimLocal,
-        status: 'ativo' as const,
-        proximoPagamento: dataPagamento,
-        color: formData.color || corAuto,
-        cnpj: formData.cnpj,
-        ramo: formData.ramo,
-        documentoNome: formData.documento ? formData.documento.name : undefined,
-        descricao: formData.descricao,
-      }));
-
-      setFluxos(prev => [...prev, ...novosFluxos]);
+  const handleNovoFluxo = async (formData: NovoFluxoFormData) => {
+    if (!user?.uid) {
+      console.error('Usuário não autenticado');
+      return;
     }
 
-    setIsModalOpen(false);
+    try {
+      setIsLoading(true);
+
+      // Atribuir cor automaticamente se não fornecida
+      const corAuto = colors[firebaseFluxos.length % colors.length];
+
+      const dataInicioLocal = criarDataLocal(formData.dataInicio);
+      
+      // Calcular data final usando date-fns
+      const dataFimCalculada = calcularDataFinal(
+        formData.dataInicio,
+        formData.recorrencia as 'unica' | 'semanal' | 'mensal',
+        formData.quantidadeParcelas
+      );
+
+      // Para fluxos recorrentes, gerar todas as datas de pagamento
+      const datasPagamento = gerarDatasPagamento(
+        formData.dataInicio,
+        formData.recorrencia as 'semanal' | 'mensal',
+        formData.quantidadeParcelas
+      );
+
+      // Criar um fluxo para cada data de pagamento (exceto cobrança única)
+      if (formData.recorrencia === 'unica') {
+        const proximoPagamento = dataInicioLocal;
+        
+        const firebaseData = convertFormDataToFirebase(
+          formData,
+          user.uid,
+          proximoPagamento,
+          corAuto
+        );
+
+        await createFluxo(firebaseData);
+      } else {
+        // Para fluxos recorrentes, criar um documento para cada parcela
+        for (let i = 0; i < datasPagamento.length; i++) {
+          const proximoPagamento = datasPagamento[i];
+          
+          const firebaseData = convertFormDataToFirebase(
+            formData,
+            user.uid,
+            proximoPagamento,
+            corAuto
+          );
+
+          await createFluxo(firebaseData);
+        }
+      }
+
+      // Recarregar fluxos do Firebase
+      const firebaseData = await getFluxosByUserId(user.uid);
+      const convertedFluxos = convertFirebaseFluxosToComissao(firebaseData);
+      setFirebaseFluxos(convertedFluxos);
+
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Erro ao criar fluxo:', error);
+      // Aqui você pode adicionar uma notificação de erro para o usuário
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Função para marcar como pago (visualização de usuário)
@@ -384,6 +419,7 @@ export default function AgendaView() {
               <NovoFluxoForm 
                 onSubmit={handleNovoFluxo}
                 onCancel={() => setIsModalOpen(false)}
+                isLoading={isLoading}
               />
             </div>
           </div>

@@ -1,21 +1,9 @@
 // src/constants/fluxos-mock.ts
 
-export interface FluxoComissao {
-  id: string;
-  nomeEmpresa: string;
-  valor: number;
-  recorrencia: 'unica' | 'semanal' | 'mensal';
-  dataInicio: Date;
-  dataFim: Date;
-  status: 'ativo' | 'pendente' | 'finalizado';
-  proximoPagamento: Date;
-  color?: string;
-  cnpj?: string;
-  ramo?: string;
-  documentoNome?: string;
-  documentoUrl?: string;
-  descricao?: string;
-}
+import { FluxoComissao } from '@/types/fluxo';
+
+// Re-exportar para compatibilidade
+export type { FluxoComissao };
 
 // Paleta de cores usada para identificar clientes
 export const colors = [
@@ -66,67 +54,6 @@ export const fluxosIniciais: FluxoComissao[] = [
     status: 'ativo',
     proximoPagamento: new Date('2025-09-27'),
     color: colors[1],
-  },
-  {
-    id: '3',
-    nomeEmpresa: 'Imobiliária R&R',
-    cnpj: '11.222.333/0001-44',
-    valor: 1000,
-    recorrencia: 'mensal',
-    dataInicio: new Date('2025-09-01'),
-    dataFim: new Date('2025-12-31'),
-    status: 'ativo',
-    proximoPagamento: new Date('2025-10-13'),
-    color: colors[2],
-    descricao: 'Comissão mensal por indicações de clientes'
-  },
-  {
-    id: '4',
-    nomeEmpresa: 'Corretora Porto',
-    cnpj: '55.666.777/0001-88',
-    valor: 500,
-    recorrencia: 'mensal',
-    dataInicio: new Date('2025-10-01'),
-    dataFim: new Date('2025-12-31'),
-    status: 'ativo',
-    proximoPagamento: new Date('2025-10-16'),
-    color: colors[3],
-  },
-  {
-    id: '40',
-    nomeEmpresa: 'Corretora Porto',
-    cnpj: '55.666.777/0001-88',
-    valor: 500,
-    recorrencia: 'mensal',
-    dataInicio: new Date('2025-10-01'),
-    dataFim: new Date('2025-12-31'),
-    status: 'ativo',
-    proximoPagamento: new Date('2025-11-16'),
-    color: colors[3],
-  },
-  {
-    id: '41',
-    nomeEmpresa: 'Corretora Porto',
-    cnpj: '55.666.777/0001-88',
-    valor: 500,
-    recorrencia: 'mensal',
-    dataInicio: new Date('2025-10-01'),
-    dataFim: new Date('2025-12-31'),
-    status: 'ativo',
-    proximoPagamento: new Date('2025-12-16'),
-    color: colors[3],
-  },
-  {
-    id: '10',
-    nomeEmpresa: 'Imobiliária R&R',
-    cnpj: '11.222.333/0001-44',
-    valor: 1000,
-    recorrencia: 'mensal',
-    dataInicio: new Date('2025-09-01'),
-    dataFim: new Date('2025-12-31'),
-    status: 'ativo',
-    proximoPagamento: new Date('2025-11-13'),
-    color: colors[2],
   },
   {
     id: '5',

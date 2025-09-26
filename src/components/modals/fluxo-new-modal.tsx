@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ramos as ramoOptions } from '@/constants/ramos';
 import { colors } from '@/constants/fluxos-mock';
-import { NovoFluxoFormData } from '@/types';
+import { NovoFluxoFormData } from '@/types/fluxo';
 import { calcularDataFinal } from '@/lib/dateUtils';
 
 interface NovoFluxoFormProps {
