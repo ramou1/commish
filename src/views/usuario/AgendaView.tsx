@@ -20,7 +20,6 @@ import { fluxosIniciais, FluxoComissao, colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types/fluxo';
 import { 
   criarDataLocal, 
-  calcularDataFinal,
   gerarDatasPagamento
 } from '@/lib/dateUtils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,7 +28,6 @@ import { convertFormDataToFirebase, convertFirebaseFluxosToComissao } from '@/li
 
 export default function AgendaView() {
   const { user } = useAuth();
-  const [fluxos, setFluxos] = useState<FluxoComissao[]>(fluxosIniciais);
   const [firebaseFluxos, setFirebaseFluxos] = useState<FluxoComissao[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -170,13 +168,6 @@ export default function AgendaView() {
 
       const dataInicioLocal = criarDataLocal(formData.dataInicio);
       
-      // Calcular data final usando date-fns
-      const dataFimCalculada = calcularDataFinal(
-        formData.dataInicio,
-        formData.recorrencia as 'unica' | 'semanal' | 'mensal',
-        formData.quantidadeParcelas
-      );
-
       // Para fluxos recorrentes, gerar todas as datas de pagamento
       const datasPagamento = gerarDatasPagamento(
         formData.dataInicio,

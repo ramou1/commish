@@ -2,9 +2,26 @@
 import { Timestamp } from 'firebase/firestore';
 import { FluxoComissao, FluxoFirebase } from '@/types/fluxo';
 
+// Tipo para Timestamp do Firebase
+type FirebaseTimestamp = {
+  toDate(): Date;
+};
+
 // Converter dados do formulário para formato do Firebase
 export function convertFormDataToFirebase(
-  formData: any,
+  formData: {
+    descricao?: string;
+    cnpj: string;
+    nomeEmpresa: string;
+    ramo?: string;
+    valor: string;
+    recorrencia: 'unica' | 'semanal' | 'mensal' | '';
+    dataInicio: string;
+    dataFim: string;
+    quantidadeParcelas: number;
+    color?: string;
+    documento?: File | null;
+  },
   userId: string,
   proximoPagamento: Date,
   corAuto: string
@@ -40,10 +57,10 @@ export function convertFirebaseToFluxoComissao(firebaseFluxo: FluxoFirebase): Fl
     nomeEmpresa: firebaseFluxo.nomeEmpresa,
     valor: firebaseFluxo.valor,
     recorrencia: firebaseFluxo.recorrencia,
-    dataInicio: firebaseFluxo.dataInicio.toDate(),
-    dataFim: firebaseFluxo.dataFim.toDate(),
+    dataInicio: (firebaseFluxo.dataInicio as FirebaseTimestamp).toDate(),
+    dataFim: (firebaseFluxo.dataFim as FirebaseTimestamp).toDate(),
     status: firebaseFluxo.status,
-    proximoPagamento: firebaseFluxo.proximoPagamento.toDate(),
+    proximoPagamento: (firebaseFluxo.proximoPagamento as FirebaseTimestamp).toDate(),
     color: firebaseFluxo.color,
     cnpj: firebaseFluxo.cnpj,
     ramo: firebaseFluxo.ramo,

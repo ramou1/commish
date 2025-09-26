@@ -42,14 +42,14 @@ export interface FluxoFirebase {
   ramo?: string;
   valor: number;
   recorrencia: 'unica' | 'semanal' | 'mensal';
-  dataInicio: any; // Timestamp do Firebase
-  dataFim: any; // Timestamp do Firebase
+  dataInicio: unknown; // Timestamp do Firebase
+  dataFim: unknown; // Timestamp do Firebase
   quantidadeParcelas: number;
   status: 'ativo' | 'pendente' | 'finalizado';
-  proximoPagamento: any; // Timestamp do Firebase
+  proximoPagamento: unknown; // Timestamp do Firebase
   color?: string;
   documentoNome?: string;
   documentoUrl?: string;
-  createdAt: any; // Timestamp do Firebase
-  updatedAt: any; // Timestamp do Firebase
+  createdAt: unknown; // Timestamp do Firebase
+  updatedAt: unknown; // Timestamp do Firebase
 }

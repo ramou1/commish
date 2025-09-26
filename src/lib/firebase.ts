@@ -29,7 +29,7 @@ export async function createFluxo(fluxoData: Omit<FluxoFirebase, 'id' | 'created
     
     // Remover campos com valores undefined para evitar erro do Firebase
     const cleanData = Object.fromEntries(
-      Object.entries(fluxoData).filter(([_, value]) => value !== undefined)
+      Object.entries(fluxoData).filter(([, value]) => value !== undefined)
     );
     
     const docRef = await addDoc(collection(db, 'fluxos'), {
