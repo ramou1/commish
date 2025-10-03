@@ -327,24 +327,8 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="descricao" className="text-sm font-medium text-gray-700">
-          Descrição (Opcional)
-        </Label>
-        <Input
-          id="descricao"
-          type="text"
-          placeholder="Ex: Comissão de venda do apartamento XYZ"
-          value={formData.descricao}
-          onChange={(e) => handleInputChange('descricao', e.target.value)}
-          className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-          disabled={isLoading}
-        />
-        <p className="text-xs text-gray-500">
-          Adicione uma descrição para identificar facilmente este fluxo
-        </p>
-      </div>
+    <form onSubmit={handleSubmit} className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto space-y-4 p-6">
 
       {/* CNPJ */}
       <div className="space-y-2">
@@ -580,8 +564,28 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         </div>
       </div>
 
-      {/* Botões */}
-      <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+      {/* Descrição - Movido para o final */}
+      <div className="space-y-2">
+        <Label htmlFor="descricao" className="text-sm font-medium text-gray-700">
+          Descrição (Opcional)
+        </Label>
+        <Input
+          id="descricao"
+          type="text"
+          placeholder="Ex: Comissão de venda do apartamento XYZ"
+          value={formData.descricao}
+          onChange={(e) => handleInputChange('descricao', e.target.value)}
+          className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+          disabled={isLoading}
+        />
+        <p className="text-xs text-gray-500">
+          Adicione uma descrição para identificar facilmente este fluxo
+        </p>
+      </div>
+      </div>
+
+      {/* Botões - Rodapé fixo */}
+      <div className="flex justify-end space-x-3 p-6 pt-4 border-t border-gray-200 bg-white">
         <Button 
           type="button"
           variant="outline" 
