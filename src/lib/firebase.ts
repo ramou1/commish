@@ -22,8 +22,8 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Função para criar um novo fluxo no Firebase
-export async function createFluxo(fluxoData: Omit<FluxoFirebase, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+// Função para criar um novo fluxo no Firebase (nova estrutura com subcoleções)
+export async function createFluxo(userId: string, fluxoData: Omit<FluxoFirebase, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
   try {
     const now = Timestamp.now();
     
@@ -32,7 +32,8 @@ export async function createFluxo(fluxoData: Omit<FluxoFirebase, 'id' | 'created
       Object.entries(fluxoData).filter(([, value]) => value !== undefined)
     );
     
-    const docRef = await addDoc(collection(db, 'fluxos'), {
+    // Criar na subcoleção do usuário
+    const docRef = await addDoc(collection(db, 'users', userId, 'fluxos'), {
       ...cleanData,
       createdAt: now,
       updatedAt: now,
@@ -44,12 +45,11 @@ export async function createFluxo(fluxoData: Omit<FluxoFirebase, 'id' | 'created
   }
 }
 
-// Função para buscar fluxos de um usuário específico
+// Função para buscar fluxos de um usuário específico (nova estrutura com subcoleções)
 export async function getFluxosByUserId(userId: string): Promise<FluxoFirebase[]> {
   try {
     const q = query(
-      collection(db, 'fluxos'),
-      where('userId', '==', userId),
+      collection(db, 'users', userId, 'fluxos'),
       orderBy('createdAt', 'desc')
     );
     
@@ -66,6 +66,77 @@ export async function getFluxosByUserId(userId: string): Promise<FluxoFirebase[]
     return fluxos;
   } catch (error) {
     console.error('Erro ao buscar fluxos:', error);
+    throw error;
+  }
+}
+
+// Função para criar fluxo pendente de aprovação (futura funcionalidade)
+export async function createFluxoPendente(userId: string, fluxoData: Omit<FluxoFirebase, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  try {
+    const now = Timestamp.now();
+    
+    const cleanData = Object.fromEntries(
+      Object.entries(fluxoData).filter(([, value]) => value !== undefined)
+    );
+    
+    // Criar na subcoleção de fluxos pendentes
+    const docRef = await addDoc(collection(db, 'users', userId, 'fluxos_pendentes'), {
+      ...cleanData,
+      status: 'pendente',
+      createdAt: now,
+      updatedAt: now,
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error('Erro ao criar fluxo pendente:', error);
+    throw error;
+  }
+}
+
+// Função para buscar fluxos pendentes de um usuário
+export async function getFluxosPendentesByUserId(userId: string): Promise<FluxoFirebase[]> {
+  try {
+    const q = query(
+      collection(db, 'users', userId, 'fluxos_pendentes'),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const fluxos: FluxoFirebase[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      fluxos.push({
+        id: doc.id,
+        ...doc.data()
+      } as FluxoFirebase);
+    });
+    
+    return fluxos;
+  } catch (error) {
+    console.error('Erro ao buscar fluxos pendentes:', error);
+    throw error;
+  }
+}
+
+// Função para aprovar fluxo pendente (move de pendente para ativo)
+export async function aprovarFluxo(userId: string, fluxoPendenteId: string, fluxoData: Omit<FluxoFirebase, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  try {
+    const now = Timestamp.now();
+    
+    // Criar fluxo aprovado
+    const docRef = await addDoc(collection(db, 'users', userId, 'fluxos'), {
+      ...fluxoData,
+      status: 'ativo',
+      createdAt: now,
+      updatedAt: now,
+    });
+    
+    // Remover fluxo pendente (opcional - pode manter para histórico)
+    // await deleteDoc(doc(db, 'users', userId, 'fluxos_pendentes', fluxoPendenteId));
+    
+    return docRef.id;
+  } catch (error) {
+    console.error('Erro ao aprovar fluxo:', error);
     throw error;
   }
 }

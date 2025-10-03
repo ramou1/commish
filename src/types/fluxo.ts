@@ -7,7 +7,7 @@ export interface FluxoComissao {
   recorrencia: 'unica' | 'semanal' | 'mensal';
   dataInicio: Date;
   dataFim: Date;
-  status: 'ativo' | 'pendente' | 'finalizado';
+  status: 'ativo' | 'pendente' | 'finalizado' | 'rejeitado';
   proximoPagamento: Date;
   quantidadeParcelas?: number; // Adicionado para suporte a parcelas
   color?: string;
@@ -46,7 +46,7 @@ export interface FluxoFirebase {
   dataInicio: unknown; // Timestamp do Firebase
   dataFim: unknown; // Timestamp do Firebase
   quantidadeParcelas: number;
-  status: 'ativo' | 'pendente' | 'finalizado';
+  status: 'ativo' | 'pendente' | 'finalizado' | 'rejeitado';
   proximoPagamento: unknown; // Timestamp do Firebase
   color?: string;
   documentoNome?: string;

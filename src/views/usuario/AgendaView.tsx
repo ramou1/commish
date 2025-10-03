@@ -187,7 +187,7 @@ export default function AgendaView() {
           corAuto
         );
 
-        await createFluxo(firebaseData);
+        await createFluxo(user.uid, firebaseData);
       } else {
         // Para fluxos recorrentes, criar um documento para cada parcela
         // Calcular valor por parcela
@@ -211,7 +211,7 @@ export default function AgendaView() {
             corAuto
           );
 
-          await createFluxo(firebaseData);
+          await createFluxo(user.uid, firebaseData);
         }
       }
 

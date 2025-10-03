@@ -9,9 +9,12 @@ Sistema web para gestão e acompanhamento de fluxos de comissão, permitindo que
 - **Dashboard Completo**: Visualize performance e planeje crescimento
 - **Autenticação Segura**: Sistema de login e cadastro com validação completa
 - **Interface Intuitiva**: Design moderno e responsivo para melhor experiência
+- **Gestão por Parcelas**: Criação de fluxos recorrentes com cálculo automático de parcelas
+- **Sistema de Aprovação**: Estrutura preparada para aprovação de fluxos entre empresas e vendedores (em desenvolvimento)
 
 ## 🏗️ Arquitetura do Projeto
 
+### **Frontend (Next.js)**
 ```
 src/
 ├── app/                  # Páginas e rotas da aplicação Next.js
@@ -20,20 +23,50 @@ src/
 ├── components/           # Componentes reutilizáveis da UI
 │   ├── modals/           # Componentes de modal (formulários)
 │   │   ├── fluxo-new-modal.tsx        # Modal para criar novo fluxo
-│   │   └── fluxo-details-modal.tsx    # Modal para exibir detalhes do fluxo
+│   │   ├── fluxo-details-modal.tsx    # Modal para exibir detalhes do fluxo
+│   │   └── fluxo-empresa-modal.tsx    # Modal para empresas
 │   └── ui/               # Componentes base (botões, inputs, etc.)
 ├── constants/            # Dados mockados e constantes da aplicação
 ├── lib/                  # Utilitários e funções auxiliares
 │   ├── dateUtils.ts      # Utilitários para manipulação de datas com date-fns
-│   └── firebase.ts       # Configuração e inicialização do Firebase
+│   ├── firebase.ts       # Configuração e inicialização do Firebase
+│   └── fluxoUtils.ts     # Utilitários para conversão de dados de fluxos
 ├── contexts/             # Contextos React para gerenciamento de estado
 │   ├── AuthContext.tsx   # Contexto de autenticação com Firebase
 │   └── ProfileContext.tsx # Contexto para gerenciamento de perfis
+├── views/                # Visualizações específicas por tipo de usuário
+│   ├── usuario/          # Visualização para vendedores
+│   ├── empresa/          # Visualização para empresas
+│   └── admin/            # Visualização para administradores
 └── types/                # Definições de interfaces
-    ├── index.ts          # Tipos gerais da aplicação
+    ├── fluxo.ts          # Interfaces relacionadas aos fluxos
     ├── user.ts           # Interfaces relacionadas ao usuário
     └── profile.ts        # Interfaces de perfil
 ```
+
+### **Backend (Firebase)**
+```
+Firebase Firestore
+├── users/{userId}/fluxos/{fluxoId}           # Fluxos aprovados por usuário
+├── users/{userId}/fluxos_pendentes/{fluxoId} # Fluxos pendentes de aprovação
+└── empresas/{empresaId}/propostas/{propostaId} # Propostas de fluxos (futuro)
+```
+
+### **Arquitetura de Dados**
+
+O sistema utiliza uma **estrutura de subcoleções** no Firebase Firestore para otimizar performance e organização:
+
+- **`users/{userId}/fluxos/`**: Fluxos ativos do usuário (criados diretamente ou aprovados)
+- **`users/{userId}/fluxos_pendentes/`**: Fluxos pendentes de aprovação do usuário
+- **Isolamento por usuário**: Cada usuário só acessa seus próprios dados
+- **Performance otimizada**: Queries em coleções menores (~50 fluxos por usuário)
+- **Escalabilidade**: Estrutura cresce linearmente com o número de usuários
+
+### **Tipos de Usuário**
+
+1. **Vendedor**: Cria e gerencia seus próprios fluxos de comissão
+2. **Empresa**: Cria fluxos para seus vendedores (com sistema de aprovação futuro)
+3. **Admin**: Acesso completo ao sistema (em desenvolvimento)
 
 ## 📱 Páginas Principais
 
@@ -56,7 +89,7 @@ src/
 - **Zod** - Validação de schemas
 - **date-fns** - Biblioteca moderna para manipulação de datas
 - **Lucide React** - Ícones modernos
-- **Firebase** - Autenticação e banco de dados em tempo real
+- **Firebase (Backend-as-a-Service)** - Autenticação e banco de dados em tempo real
 
 ## 🧩 Componentes Principais
 
@@ -133,23 +166,6 @@ Contexto React para gerenciamento de autenticação:
 - ✅ **Mensagens de erro**: Feedback em português brasileiro
 - ✅ **Redirecionamento automático**: Baseado no estado de autenticação
 - ✅ **Proteção de rotas**: Dashboard protegido para usuários logados
-
-### **Estrutura de Dados no Firestore**
-
-#### Coleção: `users`
-Cada documento contém:
-```typescript
-{
-  uid: string;           // ID único do Firebase Auth
-  email: string;         // Email do usuário
-  nome: string;          // Nome completo
-  cpf: string;           // CPF formatado
-  tipo: 'vendedor' | 'empresa';  // Tipo de usuário
-  ramo: string;          // Ramo de atuação
-  createdAt: string;     // Data de criação (ISO)
-  updatedAt: string;     // Data de atualização (ISO)
-}
-```
 
 ### **Configuração Inicial**
 Para configurar o Firebase no projeto:
@@ -235,7 +251,7 @@ npm run dev:clean
 }
 ```
 
-#### **Coleção: fluxos** (Futura implementação)
+#### **Coleção: fluxos** 
 ```typescript
 // Documentos de fluxos de comissão
 {
@@ -262,9 +278,9 @@ npm run dev:clean
 - ✅ **Persistência de sessão** automática
 - ✅ **Validação de rotas** protegidas
 - ✅ **Mensagens de erro** em português
+- ✅ **Gestão de fluxos** de comissão
 
 ### **Funcionalidades Futuras**
-- 🔄 **Gestão de fluxos** de comissão
 - 🔄 **Upload de documentos** para Cloud Storage
 - 🔄 **Notificações** com Firebase Cloud Messaging
 - 🔄 **Analytics** com Firebase Analytics
