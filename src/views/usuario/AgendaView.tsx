@@ -16,7 +16,8 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-import { fluxosIniciais, FluxoComissao, colors } from '@/constants/fluxos-mock';
+import { FluxoComissao } from '@/types/fluxo';
+import { colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types/fluxo';
 import { 
   criarDataLocal, 
@@ -54,9 +55,9 @@ export default function AgendaView() {
     loadFirebaseFluxos();
   }, [user?.uid]);
 
-  // Combinar fluxos do mock com os do Firebase
+  // Usar apenas os fluxos do Firebase
   const allFluxos = useMemo(() => {
-    return [...fluxosIniciais, ...firebaseFluxos];
+    return firebaseFluxos;
   }, [firebaseFluxos]);
 
   // Calcular apenas os meses que têm fluxos ativos
@@ -308,6 +309,13 @@ export default function AgendaView() {
         <CardContent>
           {months.length === 0 ? (
             <div className="text-center py-12">
+              <div className="mb-4">
+                <img 
+                  src="/images/calendar-empty.png" 
+                  alt="Calendário vazio" 
+                  className="w-16 h-16 mx-auto opacity-60"
+                />
+              </div>
               <p className="text-gray-400 text-lg">Nenhum fluxo ativo</p>
               <p className="text-gray-500 text-sm mt-2">
                 Crie seu primeiro fluxo para ver a agenda mensal

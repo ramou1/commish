@@ -55,9 +55,16 @@ export default function HomePage() {
           <div className="text-center">
             {/* Logo e título */}
             <div className="mb-12">
-              <h1 className="text-6xl font-semibold tracking-tight text-gray-900 mb-6">
-                Commish
-              </h1>
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <img 
+                  src="/images/charts.png" 
+                  alt="Charts" 
+                  className="w-16 h-16"
+                />
+                <h1 className="text-6xl font-semibold tracking-tight text-gray-900">
+                  Commish
+                </h1>
+              </div>
               <p className="text-xl text-gray-600 mb-3 font-medium">
                 Plataforma de Gestão e Antecipação de Comissões
               </p>
