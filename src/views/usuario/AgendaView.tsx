@@ -11,7 +11,6 @@ import {
   Plus, 
   Filter,
   Download,
-  X,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -24,7 +23,7 @@ import {
   gerarDatasPagamento
 } from '@/lib/dateUtils';
 import { useAuth } from '@/contexts/AuthContext';
-import { createFluxo, getFluxosByUserId } from '@/lib/firebase';
+import { createFluxo, getFluxosByUserId, deleteFluxo } from '@/lib/firebase';
 import { convertFormDataToFirebase, convertFirebaseFluxosToComissao } from '@/lib/fluxoUtils';
 
 export default function AgendaView() {
@@ -237,6 +236,33 @@ export default function AgendaView() {
     setSelectedFluxo(null);
   };
 
+  // Função para excluir um fluxo
+  const handleDeleteFluxo = async () => {
+    if (!selectedFluxo || !user?.uid) return;
+
+    try {
+      setIsLoading(true);
+      await deleteFluxo(user.uid, selectedFluxo.id);
+      
+      // Recarregar fluxos do Firebase
+      const firebaseData = await getFluxosByUserId(user.uid);
+      const convertedFluxos = convertFirebaseFluxosToComissao(firebaseData);
+      setFirebaseFluxos(convertedFluxos);
+      
+      setSelectedFluxo(null);
+    } catch (error) {
+      console.error('Erro ao excluir fluxo:', error);
+      // Aqui você pode adicionar uma notificação de erro para o usuário
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função para fechar modal de criação
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -414,23 +440,15 @@ export default function AgendaView() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col">
             {/* Cabeçalho fixo */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white rounded-t-lg">
+            <div className="p-6 border-b border-gray-200 bg-white rounded-t-lg">
               <h3 className="text-xl font-semibold text-gray-900">Criar Novo Fluxo</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsModalOpen(false)}
-                className="h-8 w-8 p-0 hover:bg-gray-100"
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </div>
             
             {/* Conteúdo com scroll */}
             <div className="flex-1 overflow-hidden">
               <NovoFluxoForm 
                 onSubmit={handleNovoFluxo}
-                onCancel={() => setIsModalOpen(false)}
+                onCancel={handleCloseModal}
                 isLoading={isLoading}
               />
             </div>
@@ -447,6 +465,8 @@ export default function AgendaView() {
           formatarData={formatarData}
           onMarkAsPaid={() => handleMarkAsPaid(selectedFluxo.id)}
           showMarkAsPaidButton={true}
+          onDelete={handleDeleteFluxo}
+          showDeleteButton={true}
         />
       )}
     </div>

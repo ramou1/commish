@@ -10,6 +10,7 @@ import { ramos as ramoOptions } from '@/constants/ramos';
 import { colors } from '@/constants/fluxos-mock';
 import { NovoFluxoFormData } from '@/types/fluxo';
 import { calcularDataFinal } from '@/lib/dateUtils';
+import { AlertTriangle } from 'lucide-react';
 
 interface NovoFluxoFormProps {
   onSubmit: (data: NovoFluxoFormData) => void;
@@ -34,6 +35,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
 
   const [showSummary, setShowSummary] = useState(false);
   const [loadingCNPJ, setLoadingCNPJ] = useState(false);
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
 
   type FormErrors = Partial<Record<keyof NovoFluxoFormData, string>>;
   const [errors, setErrors] = useState<FormErrors>({});
@@ -199,11 +201,68 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
     setShowSummary(false);
   };
 
+  const handleCancelClick = () => {
+    setShowCancelConfirmation(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setShowCancelConfirmation(false);
+    onCancel();
+  };
+
+  const handleCancelCancel = () => {
+    setShowCancelConfirmation(false);
+  };
+
+  // Verificar se há dados preenchidos
+  const hasFormData = formData.cnpj || formData.nomeEmpresa || formData.valor || formData.descricao;
+
   // Função para formatar data corretamente sem problemas de fuso horário
   const formatarDataParaResumo = (dataString: string) => {
     const [ano, mes, dia] = dataString.split('-');
     return new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia)).toLocaleDateString('pt-BR');
   };
+
+  // Modal de confirmação de cancelamento
+  if (showCancelConfirmation) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+          <div className="p-6">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                <AlertTriangle className="w-5 h-5 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Cancelar Criação</h3>
+                <p className="text-sm text-gray-600">Você perderá os dados preenchidos</p>
+              </div>
+            </div>
+            
+            <p className="text-gray-700 mb-6">
+              Tem certeza que deseja cancelar? Todos os dados preenchidos serão perdidos e não poderão ser recuperados.
+            </p>
+            
+            <div className="flex justify-end gap-3">
+              <Button 
+                variant="outline" 
+                onClick={handleCancelCancel}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Continuar Editando
+              </Button>
+              <Button 
+                onClick={handleConfirmCancel}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              >
+                Sim, Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (showSummary) {
     return (
@@ -589,7 +648,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         <Button 
           type="button"
           variant="outline" 
-          onClick={onCancel}
+          onClick={handleCancelClick}
           className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
           disabled={isLoading}
         >

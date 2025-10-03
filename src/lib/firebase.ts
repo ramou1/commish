@@ -141,4 +141,15 @@ export async function aprovarFluxo(userId: string, fluxoPendenteId: string, flux
   }
 }
 
+// Função para excluir um fluxo
+export async function deleteFluxo(userId: string, fluxoId: string): Promise<void> {
+  try {
+    const { deleteDoc, doc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'users', userId, 'fluxos', fluxoId));
+  } catch (error) {
+    console.error('Erro ao excluir fluxo:', error);
+    throw error;
+  }
+}
+
 export default app;
