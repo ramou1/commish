@@ -190,11 +190,22 @@ export default function AgendaView() {
         await createFluxo(firebaseData);
       } else {
         // Para fluxos recorrentes, criar um documento para cada parcela
+        // Calcular valor por parcela
+        const valorNumerico = parseFloat(formData.valor.replace(/[^\d,]/g, '').replace(',', '.'));
+        const valorPorParcela = valorNumerico / formData.quantidadeParcelas;
+        
+        // Criar formData com valor da parcela (passando valor em centavos para compatibilidade)
+        const valorEmCentavos = Math.round(valorPorParcela * 100);
+        const formDataComValorParcela = {
+          ...formData,
+          valor: valorEmCentavos.toString() // Passar como string de centavos
+        };
+        
         for (let i = 0; i < datasPagamento.length; i++) {
           const proximoPagamento = datasPagamento[i];
           
           const firebaseData = convertFormDataToFirebase(
-            formData,
+            formDataComValorParcela,
             user.uid,
             proximoPagamento,
             corAuto

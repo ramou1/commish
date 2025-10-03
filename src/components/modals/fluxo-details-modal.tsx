@@ -69,10 +69,36 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-500">Valor</p>
-              <p className="text-base font-semibold text-gray-900">{formatarMoeda(fluxo.valor)}</p>
-            </div>
+            {/* Para fluxos únicos, mostrar apenas o valor */}
+            {fluxo.recorrencia === 'unica' ? (
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">Valor</p>
+                <p className="text-base font-semibold text-gray-900">{formatarMoeda(fluxo.valor)}</p>
+              </div>
+            ) : (
+              <>
+                {/* Para fluxos recorrentes, mostrar valor da parcela */}
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-500">Valor da Parcela</p>
+                  <p className="text-base font-semibold text-gray-900">{formatarMoeda(fluxo.valor)}</p>
+                </div>
+                {/* Calcular e mostrar valor total e quantidade de parcelas */}
+                {fluxo.quantidadeParcelas && fluxo.quantidadeParcelas > 1 && (
+                  <>
+                    <div className="space-y-1">
+                      <p className="text-sm text-gray-500">Valor Total</p>
+                      <p className="text-base font-semibold text-gray-900">
+                        {formatarMoeda(fluxo.valor * fluxo.quantidadeParcelas)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-gray-500">Quantidade de Parcelas</p>
+                      <p className="text-base font-medium text-gray-900">{fluxo.quantidadeParcelas}</p>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
             <div className="space-y-1">
               <p className="text-sm text-gray-500">Próximo pagamento</p>
               <p className="text-base font-medium text-gray-900">{formatarData(fluxo.proximoPagamento)}</p>

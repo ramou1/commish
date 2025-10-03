@@ -61,6 +61,7 @@ export function convertFirebaseToFluxoComissao(firebaseFluxo: FluxoFirebase): Fl
     dataFim: (firebaseFluxo.dataFim as FirebaseTimestamp).toDate(),
     status: firebaseFluxo.status,
     proximoPagamento: (firebaseFluxo.proximoPagamento as FirebaseTimestamp).toDate(),
+    quantidadeParcelas: firebaseFluxo.quantidadeParcelas,
     color: firebaseFluxo.color,
     cnpj: firebaseFluxo.cnpj,
     ramo: firebaseFluxo.ramo,

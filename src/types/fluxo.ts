@@ -9,6 +9,7 @@ export interface FluxoComissao {
   dataFim: Date;
   status: 'ativo' | 'pendente' | 'finalizado';
   proximoPagamento: Date;
+  quantidadeParcelas?: number; // Adicionado para suporte a parcelas
   color?: string;
   cnpj?: string;
   ramo?: string;
