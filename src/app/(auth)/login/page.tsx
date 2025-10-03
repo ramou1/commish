@@ -242,8 +242,8 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               onClick={handleGoogleSignIn}
-              className="w-full h-10 border-gray-200 hover:bg-gray-50 flex items-center justify-center space-x-2 mb-8"
-              disabled={isLoading}
+              className="w-full h-10 border-gray-200 hover:bg-gray-50 flex items-center justify-center space-x-2 mb-8 opacity-50 cursor-not-allowed"
+              disabled={true}
             >
               {isLoading ? (
                 <LoadingSpinner color="gray" />
@@ -256,7 +256,7 @@ export default function LoginPage() {
                 </svg>
               )}
               <span className="text-gray-700">
-                {isLoading ? 'Entrando...' : 'Continuar com Google'}
+                Continuar com Google (Em breve)
               </span>
             </Button>
 
