@@ -185,7 +185,7 @@ export default function CadastroPage() {
           
           <div className="w-full bg-gray-100 rounded-full h-1">
             <div
-              className="bg-gray-900 h-1 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] h-1 rounded-full transition-all duration-300"
               style={{ width: `${(currentStep / totalSteps) * 100}%` }}
             />
           </div>
@@ -383,7 +383,7 @@ export default function CadastroPage() {
                 <Button
                   onClick={handleNext}
                   disabled={!isStepValid()}
-                  className="flex items-center space-x-2 bg-gray-900 hover:bg-gray-800 text-white h-10 px-4 rounded-md font-medium"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white h-10 px-4 rounded-md font-medium"
                 >
                   <span>Próximo</span>
                   <ArrowRight className="w-4 h-4" />
@@ -392,7 +392,7 @@ export default function CadastroPage() {
                 <Button
                   onClick={handleSubmit}
                   disabled={!isStepValid() || isLoading}
-                  className="bg-gray-900 hover:bg-gray-800 text-white h-10 px-4 rounded-md font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white h-10 px-4 rounded-md font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <>

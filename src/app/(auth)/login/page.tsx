@@ -210,7 +210,7 @@ export default function LoginPage() {
               {/* Botão de login */}
               <Button
                 type="submit"
-                className="w-full bg-gray-900 hover:bg-gray-800 text-white h-10 rounded-md font-medium flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white h-10 rounded-md font-medium flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 disabled={isLoading}
               >
                 {isLoading ? (
