@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Upload, User, Mail, Building, Palette, Check, Shield } from 'lucide-react';
+import { X, Upload, User, Mail, Building, Palette, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { ExtendedUser, DadosVendedor, DadosEmpresa } from '@/types/user';
+import { DadosVendedor, DadosEmpresa } from '@/types/user';
 import { ramos as ramoOptions } from '@/constants/ramos';
 
 interface SettingsModalProps {
@@ -16,7 +16,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { user, updateUserProfile } = useAuth();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,15 +35,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     if (user) {
       const dadosPessoais = user.dadosPessoais;
       let nome = '';
-      let ramo = '';
+      const ramo = user.ramo || '';
 
       if (dadosPessoais) {
         if ('nome' in dadosPessoais) {
           nome = (dadosPessoais as DadosVendedor).nome || '';
-          ramo = (dadosPessoais as DadosVendedor).ramo || '';
         } else if ('razaoSocial' in dadosPessoais) {
           nome = (dadosPessoais as DadosEmpresa).razaoSocial || '';
-          ramo = (dadosPessoais as DadosEmpresa).ramo || '';
         }
       }
 

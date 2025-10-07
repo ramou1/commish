@@ -214,9 +214,6 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
     setShowCancelConfirmation(false);
   };
 
-  // Verificar se há dados preenchidos
-  const hasFormData = formData.cnpj || formData.nomeEmpresa || formData.valor || formData.descricao;
-
   // Função para formatar data corretamente sem problemas de fuso horário
   const formatarDataParaResumo = (dataString: string) => {
     const [ano, mes, dia] = dataString.split('-');

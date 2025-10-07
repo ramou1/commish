@@ -1,7 +1,7 @@
 // src/lib/firebase.ts
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, Timestamp } from 'firebase/firestore';
 import { FluxoFirebase } from '@/types/fluxo';
 
 // Configuração do Firebase
