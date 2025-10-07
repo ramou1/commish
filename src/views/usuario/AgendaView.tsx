@@ -308,7 +308,7 @@ export default function AgendaView() {
           </Button>
           <Button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-gray-900 hover:bg-gray-800 h-9 text-white"
+            className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 h-9 text-white"
           >
             <Plus className="w-4 h-4" />
             Criar Fluxo

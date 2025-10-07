@@ -8,7 +8,8 @@ import {
   signOut, 
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -26,6 +27,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, userData: UserProfile) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,8 +62,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      console.log('AuthContext: Tentando fazer login com email:', email);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('AuthContext: Login bem-sucedido para:', userCredential.user.email);
     } catch (error: unknown) {
+      console.error('AuthContext: Erro no login:', error);
       const firebaseError = error as { code: string };
       throw new Error(getAuthErrorMessage(firebaseError.code));
     }
@@ -125,14 +130,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const resetPassword = useCallback(async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error: unknown) {
+      const firebaseError = error as { code: string };
+      throw new Error(getAuthErrorMessage(firebaseError.code));
+    }
+  }, []);
+
   const contextValue = useMemo(() => ({
     user,
     loading,
     signIn,
     signUp,
     signInWithGoogle,
-    logout
-  }), [user, loading, signIn, signUp, signInWithGoogle, logout]);
+    logout,
+    resetPassword
+  }), [user, loading, signIn, signUp, signInWithGoogle, logout, resetPassword]);
 
   return (
     <AuthContext.Provider value={contextValue}>
@@ -172,6 +187,10 @@ function getAuthErrorMessage(errorCode: string): string {
       return 'Login cancelado pelo usuário';
     case 'auth/popup-blocked':
       return 'Popup bloqueado pelo navegador';
+    case 'auth/invalid-email':
+      return 'Email inválido';
+    case 'auth/user-not-found':
+      return 'Nenhuma conta encontrada com este email';
     default:
       return 'Erro de autenticação. Tente novamente';
   }
