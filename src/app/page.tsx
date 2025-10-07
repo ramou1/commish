@@ -50,14 +50,22 @@ export default function HomePage() {
   return (
     <div className="min-h-screen font-[family-name:var(--font-geist-sans)]">
       {/* Hero Section */}
-      <div className="relative bg-gray-100">
+      <div 
+        className="relative"
+        style={{
+          backgroundImage: 'url(/images/pattern-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <div className="max-w-5xl mx-auto px-6 py-32">
           <div className="text-center">
             {/* Logo e título */}
             <div className="mb-12">
               <div className="flex items-center justify-center gap-4 mb-6">
                 <img 
-                  src="/images/charts.png" 
+                  src="/images/icone.png" 
                   alt="Charts" 
                   className="w-16 h-16"
                 />
@@ -115,11 +123,45 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => {
               const Icon = feature.icon;
+              
+              // Definir cores para cada ícone usando apenas as cores principais do projeto
+              const getIconColors = (title: string) => {
+                switch (title) {
+                  case 'Gestão de Comissões':
+                    return {
+                      bg: 'bg-gray-100',
+                      icon: 'text-gray-700'
+                    };
+                  case 'Antecipação Inteligente':
+                    return {
+                      bg: 'bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)]',
+                      icon: 'text-white'
+                    };
+                  case 'Dashboard Completo':
+                    return {
+                      bg: 'bg-gray-100',
+                      icon: 'text-gray-700'
+                    };
+                  case 'Segurança Total':
+                    return {
+                      bg: 'bg-gray-100',
+                      icon: 'text-gray-700'
+                    };
+                  default:
+                    return {
+                      bg: 'bg-gray-100',
+                      icon: 'text-gray-700'
+                    };
+                }
+              };
+              
+              const colors = getIconColors(feature.title);
+              
               return (
                 <Card key={index} className="border border-gray-100 rounded-lg p-6 hover:border-gray-200 transition-colors">
                   <CardContent className="p-0">
-                    <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center mb-4">
-                      <Icon className="w-5 h-5 text-gray-700" />
+                    <div className={`w-10 h-10 ${colors.bg} rounded-md flex items-center justify-center mb-4`}>
+                      <Icon className={`w-5 h-5 ${colors.icon}`} />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {feature.title}

@@ -374,7 +374,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
           </Button>
           <Button 
             type="button"
-            className="bg-gray-900 hover:bg-gray-800 text-white"
+            className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white"
             onClick={handleConfirmSubmit}
             disabled={isLoading}
           >
@@ -656,7 +656,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
         </Button>
         <Button 
           type="submit"
-          className="bg-gray-900 hover:bg-gray-800 text-white"
+          className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white"
           disabled={isLoading}
         >
           {isLoading ? 'Criando...' : 'Criar Fluxo'}

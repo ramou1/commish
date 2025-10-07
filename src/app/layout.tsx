@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Commish",
-  description: "Plataforma de Gestão de Comissões",
+  title: "Commish - Plataforma de Gestão e Antecipação de Comissões",
+  description: "Plataforma de Gestão e Antecipação de Comissões",
 };
 
 export default function RootLayout({

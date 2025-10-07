@@ -126,7 +126,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-[family-name:var(--font-geist-sans)] flex items-center justify-center p-6">
+    <div 
+      className="min-h-screen font-[family-name:var(--font-geist-sans)] flex items-center justify-center p-6"
+      style={{
+        backgroundImage: 'url(/images/pattern-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="w-full max-w-md">
         {/* Cabeçalho com logo */}
         <div className="text-center mb-12">

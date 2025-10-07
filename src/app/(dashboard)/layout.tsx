@@ -139,7 +139,14 @@ export default function DashboardLayout({
           {/* Logo */}
           <div className="flex items-center justify-center h-16 px-4 border-b border-gray-100">
             {!sidebarCollapsed && (
-              <h1 className="text-lg font-semibold tracking-tight text-gray-900">Commish</h1>
+              <div className="flex items-center gap-3">
+                <img 
+                  src="/images/icone.png" 
+                  alt="Commish" 
+                  className="w-8 h-8"
+                />
+                <h1 className="text-lg font-semibold tracking-tight text-gray-900">Commish</h1>
+              </div>
             )}
           </div>
 
@@ -215,7 +222,14 @@ export default function DashboardLayout({
             <div className="relative flex flex-col w-80 bg-white">
               {/* Header com botão fechar */}
               <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
-                <h1 className="text-lg font-semibold tracking-tight text-gray-900">Commish</h1>
+                <div className="flex items-center gap-2">
+                  <img 
+                    src="/images/icone.png" 
+                    alt="Commish" 
+                    className="w-8 h-8"
+                  />
+                  <h1 className="text-lg font-semibold tracking-tight text-gray-900">Commish</h1>
+                </div>
                 <button
                   onClick={closeSidebar}
                   className="text-gray-400 hover:text-gray-600"
