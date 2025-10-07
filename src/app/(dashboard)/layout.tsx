@@ -21,6 +21,7 @@ import { ProfileProvider } from '@/contexts/ProfileContext';
 import { ProfileSelector } from '@/components/ui/profile-selector';
 import { useAuth } from '@/contexts/AuthContext';
 import { ExtendedUser, DadosVendedor, DadosEmpresa } from '@/types/user';
+import { SettingsModal } from '@/components/modals/settings-modal';
 
 // Helper function to get user name from dadosPessoais
 function getUserName(user: ExtendedUser): string | undefined {
@@ -88,6 +89,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const { user, loading, logout } = useAuth();
 
   useEffect(() => {
@@ -350,8 +352,8 @@ export default function DashboardLayout({
                 {/* Dropdown do usuário */}
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg border border-gray-100 shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <button
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-400 cursor-not-allowed"
-                    disabled
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setSettingsModalOpen(true)}
                   >
                     <Settings className="w-4 h-4 mr-3" />
                     Configurações
@@ -376,6 +378,12 @@ export default function DashboardLayout({
           </div>
         </main>
       </div>
+      
+      {/* Modal de Configurações */}
+      <SettingsModal 
+        isOpen={settingsModalOpen} 
+        onClose={() => setSettingsModalOpen(false)} 
+      />
       </div>
     </ProfileProvider>
   );
