@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { FluxoComissao } from '@/constants/fluxos-mock';
 import { useState } from 'react';
 
@@ -24,6 +24,43 @@ interface FluxoDetalhesModalProps {
 
 export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData, onMarkAsPaid, showMarkAsPaidButton, onDelete, showDeleteButton }: FluxoDetalhesModalProps) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  // Funções para status (iguais às da view da empresa)
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'atrasado':
+        return <AlertCircle className="w-4 h-4 text-red-500" />;
+      case 'pago':
+      case 'finalizado':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      default:
+        return <Clock className="w-4 h-4 text-yellow-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'atrasado':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'pago':
+      case 'finalizado':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'atrasado':
+        return 'Atrasado';
+      case 'pago':
+      case 'finalizado':
+        return 'Pago';
+      default:
+        return 'Pendente';
+    }
+  };
 
   const handleDeleteClick = () => {
     setShowDeleteConfirmation(true);
@@ -115,10 +152,16 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-xs border-gray-200 text-gray-700">
-                {fluxo.recorrencia}
+                {fluxo.recorrencia === 'unica' ? 'Cobrança Única' : 
+                 fluxo.recorrencia === 'semanal' ? 'Semanalmente' : 
+                 fluxo.recorrencia === 'mensal' ? 'Mensalmente' : fluxo.recorrencia}
               </Badge>
-              <Badge variant="outline" className="text-xs border-gray-200 text-gray-700">
-                {fluxo.status}
+              <Badge
+                variant="outline"
+                className={`text-xs flex items-center gap-1 ${getStatusColor(fluxo.status)}`}
+              >
+                {getStatusIcon(fluxo.status)}
+                {getStatusText(fluxo.status)}
               </Badge>
               {fluxo.color && (
                 <span

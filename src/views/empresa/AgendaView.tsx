@@ -187,7 +187,7 @@ export default function AgendaView() {
       recorrencia: 'unica' as const,
       dataInicio: cliente.dataInicio,
       dataFim: cliente.dataFim,
-      status: (cliente.status === 'pago' ? 'finalizado' : 'ativo') as 'pendente' | 'ativo' | 'finalizado',
+      status: cliente.status as 'pendente' | 'ativo' | 'finalizado',
       proximoPagamento: cliente.dataVencimento,
       color: cliente.color,
       cnpj: cliente.cnpj,
@@ -204,6 +204,14 @@ export default function AgendaView() {
     // Aqui você implementaria a lógica para marcar como pago
     // Por exemplo, fazer uma chamada para API ou atualizar o estado local
     console.log('Marcando como pago:', clienteId);
+    setSelectedCliente(null);
+  };
+
+  // Função para excluir fluxo
+  const handleDeleteFluxo = (clienteId: string) => {
+    // Aqui você implementaria a lógica para excluir o fluxo
+    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
+    console.log('Excluindo fluxo:', clienteId);
     setSelectedCliente(null);
   };
 
@@ -365,15 +373,7 @@ export default function AgendaView() {
                               <span className="font-medium text-gray-900 text-sm">
                                 {cliente.nomeEmpresa}
                               </span>
-                              <div className="flex items-center gap-1">
-                                {getStatusIcon(cliente.status)}
-                                <Badge
-                                  variant="outline"
-                                  className={`text-xs ${getStatusColor(cliente.status)}`}
-                                >
-                                  {getStatusText(cliente.status)}
-                                </Badge>
-                              </div>
+                              {getStatusIcon(cliente.status)}
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-xs text-gray-600">
@@ -413,6 +413,8 @@ export default function AgendaView() {
           formatarData={formatarData}
           onMarkAsPaid={() => handleMarkAsPaid(selectedCliente.id)}
           showMarkAsPaidButton={true}
+          onDelete={() => handleDeleteFluxo(selectedCliente.id)}
+          showDeleteButton={true}
         />
       )}
 
