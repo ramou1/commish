@@ -125,37 +125,14 @@ export default function HomePage() {
               const Icon = feature.icon;
               
               // Definir cores para cada ícone usando apenas as cores principais do projeto
-              const getIconColors = (title: string) => {
-                switch (title) {
-                  case 'Gestão de Comissões':
-                    return {
-                      bg: 'bg-gray-100',
-                      icon: 'text-gray-700'
-                    };
-                  case 'Antecipação Inteligente':
-                    return {
-                      bg: 'bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)]',
-                      icon: 'text-white'
-                    };
-                  case 'Dashboard Completo':
-                    return {
-                      bg: 'bg-gray-100',
-                      icon: 'text-gray-700'
-                    };
-                  case 'Segurança Total':
-                    return {
-                      bg: 'bg-gray-100',
-                      icon: 'text-gray-700'
-                    };
-                  default:
-                    return {
-                      bg: 'bg-gray-100',
-                      icon: 'text-gray-700'
-                    };
-                }
+              const getIconColors = () => {
+                return {
+                  bg: 'bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)]',
+                  icon: 'text-white'
+                };
               };
               
-              const colors = getIconColors(feature.title);
+              const colors = getIconColors();
               
               return (
                 <Card key={index} className="border border-gray-100 rounded-lg p-6 hover:border-gray-200 transition-colors">
