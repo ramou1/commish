@@ -16,16 +16,20 @@ import {
   CheckCircle,
   Clock,
   Plus,
-  X
+  X,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
-import { clientesPagamento, ClientePagamento } from '@/constants/empresa-mock';
+import { clientesPagamento, ClientePagamento, fluxosPendentesAprovacao, FluxoPendenteAprovacao } from '@/constants/empresa-mock';
 
 export default function AgendaView() {
   const [clientes] = useState<ClientePagamento[]>(clientesPagamento);
+  const [fluxosPendentes, setFluxosPendentes] = useState<FluxoPendenteAprovacao[]>(fluxosPendentesAprovacao);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedCliente, setSelectedCliente] = useState<ClientePagamento | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isApprovalExpanded, setIsApprovalExpanded] = useState(false);
 
   // Calcular apenas os meses que têm pagamentos (incluindo pagos para visualização)
   const months = useMemo(() => {
@@ -223,6 +227,21 @@ export default function AgendaView() {
     setIsModalOpen(false);
   };
 
+  // Funções para aprovação de fluxos
+  const handleAprovarFluxo = (fluxoId: string) => {
+    // Aqui você implementaria a lógica para aprovar o fluxo
+    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
+    console.log('Aprovando fluxo:', fluxoId);
+    setFluxosPendentes(prev => prev.filter(fluxo => fluxo.id !== fluxoId));
+  };
+
+  const handleRecusarFluxo = (fluxoId: string) => {
+    // Aqui você implementaria a lógica para recusar o fluxo
+    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
+    console.log('Recusando fluxo:', fluxoId);
+    setFluxosPendentes(prev => prev.filter(fluxo => fluxo.id !== fluxoId));
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -296,6 +315,106 @@ export default function AgendaView() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Seção de Aprovação de Fluxos - Accordion */}
+      {fluxosPendentes.length > 0 && (
+        <Card className="border border-orange-200 bg-orange-50">
+          <CardHeader 
+            className="pb-3 cursor-pointer hover:bg-orange-100 transition-colors"
+            onClick={() => setIsApprovalExpanded(!isApprovalExpanded)}
+          >
+            <CardTitle className="text-lg font-semibold text-orange-900 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5" />
+                Fluxos Pendentes de Aprovação
+                <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">
+                  {fluxosPendentes.length}
+                </Badge>
+              </div>
+              {isApprovalExpanded ? (
+                <ChevronUp className="w-5 h-5 text-orange-700" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-orange-700" />
+              )}
+            </CardTitle>
+            <p className="text-sm text-orange-700">
+              Usuários criaram fluxos mencionando seu CNPJ. Clique para expandir e revisar.
+            </p>
+          </CardHeader>
+          {isApprovalExpanded && (
+            <CardContent>
+              <div className="space-y-4">
+                {fluxosPendentes.map((fluxo) => (
+                  <div
+                    key={fluxo.id}
+                    className="bg-white rounded-lg p-4 border border-orange-200 shadow-sm"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-900">{fluxo.nomeUsuario}</h4>
+                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                            {fluxo.emailUsuario}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-1">
+                          <span className="font-medium">Empresa:</span> {fluxo.nomeEmpresa}
+                        </p>
+                        <p className="text-sm text-gray-600 mb-1">
+                          <span className="font-medium">CNPJ:</span> {fluxo.cnpjEmpresa}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <span className="font-medium">Descrição:</span> {fluxo.descricao}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-gray-900">{formatarMoeda(fluxo.valor)}</p>
+                        <p className="text-xs text-gray-500">
+                          {fluxo.recorrencia === 'unica' ? 'Cobrança Única' : 
+                           fluxo.recorrencia === 'semanal' ? 'Semanalmente' : 
+                           fluxo.recorrencia === 'mensal' ? 'Mensalmente' : fluxo.recorrencia}
+                          {fluxo.quantidadeParcelas && ` (${fluxo.quantidadeParcelas} parcelas)`}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs text-gray-500">
+                        <p>Criado em: {formatarData(fluxo.dataCriacao)}</p>
+                        <p>Vencimento: {formatarData(fluxo.dataVencimento)}</p>
+                        {fluxo.observacoesUsuario && (
+                          <p className="mt-1 text-blue-600">
+                            <span className="font-medium">Observações:</span> {fluxo.observacoesUsuario}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRecusarFluxo(fluxo.id)}
+                          className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          Recusar
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleAprovarFluxo(fluxo.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Aprovar
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          )}
+        </Card>
+      )}
 
       {/* Card de visualização mensal */}
       <Card className="border border-gray-200">

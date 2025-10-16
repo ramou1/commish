@@ -329,3 +329,102 @@ export const clientesPagamento: ClientePagamento[] = [
   }
 ];
 
+// Interface para fluxos pendentes de aprovação
+export interface FluxoPendenteAprovacao {
+  id: string;
+  nomeUsuario: string;
+  emailUsuario: string;
+  cnpjEmpresa: string;
+  nomeEmpresa: string;
+  valor: number;
+  dataCriacao: Date;
+  dataVencimento: Date;
+  recorrencia: 'unica' | 'semanal' | 'mensal';
+  quantidadeParcelas?: number;
+  descricao: string;
+  documentoNome?: string;
+  observacoesUsuario?: string;
+  status: 'pendente_aprovacao';
+}
+
+// Dados mockados para fluxos pendentes de aprovação
+export const fluxosPendentesAprovacao: FluxoPendenteAprovacao[] = [
+  {
+    id: 'pa-1',
+    nomeUsuario: 'Carlos Mendes',
+    emailUsuario: 'carlos.mendes@email.com',
+    cnpjEmpresa: '12.345.678/0001-90',
+    nomeEmpresa: 'Construtora Alpha Ltda',
+    valor: 8500.00,
+    dataCriacao: new Date(2024, 11, 10),
+    dataVencimento: new Date(2024, 11, 15),
+    recorrencia: 'unica',
+    descricao: 'Comissão de venda apartamento - Torre A, apartamento 1201',
+    documentoNome: 'contrato_alpha_1201.pdf',
+    observacoesUsuario: 'Cliente já assinou o contrato e fez o pagamento inicial',
+    status: 'pendente_aprovacao'
+  },
+  {
+    id: 'pa-2',
+    nomeUsuario: 'Ana Beatriz Silva',
+    emailUsuario: 'ana.silva@email.com',
+    cnpjEmpresa: '23.456.789/0001-01',
+    nomeEmpresa: 'Imobiliária Beta S.A.',
+    valor: 4200.00,
+    dataCriacao: new Date(2024, 11, 12),
+    dataVencimento: new Date(2024, 11, 20),
+    recorrencia: 'unica',
+    descricao: 'Comissão de venda casa - Residencial Verde, casa 45',
+    documentoNome: 'venda_beta_casa45.pdf',
+    observacoesUsuario: 'Venda realizada com financiamento aprovado',
+    status: 'pendente_aprovacao'
+  },
+  {
+    id: 'pa-3',
+    nomeUsuario: 'Roberto Santos',
+    emailUsuario: 'roberto.santos@email.com',
+    cnpjEmpresa: '34.567.890/0001-12',
+    nomeEmpresa: 'Desenvolvimento Gamma Ltda',
+    valor: 12500.00,
+    dataCriacao: new Date(2024, 11, 8),
+    dataVencimento: new Date(2024, 11, 30),
+    recorrencia: 'mensal',
+    quantidadeParcelas: 3,
+    descricao: 'Comissão projeto comercial - Shopping Center, loja 15',
+    documentoNome: 'projeto_gamma_loja15.pdf',
+    observacoesUsuario: 'Projeto em fase final de construção',
+    status: 'pendente_aprovacao'
+  },
+  {
+    id: 'pa-4',
+    nomeUsuario: 'Mariana Costa',
+    emailUsuario: 'mariana.costa@email.com',
+    cnpjEmpresa: '45.678.901/0001-23',
+    nomeEmpresa: 'Investimentos Delta Ltda',
+    valor: 6800.00,
+    dataCriacao: new Date(2024, 11, 14),
+    dataVencimento: new Date(2024, 11, 25),
+    recorrencia: 'unica',
+    descricao: 'Comissão de venda terreno - Condomínio Delta, lote 78',
+    documentoNome: 'terreno_delta_lote78.pdf',
+    observacoesUsuario: 'Cliente interessado em construir casa de alto padrão',
+    status: 'pendente_aprovacao'
+  },
+  {
+    id: 'pa-5',
+    nomeUsuario: 'Pedro Oliveira',
+    emailUsuario: 'pedro.oliveira@email.com',
+    cnpjEmpresa: '56.789.012/0001-34',
+    nomeEmpresa: 'Empreendimentos Epsilon S.A.',
+    valor: 9500.00,
+    dataCriacao: new Date(2024, 11, 11),
+    dataVencimento: new Date(2024, 11, 28),
+    recorrencia: 'semanal',
+    quantidadeParcelas: 4,
+    descricao: 'Comissão de venda apartamento - Torre B, apartamento 205',
+    documentoNome: 'contrato_epsilon_205.pdf',
+    observacoesUsuario: 'Cliente fez proposta acima do valor de tabela',
+    status: 'pendente_aprovacao'
+  }
+];
+
