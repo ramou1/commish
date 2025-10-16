@@ -226,11 +226,11 @@ export default function AgendaView() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-9 border-gray-200 text-gray-700">
+          <Button variant="outline" size="sm" className="h-9 border-gray-200 text-gray-700" disabled>
             <Filter className="w-4 h-4" />
             Filtros
           </Button>
-          <Button variant="outline" size="sm" className="h-9 border-gray-200 text-gray-700">
+          <Button variant="outline" size="sm" className="h-9 border-gray-200 text-gray-700" disabled>
             <Download className="w-4 h-4" />
             Exportar
           </Button>
@@ -418,20 +418,15 @@ export default function AgendaView() {
 
       {/* Modal de Novo Fluxo */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Criar Novo Fluxo</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsModalOpen(false)}
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col">
+            {/* Cabeçalho fixo */}
+            <div className="px-6 py-4 border-b border-gray-200 bg-white rounded-t-lg">
+              <h3 className="text-xl font-semibold text-gray-900">Criar Novo Fluxo</h3>
             </div>
-            <div className="p-6">
+            
+            {/* Conteúdo com scroll */}
+            <div className="flex-1 overflow-hidden">
               <NovoFluxoEmpresaForm
                 onSubmit={handleNovoFluxo}
                 onCancel={() => setIsModalOpen(false)}

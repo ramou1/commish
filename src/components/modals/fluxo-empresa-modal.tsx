@@ -387,7 +387,8 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[calc(100vh-12rem)] rounded-lg overflow-hidden">
+      <div className="flex-1 overflow-y-auto space-y-4 px-6 py-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
       {/* Campo Tipo */}
       <div className="space-y-2">
         <Label htmlFor="tipo" className="text-sm font-medium text-gray-700">
@@ -499,25 +500,6 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
         </>
       )}
 
-      {/* Descrição */}
-      <div className="space-y-2">
-        <Label htmlFor="descricao" className="text-sm font-medium text-gray-700">
-          Descrição (Opcional)
-        </Label>
-        <Input
-          id="descricao"
-          type="text"
-          placeholder="Ex: Comissão de venda do apartamento XYZ"
-          value={formData.descricao || ''}
-          onChange={(e) => handleInputChange('descricao', e.target.value)}
-          className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-          disabled={isLoading}
-        />
-        <p className="text-xs text-gray-500">
-          Adicione uma descrição para identificar facilmente este fluxo
-        </p>
-      </div>
-
       {/* Valor a Receber e Recorrência na mesma linha */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Valor a Receber */}
@@ -542,7 +524,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
         </div>
 
         {/* Recorrência */}
-        <div className="space-y-2 sm:col-span-2">
+        <div className="space-y-2">
           <Label htmlFor="recorrencia" className="text-sm font-medium text-gray-700">
             Recorrência
           </Label>
@@ -591,7 +573,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
             {errors.quantidadeParcelas && (
               <p className="text-xs text-red-500">{errors.quantidadeParcelas}</p>
             )}
-            {/* Espaço reservado para o valor por parcela */}
+            {/* Espaço reservado para o valor por parcela - sempre ocupa o mesmo espaço */}
             <div className="h-5">
               {formData.valor && formData.quantidadeParcelas > 1 && (
                 <p className="text-xs text-gray-500">
@@ -700,8 +682,29 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
         </div>
       </div>
 
-      {/* Botões */}
-      <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+      {/* Descrição - Movido para o final */}
+      <div className="space-y-2">
+        <Label htmlFor="descricao" className="text-sm font-medium text-gray-700">
+          Descrição (Opcional)
+        </Label>
+        <Input
+          id="descricao"
+          type="text"
+          placeholder="Ex: Comissão de venda do apartamento XYZ"
+          value={formData.descricao || ''}
+          onChange={(e) => handleInputChange('descricao', e.target.value)}
+          className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+          disabled={isLoading}
+        />
+        <p className="text-xs text-gray-500">
+          Adicione uma descrição para identificar facilmente este fluxo
+        </p>
+      </div>
+
+      </div>
+
+      {/* Botões - Rodapé fixo */}
+      <div className="flex justify-end items-center space-x-3 px-6 py-3 border-t border-gray-200 bg-white shrink-0 mt-auto rounded-b-lg">
         <Button 
           type="button"
           variant="outline" 
@@ -713,7 +716,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
         </Button>
         <Button 
           type="submit"
-          className="bg-gray-900 hover:bg-gray-800 text-white"
+          className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white"
           disabled={isLoading}
         >
           {isLoading ? 'Criando...' : 'Criar Fluxo'}

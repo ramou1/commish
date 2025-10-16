@@ -384,7 +384,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[calc(100vh-12rem)] rounded-lg overflow-hidden">
-      <div className="flex-1 overflow-y-auto space-y-4 p-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+      <div className="flex-1 overflow-y-auto space-y-4 px-6 py-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
 
       {/* CNPJ */}
       <div className="space-y-2">
@@ -641,7 +641,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
       </div>
 
       {/* Botões - Rodapé fixo */}
-      <div className="flex justify-end items-center space-x-3 px-6 py-3 border-t border-gray-200 bg-white shrink-0 mt-auto h-16 rounded-b-lg">
+      <div className="flex justify-end items-center space-x-3 px-6 py-3 border-t border-gray-200 bg-white shrink-0 mt-auto rounded-b-lg">
         <Button 
           type="button"
           variant="outline" 
