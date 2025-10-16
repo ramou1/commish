@@ -216,12 +216,18 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
               <p className="text-sm text-gray-500">Fim</p>
               <p className="text-base font-medium text-gray-900">{formatarData(fluxo.dataFim)}</p>
             </div>
-            {fluxo.ramo && (
-              <div className="space-y-1">
-                <p className="text-sm text-gray-500">Ramo</p>
-                <p className="text-base font-medium text-gray-900">{fluxo.ramo}</p>
-              </div>
-            )}
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500">Tipo</p>
+              <p className="text-base font-medium text-gray-900">
+                {fluxo.tipo === 'empresa' ? 'Pessoa Jurídica' : 'Pessoa Física'}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500">Ramo</p>
+              <p className="text-base font-medium text-gray-900">
+                {fluxo.tipo === 'empresa' && fluxo.ramo ? fluxo.ramo : '---'}
+              </p>
+            </div>
             {fluxo.documentoNome && (
               <div className="space-y-1 sm:col-span-2">
                 <p className="text-sm text-gray-500">Anexo</p>

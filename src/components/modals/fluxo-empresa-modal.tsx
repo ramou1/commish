@@ -500,12 +500,12 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
         </>
       )}
 
-      {/* Valor a Receber e Recorrência na mesma linha */}
+      {/* Valor a Pagar e Recorrência na mesma linha */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Valor a Receber */}
+        {/* Valor a Pagar */}
         <div className="space-y-2">
           <Label htmlFor="valor" className="text-sm font-medium text-gray-700">
-            Valor a Receber
+            Valor a Pagar
           </Label>
           <Input
             id="valor"
@@ -604,28 +604,30 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
           )}
         </div>
 
-        {/* Ramo */}
-        <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-          <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">
-            Ramo (Opcional)
-          </Label>
-          <Select
-            value={formData.ramo}
-            onValueChange={(value) => handleInputChange('ramo', value)}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500">
-              <SelectValue placeholder="Selecione o ramo" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border border-gray-200">
-              {ramoOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value} className="hover:bg-gray-50">
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Ramo - Só aparece para Pessoa Jurídica */}
+        {formData.tipo === 'empresa' && (
+          <div className="space-y-2 sm:col-span-2 lg:col-span-1">
+            <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">
+              Ramo (Opcional)
+            </Label>
+            <Select
+              value={formData.ramo}
+              onValueChange={(value) => handleInputChange('ramo', value)}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500">
+                <SelectValue placeholder="Selecione o ramo" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border border-gray-200">
+                {ramoOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value} className="hover:bg-gray-50">
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Upload de Documento */}

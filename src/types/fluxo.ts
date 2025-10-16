@@ -51,6 +51,7 @@ export interface FluxoFirebase {
   color?: string;
   documentoNome?: string;
   documentoUrl?: string;
+  tipo: 'empresa' | 'pessoa';
   createdAt: unknown; // Timestamp do Firebase
   updatedAt: unknown; // Timestamp do Firebase
 }

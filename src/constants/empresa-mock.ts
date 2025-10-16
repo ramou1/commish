@@ -25,21 +25,6 @@ export interface ClientePagamento {
 export const clientesPagamento: ClientePagamento[] = [
   // EMPRESAS
   {
-    id: '1',
-    nomeEmpresa: 'Construtora Alpha Ltda',
-    cnpj: '12.345.678/0001-90',
-    valor: 8500.00,
-    dataVencimento: new Date(2024, 11, 15), // 15 de dezembro
-    dataInicio: new Date(2024, 11, 15),
-    dataFim: new Date(2024, 11, 15),
-    status: 'pendente',
-    ramo: 'Construção Civil',
-    color: colors[0],
-    descricao: 'Comissão de venda apartamento - Torre A',
-    documentoNome: 'contrato_alpha.pdf',
-    tipo: 'empresa'
-  },
-  {
     id: '2',
     nomeEmpresa: 'Imobiliária Beta S.A.',
     cnpj: '23.456.789/0001-01',
@@ -68,6 +53,21 @@ export const clientesPagamento: ClientePagamento[] = [
     descricao: 'Comissão projeto comercial - Shopping Center',
     documentoNome: 'projeto_gamma.pdf',
     observacoes: 'Cliente solicitou prazo adicional',
+    tipo: 'empresa'
+  },
+  {
+    id: '6',
+    nomeEmpresa: 'Loteamentos Zeta Ltda',
+    cnpj: '67.890.123/0001-45',
+    valor: 4800.00,
+    dataVencimento: new Date(2024, 10, 10),
+    dataInicio: new Date(2024, 10, 10),
+    dataFim: new Date(2024, 10, 10),
+    status: 'atrasado',
+    ramo: 'Loteamentos',
+    color: colors[5],
+    descricao: 'Comissão de venda lote - Residencial Zeta',
+    documentoNome: 'lote_zeta.pdf',
     tipo: 'empresa'
   },
   {
@@ -100,21 +100,7 @@ export const clientesPagamento: ClientePagamento[] = [
     documentoNome: 'contrato_epsilon.pdf',
     tipo: 'empresa'
   },
-  {
-    id: '6',
-    nomeEmpresa: 'Loteamentos Zeta Ltda',
-    cnpj: '67.890.123/0001-45',
-    valor: 4800.00,
-    dataVencimento: new Date(2024, 11, 10),
-    dataInicio: new Date(2024, 11, 10),
-    dataFim: new Date(2024, 11, 10),
-    status: 'pago',
-    ramo: 'Loteamentos',
-    color: colors[5],
-    descricao: 'Comissão de venda lote - Residencial Zeta',
-    documentoNome: 'lote_zeta.pdf',
-    tipo: 'empresa'
-  },
+
   
   // PESSOAS FÍSICAS
   {
@@ -130,21 +116,6 @@ export const clientesPagamento: ClientePagamento[] = [
     color: colors[0],
     descricao: 'Comissão de venda casa - Residencial Jardim',
     documentoNome: 'venda_maria.pdf',
-    tipo: 'pessoa'
-  },
-  {
-    id: '10',
-    nomeEmpresa: 'João Pedro Oliveira',
-    cpf: '987.654.321-02',
-    valor: 12000.00,
-    dataVencimento: new Date(2024, 11, 22),
-    dataInicio: new Date(2024, 11, 22),
-    dataFim: new Date(2024, 11, 22),
-    status: 'pendente',
-    ramo: 'Pessoa Física',
-    color: colors[1],
-    descricao: 'Comissão de venda apartamento - Torre Central',
-    documentoNome: 'venda_joao.pdf',
     tipo: 'pessoa'
   },
   {
@@ -209,53 +180,6 @@ export const clientesPagamento: ClientePagamento[] = [
     descricao: 'Comissão de venda casa - Condomínio Kappa',
     documentoNome: 'kappa_venda.pdf',
     tipo: 'empresa'
-  },
-  {
-    id: '15',
-    nomeEmpresa: 'Imobiliária Lambda Ltda',
-    cnpj: '12.345.678/0001-90',
-    valor: 6100.00,
-    dataVencimento: new Date(2025, 0, 25), // 25 de janeiro
-    dataInicio: new Date(2025, 0, 25),
-    dataFim: new Date(2025, 0, 25),
-    status: 'pendente',
-    ramo: 'Imobiliário',
-    color: colors[6],
-    descricao: 'Comissão de venda terreno - Loteamento Lambda',
-    documentoNome: 'lambda_terreno.pdf',
-    tipo: 'empresa'
-  },
-  
-  // JANEIRO 2025 - PESSOAS FÍSICAS
-  {
-    id: '16',
-    nomeEmpresa: 'Roberto Almeida',
-    cpf: '321.654.987-05',
-    valor: 8800.00,
-    dataVencimento: new Date(2025, 0, 12), // 12 de janeiro
-    dataInicio: new Date(2025, 0, 12),
-    dataFim: new Date(2025, 0, 12),
-    status: 'pendente',
-    ramo: 'Pessoa Física',
-    color: colors[7],
-    descricao: 'Comissão de venda apartamento - Residencial Primavera',
-    documentoNome: 'venda_roberto.pdf',
-    tipo: 'pessoa'
-  },
-  {
-    id: '17',
-    nomeEmpresa: 'Fernanda Rodrigues',
-    cpf: '654.987.321-06',
-    valor: 13400.00,
-    dataVencimento: new Date(2025, 0, 20), // 20 de janeiro
-    dataInicio: new Date(2025, 0, 20),
-    dataFim: new Date(2025, 0, 20),
-    status: 'pendente',
-    ramo: 'Pessoa Física',
-    color: colors[0],
-    descricao: 'Comissão de venda casa - Residencial Flores',
-    documentoNome: 'venda_fernanda.pdf',
-    tipo: 'pessoa'
   },
   
   // FEVEREIRO 2025 - PAGAMENTOS SEMANAIS

@@ -1,7 +1,7 @@
 // src/views/empresa/AgendaView.tsx
 'use client'
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,19 +22,47 @@ import {
 } from 'lucide-react';
 
 import { clientesPagamento, ClientePagamento, fluxosPendentesAprovacao, FluxoPendenteAprovacao } from '@/constants/empresa-mock';
+import { useAuth } from '@/contexts/AuthContext';
+import { createFluxo, getFluxosByUserId, deleteFluxo } from '@/lib/firebase';
+import { convertFormDataToFirebase, convertFirebaseFluxosToComissao, convertFirebaseFluxosToEmpresa, convertEmpresaFormDataToFirebase } from '@/lib/fluxoUtils';
+import { criarDataLocal, gerarDatasPagamento } from '@/lib/dateUtils';
+import { colors } from '@/constants/fluxos-mock';
 
 export default function AgendaView() {
+  const { user } = useAuth();
   const [clientes] = useState<ClientePagamento[]>(clientesPagamento);
   const [fluxosPendentes, setFluxosPendentes] = useState<FluxoPendenteAprovacao[]>(fluxosPendentesAprovacao);
+  const [firebaseFluxos, setFirebaseFluxos] = useState<ClientePagamento[]>([]);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedCliente, setSelectedCliente] = useState<ClientePagamento | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isApprovalExpanded, setIsApprovalExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Carregar fluxos do Firebase quando o usuário estiver logado
+  useEffect(() => {
+    const loadFirebaseFluxos = async () => {
+      if (user?.uid) {
+        try {
+          setIsLoading(true);
+          const firebaseData = await getFluxosByUserId(user.uid);
+          const convertedFluxos = convertFirebaseFluxosToEmpresa(firebaseData);
+          setFirebaseFluxos(convertedFluxos);
+        } catch (error) {
+          console.error('Erro ao carregar fluxos da empresa do Firebase:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadFirebaseFluxos();
+  }, [user?.uid]);
 
   // Calcular apenas os meses que têm pagamentos (incluindo pagos para visualização)
   const months = useMemo(() => {
-    // Incluir todos os clientes para mostrar também os pagos
-    const allClientes = clientes;
+    // Usar apenas clientes mockados como base, adicionando fluxos do Firebase
+    const allClientes = [...clientes, ...firebaseFluxos];
     
     if (allClientes.length === 0) {
       return [];
@@ -60,13 +88,16 @@ export default function AgendaView() {
       .sort((a, b) => a.getTime() - b.getTime());
 
     return monthsArray;
-  }, [clientes]);
+  }, [clientes, firebaseFluxos]);
 
   // Função para agrupar clientes por mês (incluindo pagos para visualização)
   const groupClientesByMonth = () => {
     const grouped: { [key: string]: ClientePagamento[] } = {};
     
-    clientes.forEach(cliente => {
+    // Usar apenas clientes mockados como base, adicionando fluxos do Firebase
+    const allClientes = [...clientes, ...firebaseFluxos];
+    
+    allClientes.forEach(cliente => {
       // Incluir todos os clientes, incluindo os pagos
       const paymentDate = cliente.dataVencimento instanceof Date 
         ? cliente.dataVencimento 
@@ -212,19 +243,101 @@ export default function AgendaView() {
   };
 
   // Função para excluir fluxo
-  const handleDeleteFluxo = (clienteId: string) => {
-    // Aqui você implementaria a lógica para excluir o fluxo
-    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
-    console.log('Excluindo fluxo:', clienteId);
-    setSelectedCliente(null);
+  const handleDeleteFluxo = async (clienteId: string) => {
+    if (!user?.uid) {
+      console.error('Usuário não autenticado');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await deleteFluxo(user.uid, clienteId);
+      
+      // Recarregar fluxos do Firebase
+      const firebaseData = await getFluxosByUserId(user.uid);
+      const convertedFluxos = convertFirebaseFluxosToEmpresa(firebaseData);
+      setFirebaseFluxos(convertedFluxos);
+      
+      setSelectedCliente(null);
+    } catch (error) {
+      console.error('Erro ao excluir fluxo:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Função para criar novo fluxo
-  const handleNovoFluxo = (formData: ClientePagamento) => {
-    // Aqui você implementaria a lógica para criar novo fluxo
-    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
-    console.log('Criando novo fluxo:', formData);
-    setIsModalOpen(false);
+  const handleNovoFluxo = async (formData: ClientePagamento) => {
+    if (!user?.uid) {
+      console.error('Usuário não autenticado');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      // Atribuir cor automaticamente se não fornecida
+      const corAuto = colors[firebaseFluxos.length % colors.length];
+
+      const dataInicioLocal = criarDataLocal(formData.dataInicio.toISOString());
+      
+      // Para fluxos recorrentes, gerar todas as datas de pagamento
+      const datasPagamento = gerarDatasPagamento(
+        formData.dataInicio.toISOString(),
+        formData.recorrencia as 'semanal' | 'mensal',
+        formData.quantidadeParcelas || 1
+      );
+
+      // Criar um fluxo para cada data de pagamento (exceto cobrança única)
+      if (formData.recorrencia === 'unica') {
+        const proximoPagamento = dataInicioLocal;
+        
+        const firebaseData = convertEmpresaFormDataToFirebase(
+          formData,
+          user.uid,
+          proximoPagamento,
+          corAuto
+        );
+
+        await createFluxo(user.uid, firebaseData);
+      } else {
+        // Para fluxos recorrentes, criar um documento para cada parcela
+        // Calcular valor por parcela
+        const valorNumerico = parseFloat(formData.valor.toString().replace(/[^\d,]/g, '').replace(',', '.'));
+        const valorPorParcela = valorNumerico / (formData.quantidadeParcelas || 1);
+        
+        // Criar formData com valor da parcela (passando valor em centavos para compatibilidade)
+        const valorEmCentavos = Math.round(valorPorParcela * 100);
+        const formDataComValorParcela: ClientePagamento = {
+          ...formData,
+          valor: valorEmCentavos
+        };
+
+        for (let i = 0; i < datasPagamento.length; i++) {
+          const proximoPagamento = datasPagamento[i];
+          
+          const firebaseData = convertEmpresaFormDataToFirebase(
+            formDataComValorParcela,
+            user.uid,
+            proximoPagamento,
+            corAuto
+          );
+
+          await createFluxo(user.uid, firebaseData);
+        }
+      }
+
+      // Recarregar fluxos do Firebase
+      const firebaseData = await getFluxosByUserId(user.uid);
+      const convertedFluxos = convertFirebaseFluxosToEmpresa(firebaseData);
+      setFirebaseFluxos(convertedFluxos);
+
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Erro ao criar fluxo:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Funções para aprovação de fluxos
@@ -279,7 +392,7 @@ export default function AgendaView() {
               <div>
                 <p className="text-sm text-gray-600">Pendentes</p>
                 <p className="text-2xl font-bold text-yellow-600">
-                  {clientes.filter(c => c.status === 'pendente').length}
+                  {[...clientes, ...firebaseFluxos].filter(c => c.status === 'pendente').length}
                 </p>
               </div>
               <Clock className="w-8 h-8 text-yellow-500" />
@@ -293,7 +406,7 @@ export default function AgendaView() {
               <div>
                 <p className="text-sm text-gray-600">Atrasados</p>
                 <p className="text-2xl font-bold text-red-600">
-                  {clientes.filter(c => c.status === 'atrasado').length}
+                  {[...clientes, ...firebaseFluxos].filter(c => c.status === 'atrasado').length}
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-red-500" />
@@ -307,7 +420,7 @@ export default function AgendaView() {
               <div>
                 <p className="text-sm text-gray-600">Pagamentos Totais</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {formatarMoeda(clientes.reduce((total, c) => total + c.valor, 0))}
+                  {formatarMoeda([...clientes, ...firebaseFluxos].reduce((total, c) => total + c.valor, 0))}
                 </p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-500" />
@@ -551,6 +664,7 @@ export default function AgendaView() {
               <NovoFluxoEmpresaForm
                 onSubmit={handleNovoFluxo}
                 onCancel={() => setIsModalOpen(false)}
+                isLoading={isLoading}
               />
             </div>
           </div>
