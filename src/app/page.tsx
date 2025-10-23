@@ -92,13 +92,13 @@ export default function HomePage() {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button asChild size="lg" className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white border-0 h-11 px-8 rounded-md font-medium transition-all duration-200">
-                  <Link href="/cadastro" prefetch={false}>
+                  <Link href="/cadastro">
                     Começar Agora
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="h-11 px-8 rounded-md font-medium border-gray-200 hover:bg-gray-50 transition-all duration-200">
-                  <Link href="/login" prefetch={false}>
+                  <Link href="/login">
                     Já tenho conta
                   </Link>
                 </Button>
@@ -188,7 +188,7 @@ export default function HomePage() {
                   a gestão de comissões na América Latina.
                 </p>
                 <Button asChild className="w-full bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white border-0 h-10 rounded-md font-medium transition-all duration-200">
-                  <Link href="/cadastro" prefetch={false}>
+                  <Link href="/cadastro">
                     Criar conta gratuita
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
@@ -210,7 +210,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white border-0 h-11 px-8 rounded-md font-medium transition-all duration-200">
-              <Link href="/cadastro" prefetch={false}>
+              <Link href="/cadastro">
                 Começar gratuitamente
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
