@@ -78,7 +78,6 @@ export default function LoginPage() {
     setAuthError('');
 
     try {
-      console.log('Tentando fazer login com:', formData.email);
       await signIn(formData.email, formData.senha);
       console.log('Login bem-sucedido, redirecionando...');
       
@@ -212,7 +211,7 @@ export default function LoginPage() {
               {/* Esqueci a senha */}
               <div className="text-right">
                 <Link
-                  href="/esqueci-senha"
+                  href="/forgot-password"
                   className={`text-xs underline underline-offset-4 transition-colors ${
                     isLoading 
                       ? 'text-gray-400 cursor-not-allowed pointer-events-none' 

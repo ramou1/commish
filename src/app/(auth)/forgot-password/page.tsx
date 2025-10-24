@@ -1,4 +1,4 @@
-// src/app/(auth)/esqueci-senha/page.tsx
+// src/app/(auth)/forgot-password/page.tsx
 'use client'
 
 import { useState, useRef } from 'react';

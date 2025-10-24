@@ -62,11 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
-      console.log('AuthContext: Tentando fazer login com email:', email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('AuthContext: Login bem-sucedido para:', userCredential.user.email);
     } catch (error: unknown) {
-      console.error('AuthContext: Erro no login:', error);
       const firebaseError = error as { code: string };
       throw new Error(getAuthErrorMessage(firebaseError.code));
     }
@@ -192,6 +189,6 @@ function getAuthErrorMessage(errorCode: string): string {
     case 'auth/user-not-found':
       return 'Nenhuma conta encontrada com este email';
     default:
-      return 'Erro de autenticação. Tente novamente';
+      return 'Erro ao acessar a conta. Confira as informações inseridas';
   }
 }
