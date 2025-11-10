@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Mail, Lock, Eye, EyeOff, CreditCard, Zap, Gift, Trophy, Star, Crown, Copy, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Mail, Lock, Eye, EyeOff, CreditCard, Zap, Gift, Trophy, Star, Crown, Copy, Check, Upload } from 'lucide-react';
 import { TipoUsuario, RamoNegocio } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -33,6 +33,7 @@ function CadastroContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
   const isSubmittingRef = useRef(false);
 
   const totalSteps = 5;
@@ -101,6 +102,13 @@ function CadastroContent() {
     navigator.clipboard.writeText(pixCode);
     setCopiedPix(true);
     setTimeout(() => setCopiedPix(false), 2000);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setComprovanteFile(file);
+    }
   };
 
   const isStepValid = () => {
@@ -236,15 +244,12 @@ function CadastroContent() {
                               <h4 className={`font-semibold ${isSelected && plan.available ? 'text-white' : 'text-gray-900'}`}>
                                 {plan.name}
                               </h4>
-                              {!plan.available && (
-                                <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Em breve</span>
-                              )}
+                              <p className={`text-lg font-bold ${isSelected && plan.available ? 'text-white' : 'text-gray-900'}`}>
+                                <span className="text-xs font-semibold mr-1">R$</span>{plan.price}<span className="text-xs font-normal">/mês</span>
+                              </p>
                             </div>
                             <p className={`text-sm mb-2 ${isSelected && plan.available ? 'text-white/80' : 'text-gray-600'}`}>
                               {plan.description}
-                            </p>
-                            <p className={`text-lg font-bold ${isSelected && plan.available ? 'text-white' : 'text-gray-900'}`}>
-                            <span className="text-xs font-semibold mr-1">R$</span>{plan.price}<span className="text-xs font-normal">/mês</span>
                             </p>
                           </div>
                         </div>
@@ -438,8 +443,8 @@ function CadastroContent() {
                   </div>
                 </div>
 
-                {/* Código Pix Copia e Cola */}
-                <div>
+                {/* Código Pix Copia e Cola (DESABILITADO) */}
+                <div className="opacity-50 cursor-not-allowed">
                   <Label className="text-sm font-medium text-gray-700 mb-2 block">
                     Ou use o código Pix copia e cola:
                   </Label>
@@ -448,6 +453,7 @@ function CadastroContent() {
                       value="00020126580014br.gov.bcb.pix...6304ABCD"
                       readOnly
                       className="border-gray-200 text-xs bg-gray-50"
+                      disabled
                     />
                     <Button
                       type="button"
@@ -455,18 +461,54 @@ function CadastroContent() {
                       size="sm"
                       onClick={handleCopyPixCode}
                       className="flex-shrink-0"
+                      disabled
                     >
                       {copiedPix ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </Button>
                   </div>
+                  <p className="text-xs text-gray-500 mt-1 italic">
+                    Funcionalidade temporariamente indisponível
+                  </p>
                 </div>
 
                 {/* Aviso */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-xs text-blue-800">
-                    Após o pagamento, envie o comprovante para que sua conta seja ativada.
+                    Após o pagamento, envie o comprovante abaixo para que sua conta seja ativada.
                   </p>
                 </div>
+
+                {/* Upload de Comprovante */}
+                <div>
+                  <Label htmlFor="comprovante" className="text-sm font-medium text-gray-700 mb-2 block">
+                    Envie o comprovante de pagamento:
+                  </Label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
+                    <input
+                      type="file"
+                      id="comprovante"
+                      accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <label htmlFor="comprovante" className="cursor-pointer">
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-600">
+                        {comprovanteFile ? (
+                          <span className="text-green-600 font-medium">
+                            Arquivo selecionado: {comprovanteFile.name}
+                          </span>
+                        ) : (
+                          <>Clique para selecionar o comprovante</>
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Formatos aceitos: JPG, PNG, PDF, DOC (máx. 10MB)
+                      </p>
+                    </label>
+                  </div>
+                </div>
+                
               </div>
             )}
 
@@ -494,7 +536,7 @@ function CadastroContent() {
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  disabled={!isStepValid() || isLoading}
+                  disabled={!isStepValid() || isLoading || !comprovanteFile}
                   className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white h-10 px-4 rounded-md font-medium disabled:opacity-70"
                 >
                   {isLoading ? (
