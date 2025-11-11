@@ -26,6 +26,7 @@ function CadastroContent() {
     ramo: '',
     nome: '',
     cpf: '',
+    tel: '',
     email: '',
     senha: '',
     plano: 'standart'
@@ -33,7 +34,7 @@ function CadastroContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
-  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null);
+  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null); // Inserção de comprovante removido
   const isSubmittingRef = useRef(false);
 
   const totalSteps = 5;
@@ -45,7 +46,6 @@ function CadastroContent() {
       setFormData(prev => ({ ...prev, plano: planoUrl }));
     }
   }, [searchParams]);
-
 
   const selectedPlan = plans.find(p => p.id === formData.plano) || plans[0];
 
@@ -79,12 +79,23 @@ function CadastroContent() {
     setAuthError('');
 
     try {
+      // Buscar informações completas do plano selecionado
+      const selectedPlan = plans.find(p => p.id === formData.plano);
+      
+      if (!selectedPlan) {
+        throw new Error('Plano selecionado não encontrado');
+      }
+
       await signUp(formData.email, formData.senha, {
         tipo: formData.tipo,
         ramo: formData.ramo as RamoNegocio,
         dadosPessoais: formData.tipo === 'vendedor' 
-          ? { nome: formData.nome, cpf: formData.cpf }
-          : { razaoSocial: formData.nome, cnpj: formData.cpf }
+          ? { nome: formData.nome, cpf: formData.cpf, tel: formData.tel }
+          : { razaoSocial: formData.nome, cnpj: formData.cpf, tel: formData.tel },
+        planoId: formData.plano,
+        planoNome: selectedPlan.name,
+        planoPreco: selectedPlan.priceValue,
+        comprovanteFile: comprovanteFile || undefined // Inserção de comprovante removido
       });
       
       router.push('/agenda');
@@ -104,6 +115,7 @@ function CadastroContent() {
     setTimeout(() => setCopiedPix(false), 2000);
   };
 
+  // Inserção de comprovante removido
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -118,11 +130,11 @@ function CadastroContent() {
       case 2:
         return formData.tipo === 'vendedor' || formData.tipo === 'empresa' && formData.ramo !== '';
       case 3:
-        return formData.nome.trim() !== '' && formData.cpf.trim() !== '';
+        return formData.nome.trim() !== '' && formData.cpf.trim() !== '' && formData.tel.trim() !== '';
       case 4:
         return formData.email.trim() !== '' && formData.senha.trim() !== '' && formData.senha.length >= 6;
       case 5:
-        return true; // Etapa de pagamento
+        return true; // REMOVIDO: comprovanteFile !== null;
       default:
         return false;
     }
@@ -138,6 +150,25 @@ function CadastroContent() {
     if (formatted.length <= 14) {
       handleInputChange('cpf', formatted);
     }
+  };
+
+  const handleTelefoneChange = (value: string) => {
+    // Remove tudo que não é número
+    const numbers = value.replace(/\D/g, '');
+    
+    // Formatação para (00) 00000-0000
+    let formatted = numbers;
+    if (numbers.length > 0) {
+      formatted = `(${numbers.substring(0, 2)}`;
+    }
+    if (numbers.length > 2) {
+      formatted += `) ${numbers.substring(2, 7)}`;
+    }
+    if (numbers.length > 7) {
+      formatted += `-${numbers.substring(7, 11)}`;
+    }
+    
+    handleInputChange('tel', formatted);
   };
 
   const stepIcons = [CreditCard, Briefcase, User, Mail, CreditCard];
@@ -218,7 +249,7 @@ function CadastroContent() {
             {currentStep === 1 && (
               <div className="space-y-4">
                 <div className="text-center mb-4">
-                  <p className="text-gray-600 text-sm">Escolha seu plano:</p>
+                  <p className="text-sm text-gray-700 mb-2 font-medium">Escolha seu plano:</p>
                 </div>
                 
                 <div className="space-y-3">
@@ -264,7 +295,7 @@ function CadastroContent() {
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div className="text-center">
-                  <p className="text-gray-600 mb-6 text-sm">Você é:</p>
+                  <p className="text-sm text-gray-700 mb-2 font-medium">Você é:</p>
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div 
                       className={`border rounded-lg p-4 cursor-pointer transition-colors ${
@@ -296,13 +327,13 @@ function CadastroContent() {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">Sua Área de Atuação</Label>
+                <div className="flex flex-col items-center mt-8">
+                  <Label htmlFor="ramo" className="text-sm text-gray-700 mb-2">Sua Área de Atuação:</Label>
                   <Select
                     value={formData.ramo}
                     onValueChange={(value) => handleInputChange('ramo', value)}
                   >
-                    <SelectTrigger className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0">
+                    <SelectTrigger className="border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0">
                       <SelectValue placeholder="Selecione sua área de atuação" />
                     </SelectTrigger>
                     <SelectContent>
@@ -345,6 +376,17 @@ function CadastroContent() {
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="tel" className="text-sm font-medium text-gray-700">Telefone</Label>
+                      <Input
+                        id="tel"
+                        type="tel"
+                        placeholder="(00) 00000-0000"
+                        value={formData.tel}
+                        onChange={(e) => handleTelefoneChange(e.target.value)}
+                        className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                      />
+                    </div>
                   </>
                 ) : (
                   <>
@@ -367,6 +409,17 @@ function CadastroContent() {
                         placeholder="00.000.000/0000-00"
                         value={formData.cpf}
                         onChange={(e) => handleCPFChange(e.target.value)}
+                        className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="tel" className="text-sm font-medium text-gray-700">Telefone</Label>
+                      <Input
+                        id="tel"
+                        type="tel"
+                        placeholder="(00) 00000-0000"
+                        value={formData.tel}
+                        onChange={(e) => handleTelefoneChange(e.target.value)}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
@@ -478,7 +531,7 @@ function CadastroContent() {
                   </p>
                 </div>
 
-                {/* Upload de Comprovante */}
+                {/* Upload de Comprovante - Desabilitado */}
                 <div>
                   <Label htmlFor="comprovante" className="text-sm font-medium text-gray-700 mb-2 block">
                     Envie o comprovante de pagamento:
@@ -536,7 +589,7 @@ function CadastroContent() {
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  disabled={!isStepValid() || isLoading || !comprovanteFile}
+                  disabled={!isStepValid() || isLoading}
                   className="bg-gradient-to-r from-[var(--custom-green)] to-[var(--custom-cyan)] hover:from-[var(--custom-green)]/90 hover:to-[var(--custom-cyan)]/90 text-white h-10 px-4 rounded-md font-medium disabled:opacity-70"
                 >
                   {isLoading ? (

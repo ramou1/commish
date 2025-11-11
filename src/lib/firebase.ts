@@ -3,6 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, Timestamp } from 'firebase/firestore';
 import { FluxoFirebase } from '@/types/fluxo';
+import { getStorage } from 'firebase/storage';
 
 // Configuração do Firebase
 // IMPORTANTE: Substitua essas configurações pelas suas próprias do Firebase Console
@@ -21,6 +22,7 @@ const app = initializeApp(firebaseConfig);
 // Inicializar serviços do Firebase
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 // Função para criar um novo fluxo no Firebase (nova estrutura com subcoleções)
 export async function createFluxo(userId: string, fluxoData: Omit<FluxoFirebase, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {

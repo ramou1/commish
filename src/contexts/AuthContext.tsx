@@ -14,17 +14,19 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { 
-  ExtendedUser, 
-  UserProfile,
+  ExtendedUser,
+  CadastroData,
   TipoUsuario,
-  DadosVendedor
+  DadosVendedor,
+  PlanoUsuario,
+  StatusUsuario
 } from '@/types/user';
 
 interface AuthContextType {
   user: ExtendedUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, userData: UserProfile) => Promise<void>;
+  signUp: (email: string, password: string, userData: CadastroData) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -69,26 +71,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, userData: UserProfile) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+// Função signUp atualizado para remover o upload do comprovante temporariamente
+const signUp = useCallback(async (email: string, password: string, userData: CadastroData) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // REMOVER: Upload do comprovante (comentado temporariamente)
+    // let comprovanteData: ComprovantePagamento | undefined;
+    
+    // if (userData.comprovanteFile) {
+    //   const comprovanteRef = ref(storage, `comprovantes/${user.uid}/${userData.comprovanteFile.name}`);
+    //   const snapshot = await uploadBytes(comprovanteRef, userData.comprovanteFile);
+    //   const downloadURL = await getDownloadURL(snapshot.ref);
       
-      // Salvar dados adicionais no Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        email: user.email,
-        tipo: userData.tipo,
-        ramo: userData.ramo,
-        dadosPessoais: userData.dadosPessoais,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-    } catch (error: unknown) {
-      const firebaseError = error as { code: string };
-      throw new Error(getAuthErrorMessage(firebaseError.code));
-    }
-  }, []);
+    //   comprovanteData = {
+    //     arquivoUrl: downloadURL,
+    //     nomeArquivo: userData.comprovanteFile.name,
+    //     dataUpload: new Date().toISOString(),
+    //     status: 'pendente' as const
+    //   };
+    // }
+    
+    // Configurar dados do plano
+    const planoData: PlanoUsuario = {
+      id: userData.planoId,
+      nome: userData.planoNome,
+      preco: userData.planoPreco,
+      dataInicio: new Date().toISOString(),
+      dataRenovacao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 dias
+    };
+    
+    // Salvar dados adicionais no Firestore (sem comprovante)
+    await setDoc(doc(db, 'users', user.uid), {
+      uid: user.uid,
+      email: user.email,
+      tipo: userData.tipo,
+      ramo: userData.ramo,
+      dadosPessoais: userData.dadosPessoais,
+      plano: planoData,
+      // comprovante: comprovanteData, // REMOVIDO TEMPORARIAMENTE
+      status: 'ativo' as StatusUsuario, // MUDAR PARA 'ativo' DIRETAMENTE
+      liberado: true, // LIBERAR ACESSO DIRETAMENTE
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error: unknown) {
+    const firebaseError = error as { code: string };
+    throw new Error(getAuthErrorMessage(firebaseError.code));
+  }
+}, []);
 
   const signInWithGoogle = useCallback(async () => {
     try {
@@ -106,8 +138,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           ramo: '',
           dadosPessoais: {
             nome: user.displayName || '',
-            cpf: ''
+            cpf: '',
+            tel: ''
           } as DadosVendedor,
+          plano: {
+            id: 'standart',
+            nome: 'Standart',
+            preco: 19.90,
+            dataInicio: new Date().toISOString(),
+            dataRenovacao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          status: 'pendente' as StatusUsuario,
+          liberado: false,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         });

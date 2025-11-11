@@ -8,6 +8,9 @@ Sistema web para gestão e acompanhamento de fluxos de comissão, permitindo que
 - **Antecipação Inteligente**: Antecipe recebimentos com as melhores taxas do mercado
 - **Dashboard Completo**: Visualize performance e planeje crescimento
 - **Autenticação Segura**: Sistema de login e cadastro com validação completa
+- **Sistema de Planos**: Planos flexíveis (Standart, Growth, Apoiador, Elite, Premium)
+- **Pagamento via PIX**: Integração com pagamentos via PIX e upload de comprovantes
+- **Controle de Acesso**: Sistema de aprovação de usuários baseado em status de pagamento
 - **Interface Intuitiva**: Design moderno e responsivo para melhor experiência
 - **Gestão por Parcelas**: Criação de fluxos recorrentes com cálculo automático de parcelas
 - **Sistema de Aprovação**: Estrutura preparada para aprovação de fluxos entre empresas e vendedores (em desenvolvimento)
@@ -138,34 +141,55 @@ O projeto utiliza o **date-fns** para funcionalidades avançadas de manipulaçã
 - **Fluxo mensal (3 parcelas)**: Sistema cria 3 cards (uma para cada mês)
 - **Formatação**: Datas exibidas como "26/09/2025" e meses como "setembro 2025"
 
-## 🔐 Sistema de Autenticação (Firebase)
+### **Sistema de Autenticação e Cadastro (Firebase)**
 
-O projeto utiliza **Firebase Authentication** e **Firestore** para gerenciamento completo de usuários:
+O projeto utiliza **Firebase Authentication** e **Firestore** para gerenciamento completo de usuários com sistema de planos:
 
-### **src/lib/firebase.ts**
-Configuração centralizada do Firebase:
-- **Inicialização**: Setup do app Firebase com configurações do projeto
-- **Autenticação**: Configuração do serviço de autenticação
-- **Firestore**: Configuração do banco de dados em tempo real
-- **Exportações**: Disponibilização dos serviços para toda a aplicação
+#### **Fluxo de Cadastro Multi-etapa**
+1. **Seleção de Plano**: Escolha entre planos Standart, Growth, Apoiador, Elite ou Premium
+2. **Perfil do Usuário**: Definição de tipo (Vendedor/Empresa) e área de atuação
+3. **Dados Pessoais**: CPF/CNPJ, nome/razão social e telefone
+4. **Credenciais**: Email e senha para acesso
+5. **Pagamento**: QR Code PIX e upload de comprovante
 
-### **src/contexts/AuthContext.tsx**
-Contexto React para gerenciamento de autenticação:
-- **Estados**: `user`, `loading` para controle de sessão
-- **Métodos de login**: Email/senha e Google OAuth
-- **Cadastro**: Criação de usuários com dados adicionais no Firestore
-- **Logout**: Encerramento seguro de sessão
-- **Persistência**: Manutenção automática do estado de login
-- **Otimizações**: useCallback e useMemo para performance
+#### **Sistema de Status de Usuário**
+- **Pendente**: Cadastro completo aguardando aprovação do pagamento
+- **Ativo**: Usuário liberado para acesso completo ao sistema
+- **Suspenso**: Acesso temporariamente suspenso
+- **Cancelado**: Conta desativada
 
 ### **Funcionalidades de Autenticação**
 - ✅ **Login com email/senha**: Autenticação tradicional
 - ✅ **Login com Google**: OAuth integrado
-- ✅ **Cadastro completo**: Dados pessoais + tipo de usuário + ramo
+- ✅ **Cadastro multi-etapa**: Dados pessoais + tipo de usuário + ramo + plano
+- ✅ **Sistema de planos**: Planos com diferentes níveis de acesso
+- ✅ **Pagamento via PIX**: Integração com QR Code e upload de comprovante
+- ✅ **Controle de acesso**: Liberação baseada no status de pagamento
 - ✅ **Validação de formulários**: Campos obrigatórios e formatos
 - ✅ **Mensagens de erro**: Feedback em português brasileiro
 - ✅ **Redirecionamento automático**: Baseado no estado de autenticação
-- ✅ **Proteção de rotas**: Dashboard protegido para usuários logados
+- ✅ **Proteção de rotas**: Dashboard protegido para usuários logados e ativos
+
+## 💳 Sistema de Pagamento e Planos
+
+### **Fluxo de Pagamento**
+1. **Seleção de Plano**: Usuário escolhe entre os planos disponíveis
+2. **Geração de QR Code PIX**: Sistema gera código para pagamento
+3. **Upload de Comprovante**: Usuário envia comprovante via formulário
+4. **Validação Manual**: Equipe valida o pagamento (processo manual)
+5. **Liberação de Acesso**: Usuário é notificado e ganha acesso ao sistema
+
+### **Armazenamento de Comprovantes**
+- **Firebase Storage**: Comprovantes armazenados de forma segura
+- **Estrutura organizada**: `comprovantes/{userId}/{fileName}`
+- **Metadados**: Nome do arquivo, data de upload, status de aprovação
+- **Formatos suportados**: JPG, PNG, PDF, DOC, DOCX (até 10MB)
+
+### **Controle de Acesso Baseado em Status**
+- **Usuários 'pendente'**: Acesso limitado até aprovação do pagamento
+- **Usuários 'ativo'**: Acesso completo ao sistema
+- **Usuários 'suspenso'**: Acesso temporariamente bloqueado
+- **Usuários 'cancelado'**: Conta desativada permanentemente
 
 ### **Configuração Inicial**
 Para configurar o Firebase no projeto:
@@ -242,14 +266,36 @@ npm run dev:clean
 {
   uid: string;
   email: string;
-  nome: string;
-  cpf: string;
   tipo: 'vendedor' | 'empresa';
   ramo: string;
+  dadosPessoais: {
+    // Para vendedores:
+    nome: string;
+    cpf: string;
+    tel: string;
+    // Para empresas:
+    razaoSocial: string;
+    cnpj: string;
+    tel: string;
+  };
+  plano: {
+    id: string;
+    nome: string;
+    preco: number;
+    dataInicio: string;
+    dataRenovacao: string;
+  };
+  comprovante?: {
+    arquivoUrl: string;
+    nomeArquivo: string;
+    dataUpload: string;
+    status: 'pendente' | 'aprovado' | 'rejeitado';
+  };
+  status: 'pendente' | 'ativo' | 'suspenso' | 'cancelado';
+  liberado: boolean;
   createdAt: string;
   updatedAt: string;
 }
-```
 
 #### **Coleção: fluxos** 
 ```typescript

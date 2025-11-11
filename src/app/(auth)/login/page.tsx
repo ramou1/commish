@@ -95,6 +95,8 @@ export default function LoginPage() {
     }
   };
 
+
+
   const handleGoogleSignIn = async () => {
     if (isSubmittingRef.current) return; // Prevenir cliques duplos
     
@@ -119,6 +121,8 @@ export default function LoginPage() {
       isSubmittingRef.current = false;
     }
   };
+
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(prev => !prev);

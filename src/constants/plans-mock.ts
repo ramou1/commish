@@ -1,3 +1,5 @@
+// src/constans/plans-mock.ts
+
 import { Zap, Gift, Trophy, Star, Crown } from "lucide-react";
 
 export const plans = [
