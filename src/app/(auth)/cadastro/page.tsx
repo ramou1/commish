@@ -519,9 +519,6 @@ function CadastroContent() {
                       {copiedPix ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 italic">
-                    Funcionalidade temporariamente indisponível
-                  </p>
                 </div>
 
                 {/* Aviso */}
