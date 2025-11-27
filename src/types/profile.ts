@@ -1,6 +1,6 @@
 // src/types/profile.ts
 
-export type ProfileType = 'usuario' | 'empresa' | 'admin';
+export type ProfileType = 'vendedor' | 'empresa' | 'admin';
 
 export interface Profile {
   type: ProfileType;
@@ -10,9 +10,9 @@ export interface Profile {
 }
 
 export const PROFILE_TYPES: Record<ProfileType, Profile> = {
-  usuario: {
-    type: 'usuario',
-    name: 'Usuário',
+  vendedor: {
+    type: 'vendedor',
+    name: 'Vendedor',
     description: 'Visão individual de comissões',
     icon: '👤'
   },

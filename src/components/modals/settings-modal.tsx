@@ -302,12 +302,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     {user.dadosPessoais && 'nome' in user.dadosPessoais ? 'Pessoa Física' : 'Pessoa Jurídica'}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Email Verificado:</span>
                   <span className="text-sm text-gray-900">
                     {user.emailVerified ? 'Sim' : 'Não'}
                   </span>
-                </div>
+                </div> */}
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Data de Criação:</span>
                   <span className="text-sm text-gray-900">

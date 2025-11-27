@@ -18,7 +18,7 @@ import {
   UserIcon
 } from 'lucide-react';
 import { ProfileProvider } from '@/contexts/ProfileContext';
-import { ProfileSelector } from '@/components/ui/profile-selector';
+// import { ProfileSelector } from '@/components/ui/profile-selector'; // COMENTADO: Seletor removido - perfil agora é automático
 import { useAuth } from '@/contexts/AuthContext';
 import { ExtendedUser, DadosVendedor, DadosEmpresa } from '@/types/user';
 import { SettingsModal } from '@/components/modals/settings-modal';
@@ -326,8 +326,8 @@ export default function DashboardLayout({
 
             {/* Ações do header */}
             <div className="flex items-center space-x-4">
-              {/* Seletor de perfil */}
-              <ProfileSelector />
+              {/* Seletor de perfil - COMENTADO: Agora o perfil é determinado automaticamente pelo tipo de usuário */}
+              {/* <ProfileSelector /> */}
 
               {/* Notificações */}
               <button className="text-gray-400 hover:text-gray-600 relative">

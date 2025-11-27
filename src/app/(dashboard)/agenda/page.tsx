@@ -11,7 +11,7 @@ export default function AgendaPage() {
 
   // Renderizar a visualização baseada no perfil atual
   switch (currentProfile) {
-    case 'usuario':
+    case 'vendedor':
       return <AgendaViewUsuario />;
     case 'empresa':
       return <AgendaViewEmpresa />;
