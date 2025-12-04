@@ -152,6 +152,18 @@ function CadastroContent() {
     }
   };
 
+  const formatCNPJ = (value: string) => {
+    const numericValue = value.replace(/\D/g, '');
+    return numericValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  };
+
+  const handleCNPJChange = (value: string) => {
+    const formatted = formatCNPJ(value);
+    if (formatted.length <= 18) {
+      handleInputChange('cpf', formatted);
+    }
+  };
+
   const handleTelefoneChange = (value: string) => {
     // Remove tudo que não é número
     const numbers = value.replace(/\D/g, '');
@@ -408,7 +420,7 @@ function CadastroContent() {
                         type="text"
                         placeholder="00.000.000/0000-00"
                         value={formData.cpf}
-                        onChange={(e) => handleCPFChange(e.target.value)}
+                        onChange={(e) => handleCNPJChange(e.target.value)}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>

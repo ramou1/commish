@@ -41,14 +41,16 @@ interface MenuItem {
   href: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   disabled?: boolean;
+  visibleFor?: 'vendedor' | 'empresa' | 'all'; // 'all' = visível para todos
 }
 
-const menuItems: MenuItem[] = [
+const allMenuItems: MenuItem[] = [
   {
     id: 'agenda',
     label: 'Agenda',
     href: '/agenda',
     icon: Calendar,
+    visibleFor: 'all',
   },
   {
     id: 'orcamento',
@@ -56,6 +58,7 @@ const menuItems: MenuItem[] = [
     href: '/orcamento',
     icon: Calculator,
     disabled: true,
+    visibleFor: 'all',
   },
   {
     id: 'clientes',
@@ -63,6 +66,7 @@ const menuItems: MenuItem[] = [
     href: '/clientes',
     icon: Users,
     disabled: true,
+    visibleFor: 'empresa', // Apenas para empresas
   },
   {
     id: 'contratos',
@@ -70,6 +74,7 @@ const menuItems: MenuItem[] = [
     href: '/contratos',
     icon: FileText,
     disabled: true,
+    visibleFor: 'all',
   },
   {
     id: 'cadastros',
@@ -77,6 +82,7 @@ const menuItems: MenuItem[] = [
     href: '/cadastros',
     icon: Settings,
     disabled: true,
+    visibleFor: 'empresa', // Apenas para empresas
   },
 ];
 
@@ -115,6 +121,18 @@ export default function DashboardLayout({
     if (!fullName) return 'Usuário';
     return fullName.split(' ')[0];
   };
+
+  // Filtrar itens do menu baseado no tipo de usuário
+  const getFilteredMenuItems = (): MenuItem[] => {
+    if (!user?.tipo) return allMenuItems;
+    
+    return allMenuItems.filter(item => {
+      if (item.visibleFor === 'all') return true;
+      return item.visibleFor === user.tipo;
+    });
+  };
+
+  const menuItems = getFilteredMenuItems();
 
   // Mostrar loading enquanto verifica autenticação
   if (loading) {

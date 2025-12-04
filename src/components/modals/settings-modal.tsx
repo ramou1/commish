@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { X, Upload, User, Mail, Building, Palette, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { DadosVendedor, DadosEmpresa } from '@/types/user';
-import { ramos as ramoOptions } from '@/constants/ramos';
+// Valores dos ramos conforme o tipo RamoNegocio
+const ramoOptions = [
+  { value: 'imóveis', label: 'Imóveis' },
+  { value: 'automóveis', label: 'Automóveis' },
+  { value: 'seguros', label: 'Seguros' },
+  { value: 'planos de saúde', label: 'Planos de Saúde' },
+  { value: 'vendedor digital', label: 'Vendedor Digital' },
+  { value: 'outros', label: 'Outros' }
+];
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -25,35 +33,40 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
+    cpfCnpj: '',
     ramo: '',
     foto: null as File | null,
     tema: 'claro' as 'claro' | 'escuro'
   });
 
   // Inicializar dados do usuário
-  useState(() => {
+  useEffect(() => {
     if (user) {
       const dadosPessoais = user.dadosPessoais;
       let nome = '';
+      let cpfCnpj = '';
       const ramo = user.ramo || '';
 
       if (dadosPessoais) {
         if ('nome' in dadosPessoais) {
           nome = (dadosPessoais as DadosVendedor).nome || '';
+          cpfCnpj = (dadosPessoais as DadosVendedor).cpf || '';
         } else if ('razaoSocial' in dadosPessoais) {
           nome = (dadosPessoais as DadosEmpresa).razaoSocial || '';
+          cpfCnpj = (dadosPessoais as DadosEmpresa).cnpj || '';
         }
       }
 
       setFormData({
         nome,
         email: user.email || '',
+        cpfCnpj,
         ramo,
         foto: null,
         tema: 'claro'
       });
     }
-  });
+  }, [user]);
 
   const handleInputChange = (field: string, value: string | File | null) => {
     setFormData(prev => ({
@@ -112,7 +125,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         {/* Conteúdo Scrollável */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Seção de Foto */}
-          <div className="space-y-4">
+          <div className="space-y-4 pb-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
               <User className="w-5 h-5" />
               Foto do Perfil
@@ -158,7 +171,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
 
           {/* Seção de Informações Pessoais */}
-          <div className="space-y-4">
+          <div className="space-y-4 pb-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
               <Building className="w-5 h-5" />
               Informações Pessoais
@@ -168,14 +181,14 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               {/* Nome */}
               <div className="space-y-2">
                 <Label htmlFor="nome" className="text-sm font-medium text-gray-700">
-                  Nome Completo
+                  {user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais ? 'Razão Social' : 'Nome Completo'}
                 </Label>
                 <Input
                   id="nome"
                   type="text"
                   value={formData.nome}
                   onChange={(e) => handleInputChange('nome', e.target.value)}
-                  placeholder="Seu nome completo"
+                  placeholder={user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais ? 'Razão social da empresa' : 'Seu nome completo'}
                   className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
                 />
               </div>
@@ -198,8 +211,26 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </p>
               </div>
 
+              {/* CPF/CNPJ */}
+              <div className="space-y-2">
+                <Label htmlFor="cpfCnpj" className="text-sm font-medium text-gray-700">
+                  {user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais ? 'CNPJ' : 'CPF'}
+                </Label>
+                <Input
+                  id="cpfCnpj"
+                  type="text"
+                  value={formData.cpfCnpj}
+                  disabled
+                  className="bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed"
+                  placeholder={user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais ? '00.000.000/0000-00' : '000.000.000-00'}
+                />
+                <p className="text-xs text-gray-500">
+                  {user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais ? 'CNPJ não pode ser alterado' : 'CPF não pode ser alterado'}
+                </p>
+              </div>
+
               {/* Ramo */}
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2">
                 <Label htmlFor="ramo" className="text-sm font-medium text-gray-700">
                   Ramo/Área de Atuação
                 </Label>
@@ -222,8 +253,35 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
+          {/* Seção de Segurança */}
+          <div className="space-y-4 pb-6 border-b border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+              <Shield className="w-5 h-5" />
+              Segurança
+            </h3>
+            
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-gray-700">
+                Senha da Conta
+              </Label>
+              <div className="flex items-center gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled
+                  className="border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                >
+                  Alterar Senha
+                </Button>
+                <p className="text-xs text-gray-500">
+                  Funcionalidade em desenvolvimento
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Seção de Aparência */}
-          <div className="space-y-4">
+          <div className="space-y-4 pb-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
               <Palette className="w-5 h-5" />
               Aparência
@@ -257,33 +315,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          {/* Seção de Segurança */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-              <Shield className="w-5 h-5" />
-              Segurança
-            </h3>
-            
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">
-                Senha da Conta
-              </Label>
-              <div className="flex items-center gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled
-                  className="border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                >
-                  Alterar Senha
-                </Button>
-                <p className="text-xs text-gray-500">
-                  Funcionalidade em desenvolvimento
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Informações Adicionais do Usuário */}
           {user && (
             <div className="space-y-4">
@@ -302,12 +333,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     {user.dadosPessoais && 'nome' in user.dadosPessoais ? 'Pessoa Física' : 'Pessoa Jurídica'}
                   </span>
                 </div>
-                {/* <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Email Verificado:</span>
-                  <span className="text-sm text-gray-900">
-                    {user.emailVerified ? 'Sim' : 'Não'}
-                  </span>
-                </div> */}
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Data de Criação:</span>
                   <span className="text-sm text-gray-900">
