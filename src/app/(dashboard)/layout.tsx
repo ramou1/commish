@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   Calendar, 
   Calculator, 
@@ -172,9 +173,11 @@ export default function DashboardLayout({
           <div className="flex items-center justify-center h-16 px-4 border-b border-gray-100">
             {!sidebarCollapsed && (
               <div className="flex items-center gap-3">
-                <img 
+                <Image 
                   src="/images/icone.png" 
                   alt="Commish" 
+                  width={32}
+                  height={32}
                   className="w-8 h-8"
                 />
                 <h1 className="text-lg font-semibold tracking-tight text-gray-900">Commish</h1>
@@ -255,9 +258,11 @@ export default function DashboardLayout({
               {/* Header com botão fechar */}
               <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                  <img 
+                  <Image 
                     src="/images/icone.png" 
                     alt="Commish" 
+                    width={32}
+                    height={32}
                     className="w-8 h-8"
                   />
                   <h1 className="text-lg font-semibold tracking-tight text-gray-900">Commish</h1>

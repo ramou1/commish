@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -349,9 +350,11 @@ export default function AgendaView() {
           {months.length === 0 ? (
             <div className="text-center py-12">
               <div className="mb-4">
-                <img 
+                <Image 
                   src="/images/calendar-empty.png" 
                   alt="Calendário vazio" 
+                  width={64}
+                  height={64}
                   className="w-16 h-16 mx-auto opacity-60"
                 />
               </div>

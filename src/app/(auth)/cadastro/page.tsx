@@ -3,13 +3,14 @@
 
 import { useState, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Mail, Lock, Eye, EyeOff, CreditCard, Zap, Gift, Trophy, Star, Crown, Copy, Check, Upload } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Mail, Lock, Eye, EyeOff, CreditCard, Copy, Check, Upload } from 'lucide-react';
 import { TipoUsuario, RamoNegocio } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -500,10 +501,12 @@ function CadastroContent() {
                 <div className="text-center">
                   <p className="text-sm text-gray-600 mb-4">Escaneie o QR Code para pagar via Pix:</p>
                   <div className="bg-white border-2 border-gray-200 rounded-lg p-4 inline-block">
-                    <img 
+                    <Image 
                       src="/images/pixqrcode.png" 
                       alt="QR Code Pix" 
-                      className="w-48 h-48 mx-auto"
+                      width={192}
+                      height={192}
+                      className="mx-auto"
                     />
                   </div>
                 </div>

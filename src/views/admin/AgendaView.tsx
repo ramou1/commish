@@ -1,7 +1,7 @@
 // src/views/admin/AgendaView.tsx
 'use client'
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,17 +10,13 @@ import {
   Building2,
   TrendingUp,
   DollarSign,
-  Calendar,
   FileText,
   AlertCircle,
   CheckCircle,
   Clock,
-  Search,
-  Filter,
   Download,
   RefreshCw,
   BarChart3,
-  PieChart,
   Activity
 } from 'lucide-react';
 

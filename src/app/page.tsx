@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,11 +14,6 @@ import {
   Users,
   CheckCircle,
   Lock,
-  Zap,
-  Gift,
-  Trophy,
-  Crown,
-  Star,
 } from "lucide-react";
 import { plans } from "@/constants/plans-mock";
 
@@ -73,9 +69,11 @@ export default function HomePage() {
             {/* Logo e título */}
             <div className="mb-12">
               <div className="flex items-center justify-center gap-4 mb-6">
-                <img
+                <Image
                   src="/images/icone.png"
                   alt="Charts"
+                  width={64}
+                  height={64}
                   className="w-16 h-16"
                 />
                 <h1 className="text-6xl font-semibold tracking-tight text-gray-900">
@@ -188,8 +186,6 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {plans.map((plan, index) => {
-              const Icon = plan.icon;
-
               return (
                 <Card
                   key={index}

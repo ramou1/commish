@@ -24,7 +24,7 @@ import {
 import { ClientePagamento, fluxosPendentesAprovacao, FluxoPendenteAprovacao } from '@/constants/empresa-mock';
 import { useAuth } from '@/contexts/AuthContext';
 import { createFluxo, getFluxosByUserId, deleteFluxo } from '@/lib/firebase';
-import { convertFormDataToFirebase, convertFirebaseFluxosToComissao, convertFirebaseFluxosToEmpresa, convertEmpresaFormDataToFirebase } from '@/lib/fluxoUtils';
+import { convertFirebaseFluxosToEmpresa, convertEmpresaFormDataToFirebase } from '@/lib/fluxoUtils';
 import { criarDataLocal, gerarDatasPagamento } from '@/lib/dateUtils';
 import { colors } from '@/constants/fluxos-mock';
 
@@ -186,27 +186,6 @@ export default function AgendaView() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'atrasado':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'pago':
-        return 'bg-green-100 text-green-800 border-green-200';
-      default:
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'atrasado':
-        return 'Atrasado';
-      case 'pago':
-        return 'Pago';
-      default:
-        return 'Pendente';
-    }
-  };
 
   // Converter ClientePagamento para formato do modal
   const converterParaFluxoModal = (cliente: ClientePagamento) => {
