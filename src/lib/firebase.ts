@@ -154,4 +154,35 @@ export async function deleteFluxo(userId: string, fluxoId: string): Promise<void
   }
 }
 
+// Função para buscar todos os usuários (apenas para admin)
+export async function getAllUsers(): Promise<any[]> {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'users'));
+    const users: any[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      users.push({
+        uid: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    return users;
+  } catch (error) {
+    console.error('Erro ao buscar usuários:', error);
+    throw error;
+  }
+}
+
+// Função para contar fluxos de um usuário
+export async function countFluxosByUserId(userId: string): Promise<number> {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'users', userId, 'fluxos'));
+    return querySnapshot.size;
+  } catch (error) {
+    console.error('Erro ao contar fluxos:', error);
+    return 0;
+  }
+}
+
 export default app;

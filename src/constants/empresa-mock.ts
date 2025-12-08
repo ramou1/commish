@@ -55,21 +55,21 @@ export const clientesPagamento: ClientePagamento[] = [
     observacoes: 'Cliente solicitou prazo adicional',
     tipo: 'empresa'
   },
-  {
-    id: '6',
-    nomeEmpresa: 'Loteamentos Zeta Ltda',
-    cnpj: '67.890.123/0001-45',
-    valor: 4800.00,
-    dataVencimento: new Date(2024, 10, 10),
-    dataInicio: new Date(2024, 10, 10),
-    dataFim: new Date(2024, 10, 10),
-    status: 'atrasado',
-    ramo: 'Loteamentos',
-    color: colors[5],
-    descricao: 'Comissão de venda lote - Residencial Zeta',
-    documentoNome: 'lote_zeta.pdf',
-    tipo: 'empresa'
-  },
+  // {
+  //   id: '6',
+  //   nomeEmpresa: 'Loteamentos Zeta Ltda',
+  //   cnpj: '67.890.123/0001-45',
+  //   valor: 4800.00,
+  //   dataVencimento: new Date(2024, 10, 10),
+  //   dataInicio: new Date(2024, 10, 10),
+  //   dataFim: new Date(2024, 10, 10),
+  //   status: 'atrasado',
+  //   ramo: 'Loteamentos',
+  //   color: colors[5],
+  //   descricao: 'Comissão de venda lote - Residencial Zeta',
+  //   documentoNome: 'lote_zeta.pdf',
+  //   tipo: 'empresa'
+  // },
   {
     id: '4',
     nomeEmpresa: 'Investimentos Delta Ltda',
@@ -103,21 +103,21 @@ export const clientesPagamento: ClientePagamento[] = [
 
   
   // PESSOAS FÍSICAS
-  {
-    id: '9',
-    nomeEmpresa: 'Maria Silva Santos',
-    cpf: '123.456.789-01',
-    valor: 7500.00,
-    dataVencimento: new Date(2024, 11, 18),
-    dataInicio: new Date(2024, 11, 18),
-    dataFim: new Date(2024, 11, 18),
-    status: 'pendente',
-    ramo: 'Pessoa Física',
-    color: colors[0],
-    descricao: 'Comissão de venda casa - Residencial Jardim',
-    documentoNome: 'venda_maria.pdf',
-    tipo: 'pessoa'
-  },
+  // {
+  //   id: '9',
+  //   nomeEmpresa: 'Maria Silva Santos',
+  //   cpf: '123.456.789-01',
+  //   valor: 7500.00,
+  //   dataVencimento: new Date(2024, 11, 18),
+  //   dataInicio: new Date(2024, 11, 18),
+  //   dataFim: new Date(2024, 11, 18),
+  //   status: 'pendente',
+  //   ramo: 'Pessoa Física',
+  //   color: colors[0],
+  //   descricao: 'Comissão de venda casa - Residencial Jardim',
+  //   documentoNome: 'venda_maria.pdf',
+  //   tipo: 'pessoa'
+  // },
   {
     id: '11',
     nomeEmpresa: 'Ana Carolina Costa',

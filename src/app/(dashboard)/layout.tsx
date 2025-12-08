@@ -17,7 +17,7 @@ import {
   ChevronDown,
   UserIcon
 } from 'lucide-react';
-import { ProfileProvider } from '@/contexts/ProfileContext';
+import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
 // import { ProfileSelector } from '@/components/ui/profile-selector'; // COMENTADO: Seletor removido - perfil agora é automático
 import { useAuth } from '@/contexts/AuthContext';
 import { ExtendedUser, DadosVendedor, DadosEmpresa } from '@/types/user';
@@ -41,7 +41,7 @@ interface MenuItem {
   href: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   disabled?: boolean;
-  visibleFor?: 'vendedor' | 'empresa' | 'all'; // 'all' = visível para todos
+  visibleFor?: 'vendedor' | 'empresa' | 'admin' | 'all'; // 'all' = visível para todos
 }
 
 const allMenuItems: MenuItem[] = [
@@ -83,6 +83,13 @@ const allMenuItems: MenuItem[] = [
     icon: Settings,
     disabled: true,
     visibleFor: 'empresa', // Apenas para empresas
+  },
+  {
+    id: 'usuarios',
+    label: 'Usuários',
+    href: '/usuarios',
+    icon: Users,
+    visibleFor: 'admin', // Apenas para admin
   },
 ];
 
@@ -126,8 +133,13 @@ export default function DashboardLayout({
   const getFilteredMenuItems = (): MenuItem[] => {
     if (!user?.tipo) return allMenuItems;
     
+    // Verificar se é admin através do localStorage (já que estamos dentro do ProfileProvider)
+    const currentProfile = typeof window !== 'undefined' ? localStorage.getItem('currentProfile') : null;
+    const isAdmin = user.tipo === 'admin' || currentProfile === 'admin';
+    
     return allMenuItems.filter(item => {
       if (item.visibleFor === 'all') return true;
+      if (item.visibleFor === 'admin') return isAdmin;
       return item.visibleFor === user.tipo;
     });
   };
