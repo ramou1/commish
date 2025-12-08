@@ -135,7 +135,7 @@ export default function DashboardLayout({
     
     // Verificar se é admin através do localStorage (já que estamos dentro do ProfileProvider)
     const currentProfile = typeof window !== 'undefined' ? localStorage.getItem('currentProfile') : null;
-    const isAdmin = user.tipo === 'admin' || currentProfile === 'admin';
+    const isAdmin = currentProfile === 'admin';
     
     return allMenuItems.filter(item => {
       if (item.visibleFor === 'all') return true;
