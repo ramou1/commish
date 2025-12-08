@@ -21,7 +21,7 @@ import {
   ChevronUp
 } from 'lucide-react';
 
-import { clientesPagamento, ClientePagamento, fluxosPendentesAprovacao, FluxoPendenteAprovacao } from '@/constants/empresa-mock';
+import { ClientePagamento, fluxosPendentesAprovacao, FluxoPendenteAprovacao } from '@/constants/empresa-mock';
 import { useAuth } from '@/contexts/AuthContext';
 import { createFluxo, getFluxosByUserId, deleteFluxo } from '@/lib/firebase';
 import { convertFormDataToFirebase, convertFirebaseFluxosToComissao, convertFirebaseFluxosToEmpresa, convertEmpresaFormDataToFirebase } from '@/lib/fluxoUtils';
@@ -30,7 +30,6 @@ import { colors } from '@/constants/fluxos-mock';
 
 export default function AgendaView() {
   const { user } = useAuth();
-  const [clientes] = useState<ClientePagamento[]>(clientesPagamento);
   const [fluxosPendentes, setFluxosPendentes] = useState<FluxoPendenteAprovacao[]>(fluxosPendentesAprovacao);
   const [firebaseFluxos, setFirebaseFluxos] = useState<ClientePagamento[]>([]);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -61,17 +60,15 @@ export default function AgendaView() {
 
   // Calcular apenas os meses que têm pagamentos (incluindo pagos para visualização)
   const months = useMemo(() => {
-    // Usar apenas clientes mockados como base, adicionando fluxos do Firebase
-    const allClientes = [...clientes, ...firebaseFluxos];
-    
-    if (allClientes.length === 0) {
+    // Usar apenas fluxos do Firebase
+    if (firebaseFluxos.length === 0) {
       return [];
     }
 
     // Criar um Set com todos os meses únicos que têm pagamentos
     const monthsSet = new Set<string>();
     
-    allClientes.forEach(cliente => {
+    firebaseFluxos.forEach(cliente => {
       const paymentDate = cliente.dataVencimento instanceof Date 
         ? cliente.dataVencimento 
         : new Date(cliente.dataVencimento);
@@ -88,16 +85,14 @@ export default function AgendaView() {
       .sort((a, b) => a.getTime() - b.getTime());
 
     return monthsArray;
-  }, [clientes, firebaseFluxos]);
+  }, [firebaseFluxos]);
 
   // Função para agrupar clientes por mês (incluindo pagos para visualização)
   const groupClientesByMonth = () => {
     const grouped: { [key: string]: ClientePagamento[] } = {};
     
-    // Usar apenas clientes mockados como base, adicionando fluxos do Firebase
-    const allClientes = [...clientes, ...firebaseFluxos];
-    
-    allClientes.forEach(cliente => {
+    // Usar apenas fluxos do Firebase
+    firebaseFluxos.forEach(cliente => {
       // Incluir todos os clientes, incluindo os pagos
       const paymentDate = cliente.dataVencimento instanceof Date 
         ? cliente.dataVencimento 
@@ -395,7 +390,7 @@ export default function AgendaView() {
               <div>
                 <p className="text-sm text-gray-600">Pendentes</p>
                 <p className="text-2xl font-bold text-yellow-600">
-                  {[...clientes, ...firebaseFluxos].filter(c => c.status === 'pendente').length}
+                  {firebaseFluxos.filter(c => c.status === 'pendente').length}
                 </p>
               </div>
               <Clock className="w-8 h-8 text-yellow-500" />
@@ -409,7 +404,7 @@ export default function AgendaView() {
               <div>
                 <p className="text-sm text-gray-600">Atrasados</p>
                 <p className="text-2xl font-bold text-red-600">
-                  {[...clientes, ...firebaseFluxos].filter(c => c.status === 'atrasado').length}
+                  {firebaseFluxos.filter(c => c.status === 'atrasado').length}
                 </p>
               </div>
               <AlertCircle className="w-8 h-8 text-red-500" />
@@ -423,7 +418,7 @@ export default function AgendaView() {
               <div>
                 <p className="text-sm text-gray-600">Pagamentos Totais</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {formatarMoeda([...clientes, ...firebaseFluxos].reduce((total, c) => total + c.valor, 0))}
+                  {formatarMoeda(firebaseFluxos.reduce((total, c) => total + c.valor, 0))}
                 </p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-500" />

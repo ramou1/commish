@@ -39,22 +39,22 @@ export const clientesPagamento: ClientePagamento[] = [
     documentoNome: 'venda_beta.docx',
     tipo: 'empresa'
   },
-  {
-    id: '3',
-    nomeEmpresa: 'Desenvolvimento Gamma Ltda',
-    cnpj: '34.567.890/0001-12',
-    valor: 12500.00,
-    dataVencimento: new Date(2024, 10, 30), // 30 de novembro (atrasado)
-    dataInicio: new Date(2024, 10, 30),
-    dataFim: new Date(2024, 10, 30),
-    status: 'atrasado',
-    ramo: 'Desenvolvimento Imobiliário',
-    color: colors[2],
-    descricao: 'Comissão projeto comercial - Shopping Center',
-    documentoNome: 'projeto_gamma.pdf',
-    observacoes: 'Cliente solicitou prazo adicional',
-    tipo: 'empresa'
-  },
+  // {
+  //   id: '3',
+  //   nomeEmpresa: 'Desenvolvimento Gamma Ltda',
+  //   cnpj: '34.567.890/0001-12',
+  //   valor: 12500.00,
+  //   dataVencimento: new Date(2024, 10, 30), // 30 de novembro (atrasado)
+  //   dataInicio: new Date(2024, 10, 30),
+  //   dataFim: new Date(2024, 10, 30),
+  //   status: 'atrasado',
+  //   ramo: 'Desenvolvimento Imobiliário',
+  //   color: colors[2],
+  //   descricao: 'Comissão projeto comercial - Shopping Center',
+  //   documentoNome: 'projeto_gamma.pdf',
+  //   observacoes: 'Cliente solicitou prazo adicional',
+  //   tipo: 'empresa'
+  // },
   // {
   //   id: '6',
   //   nomeEmpresa: 'Loteamentos Zeta Ltda',
@@ -70,36 +70,36 @@ export const clientesPagamento: ClientePagamento[] = [
   //   documentoNome: 'lote_zeta.pdf',
   //   tipo: 'empresa'
   // },
-  {
-    id: '4',
-    nomeEmpresa: 'Investimentos Delta Ltda',
-    cnpj: '45.678.901/0001-23',
-    valor: 6800.00,
-    dataVencimento: new Date(2024, 11, 5),
-    dataInicio: new Date(2024, 11, 5),
-    dataFim: new Date(2024, 11, 5),
-    status: 'pago',
-    ramo: 'Investimentos',
-    color: colors[3],
-    descricao: 'Comissão de venda terreno - Condomínio Delta',
-    documentoNome: 'terreno_delta.pdf',
-    tipo: 'empresa'
-  },
-  {
-    id: '5',
-    nomeEmpresa: 'Empreendimentos Epsilon S.A.',
-    cnpj: '56.789.012/0001-34',
-    valor: 9500.00,
-    dataVencimento: new Date(2024, 11, 25),
-    dataInicio: new Date(2024, 11, 25),
-    dataFim: new Date(2024, 11, 25),
-    status: 'pendente',
-    ramo: 'Construção Civil',
-    color: colors[4],
-    descricao: 'Comissão de venda apartamento - Torre B',
-    documentoNome: 'contrato_epsilon.pdf',
-    tipo: 'empresa'
-  },
+  // {
+  //   id: '4',
+  //   nomeEmpresa: 'Investimentos Delta Ltda',
+  //   cnpj: '45.678.901/0001-23',
+  //   valor: 6800.00,
+  //   dataVencimento: new Date(2024, 11, 5),
+  //   dataInicio: new Date(2024, 11, 5),
+  //   dataFim: new Date(2024, 11, 5),
+  //   status: 'pago',
+  //   ramo: 'Investimentos',
+  //   color: colors[3],
+  //   descricao: 'Comissão de venda terreno - Condomínio Delta',
+  //   documentoNome: 'terreno_delta.pdf',
+  //   tipo: 'empresa'
+  // },
+  // {
+  //   id: '5',
+  //   nomeEmpresa: 'Empreendimentos Epsilon S.A.',
+  //   cnpj: '56.789.012/0001-34',
+  //   valor: 9500.00,
+  //   dataVencimento: new Date(2024, 11, 25),
+  //   dataInicio: new Date(2024, 11, 25),
+  //   dataFim: new Date(2024, 11, 25),
+  //   status: 'pendente',
+  //   ramo: 'Construção Civil',
+  //   color: colors[4],
+  //   descricao: 'Comissão de venda apartamento - Torre B',
+  //   documentoNome: 'contrato_epsilon.pdf',
+  //   tipo: 'empresa'
+  // },
 
   
   // PESSOAS FÍSICAS
@@ -134,21 +134,21 @@ export const clientesPagamento: ClientePagamento[] = [
     observacoes: 'Aguardando documentação',
     tipo: 'pessoa'
   },
-  {
-    id: '12',
-    nomeEmpresa: 'Carlos Eduardo Lima',
-    cpf: '789.123.456-04',
-    valor: 15500.00,
-    dataVencimento: new Date(2024, 11, 8),
-    dataInicio: new Date(2024, 11, 8),
-    dataFim: new Date(2024, 11, 8),
-    status: 'pago',
-    ramo: 'Pessoa Física',
-    color: colors[3],
-    descricao: 'Comissão de venda casa - Residencial Sol',
-    documentoNome: 'venda_carlos.pdf',
-    tipo: 'pessoa'
-  },
+  // {
+  //   id: '12',
+  //   nomeEmpresa: 'Carlos Eduardo Lima',
+  //   cpf: '789.123.456-04',
+  //   valor: 15500.00,
+  //   dataVencimento: new Date(2024, 11, 8),
+  //   dataInicio: new Date(2024, 11, 8),
+  //   dataFim: new Date(2024, 11, 8),
+  //   status: 'pago',
+  //   ramo: 'Pessoa Física',
+  //   color: colors[3],
+  //   descricao: 'Comissão de venda casa - Residencial Sol',
+  //   documentoNome: 'venda_carlos.pdf',
+  //   tipo: 'pessoa'
+  // },
   
   // JANEIRO 2025 - EMPRESAS
   // {
