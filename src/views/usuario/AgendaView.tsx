@@ -34,7 +34,7 @@ export default function AgendaView() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedFluxo, setSelectedFluxo] = useState<FluxoComissao | null>(null);
 
-  // Carregar fluxos do Firebase quando o usuário estiver logado
+  // Carregar fluxos do Firebase quando o vendedor estiver logado
   useEffect(() => {
     const loadFirebaseFluxos = async () => {
       if (user?.uid) {
@@ -228,11 +228,11 @@ export default function AgendaView() {
     }
   };
 
-  // Função para marcar como pago (visualização de usuário)
+  // Função para marcar como pago (visualização de vendedor)
   const handleMarkAsPaid = (fluxoId: string) => {
     // Aqui você implementaria a lógica para marcar como pago
     // Por exemplo, fazer uma chamada para API ou atualizar o estado local
-    console.log('Marcando como pago (usuário):', fluxoId);
+    console.log('Marcando como pago (vendedor):', fluxoId);
     setSelectedFluxo(null);
   };
 

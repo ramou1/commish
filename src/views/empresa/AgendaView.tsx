@@ -39,7 +39,7 @@ export default function AgendaView() {
   const [isApprovalExpanded, setIsApprovalExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Carregar fluxos do Firebase quando o usuário estiver logado
+  // Carregar fluxos do Firebase quando a empresa estiver logada
   useEffect(() => {
     const loadFirebaseFluxos = async () => {
       if (user?.uid) {
@@ -451,7 +451,7 @@ export default function AgendaView() {
               )}
             </CardTitle>
             <p className="text-sm text-orange-700">
-              Usuários criaram fluxos mencionando seu CNPJ. Clique para expandir e revisar.
+              Vendedores criaram fluxos mencionando seu CNPJ. Clique para expandir e revisar.
             </p>
           </CardHeader>
           {isApprovalExpanded && (

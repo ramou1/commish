@@ -41,7 +41,7 @@ export function convertFormDataToFirebase(
     status: 'ativo' as const,
     proximoPagamento: Timestamp.fromDate(proximoPagamento),
     color: formData.color || corAuto,
-    tipo: 'empresa' as const, // Para fluxos de usuários comuns, sempre empresa
+    tipo: 'empresa' as const, // Para fluxos de vendedores, sempre empresa
   };
 
   // Adicionar documentoNome apenas se existir

@@ -245,7 +245,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
 
   if (showSummary) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 p-4">
         <h3 className="text-lg font-medium text-gray-900">Resumo do Fluxo</h3>
         
         <div className="bg-gray-50 p-4 rounded-md space-y-3">

@@ -121,9 +121,19 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h3 className="text-xl font-semibold text-gray-900">Detalhes do Fluxo</h3>
+      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col">
+        {/* Header Fixo */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-semibold text-gray-900">Detalhes do Fluxo</h3>
+            <Badge
+              variant="outline"
+              className={`text-xs flex items-center gap-1 ${getStatusColor(fluxo.status)}`}
+            >
+              {getStatusIcon(fluxo.status)}
+              {getStatusText(fluxo.status)}
+            </Badge>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -134,15 +144,16 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           </Button>
         </div>
 
-        <div className="p-6 space-y-4">
+        {/* Conteúdo Scrollável */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
           
           
           <div className="flex items-start justify-between">
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-sm text-gray-500">
                 {fluxo.tipo === 'pessoa' ? 'Pessoa' : 'Empresa'}
               </p>
-              <p className="text-base font-medium text-gray-900">{fluxo.nomeEmpresa}</p>
+              <p className="text-base font-medium text-gray-900 break-words">{fluxo.nomeEmpresa}</p>
               {fluxo.cpf && (
                 <p className="text-sm text-gray-800 mt-1">CPF: {fluxo.cpf}</p>
               )}
@@ -150,18 +161,11 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
                 <p className="text-sm text-gray-800 mt-1">CNPJ: {fluxo.cnpj}</p>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-4 flex-shrink-0">
               <Badge variant="outline" className="text-xs border-gray-200 text-gray-700">
                 {fluxo.recorrencia === 'unica' ? 'Cobrança Única' : 
                  fluxo.recorrencia === 'semanal' ? 'Semanalmente' : 
                  fluxo.recorrencia === 'mensal' ? 'Mensalmente' : fluxo.recorrencia}
-              </Badge>
-              <Badge
-                variant="outline"
-                className={`text-xs flex items-center gap-1 ${getStatusColor(fluxo.status)}`}
-              >
-                {getStatusIcon(fluxo.status)}
-                {getStatusText(fluxo.status)}
               </Badge>
               {fluxo.color && (
                 <span
@@ -253,35 +257,36 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
               <p className="text-sm text-gray-900">{fluxo.descricao}</p>
             </div>
           )}
+        </div>
 
-          <div className="flex justify-between items-center pt-2">
-            {/* Botão de exclusão à esquerda */}
-            {showDeleteButton && onDelete && (
+        {/* Footer Fixo */}
+        <div className="flex justify-between items-center px-6 py-3 border-t border-gray-200 bg-white flex-shrink-0 rounded-b-lg">
+          {/* Botão de exclusão à esquerda */}
+          {showDeleteButton && onDelete && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 h-8 px-3 text-xs"
+              onClick={handleDeleteClick}
+            >
+              <Trash2 className="w-3 h-3 mr-1" />
+              Excluir
+            </Button>
+          )}
+          
+          {/* Botões à direita */}
+          <div className="flex gap-2 ml-auto">
+            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'finalizado' && (
               <Button 
-                variant="outline" 
-                size="sm"
-                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 h-8 px-3 text-xs"
-                onClick={handleDeleteClick}
+                className="bg-[var(--custom-green)] hover:bg-[var(--custom-green)]/90 text-white" 
+                onClick={onMarkAsPaid}
               >
-                <Trash2 className="w-3 h-3 mr-1" />
-                Excluir
+                Marcar como Pago
               </Button>
             )}
-            
-            {/* Botões à direita */}
-            <div className="flex gap-2">
-              {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'finalizado' && (
-                <Button 
-                  className="bg-[var(--custom-green)] hover:bg-[var(--custom-green)]/90 text-white" 
-                  onClick={onMarkAsPaid}
-                >
-                  Marcar como Pago
-                </Button>
-              )}
-              <Button variant="outline" className="border-gray-200 text-gray-700" onClick={onClose}>
-                Fechar
-              </Button>
-            </div>
+            <Button variant="outline" className="border-gray-200 text-gray-700" onClick={onClose}>
+              Fechar
+            </Button>
           </div>
         </div>
       </div>

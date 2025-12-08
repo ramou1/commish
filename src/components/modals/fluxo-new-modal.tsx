@@ -263,7 +263,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
 
   if (showSummary) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 px-6 py-4">
         <h3 className="text-lg font-medium text-gray-900">Resumo do Fluxo</h3>
         
         <div className="bg-gray-50 p-4 rounded-md space-y-3">
@@ -359,7 +359,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
           )}
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end space-x-3 pt-4 pb-4 border-t border-gray-200">
           <Button 
             type="button"
             variant="outline" 
