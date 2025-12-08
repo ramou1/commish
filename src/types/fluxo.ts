@@ -17,6 +17,7 @@ export interface FluxoComissao {
   documentoUrl?: string;
   descricao?: string;
   userId?: string; // Adicionado para compatibilidade com Firebase
+  tipo?: 'empresa' | 'pessoa'; // Tipo do cliente (empresa ou pessoa física)
 }
 
 export interface NovoFluxoFormData {

@@ -70,6 +70,7 @@ export function convertFirebaseToFluxoComissao(firebaseFluxo: FluxoFirebase): Fl
     documentoNome: firebaseFluxo.documentoNome,
     documentoUrl: firebaseFluxo.documentoUrl,
     descricao: firebaseFluxo.descricao,
+    tipo: firebaseFluxo.tipo, // Incluir o tipo do fluxo
   };
 }
 

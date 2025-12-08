@@ -38,7 +38,7 @@ src/
 │   ├── AuthContext.tsx   # Contexto de autenticação com Firebase
 │   └── ProfileContext.tsx # Contexto para gerenciamento de perfis
 ├── views/                # Visualizações específicas por tipo de usuário
-│   ├── usuario/          # Visualização para vendedores
+│   ├── vendedor/          # Visualização para vendedores
 │   ├── empresa/          # Visualização para empresas
 │   └── admin/            # Visualização para administradores
 └── types/                # Definições de interfaces

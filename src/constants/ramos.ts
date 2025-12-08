@@ -6,11 +6,11 @@ export interface RamoOption {
 }
 
 export const ramos: RamoOption[] = [
-  { value: 'imoveis', label: 'Imóveis' },
-  { value: 'automoveis', label: 'Automóveis' },
+  { value: 'imóveis', label: 'Imóveis' },
+  { value: 'automóveis', label: 'Automóveis' },
   { value: 'seguros', label: 'Seguros' },
-  { value: 'planos-saude', label: 'Planos de Saúde' },
-  { value: 'vendedor-digital', label: 'Vendedor Digital' },
+  { value: 'planos de saúde', label: 'Planos de Saúde' },
+  { value: 'vendedor digital', label: 'Vendedor Digital' },
   { value: 'outros', label: 'Outros' }
 ];
 

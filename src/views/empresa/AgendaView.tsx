@@ -219,11 +219,14 @@ export default function AgendaView() {
       id: cliente.id,
       nomeEmpresa: cliente.nomeEmpresa,
       valor: cliente.valor,
-      recorrencia: 'unica' as const,
+      recorrencia: cliente.recorrencia || 'unica',
       dataInicio: cliente.dataInicio,
       dataFim: cliente.dataFim,
-      status: cliente.status as 'pendente' | 'ativo' | 'finalizado',
+      status: cliente.status === 'pago' ? 'finalizado' as const : 
+              cliente.status === 'atrasado' ? 'rejeitado' as const : 
+              'ativo' as const,
       proximoPagamento: cliente.dataVencimento,
+      quantidadeParcelas: cliente.quantidadeParcelas,
       color: cliente.color,
       cnpj: cliente.cnpj,
       cpf: cliente.cpf,
@@ -303,14 +306,14 @@ export default function AgendaView() {
       } else {
         // Para fluxos recorrentes, criar um documento para cada parcela
         // Calcular valor por parcela
-        const valorNumerico = parseFloat(formData.valor.toString().replace(/[^\d,]/g, '').replace(',', '.'));
-        const valorPorParcela = valorNumerico / (formData.quantidadeParcelas || 1);
+        // formData.valor já é um número em reais, não precisa converter
+        const valorPorParcela = formData.valor / (formData.quantidadeParcelas || 1);
         
         // Criar formData com valor da parcela (passando valor em centavos para compatibilidade)
-        const valorEmCentavos = Math.round(valorPorParcela * 100);
+        const valorParcelaEmCentavos = Math.round(valorPorParcela * 100);
         const formDataComValorParcela: ClientePagamento = {
           ...formData,
-          valor: valorEmCentavos
+          valor: valorParcelaEmCentavos / 100 // Manter como número em reais
         };
 
         for (let i = 0; i < datasPagamento.length; i++) {

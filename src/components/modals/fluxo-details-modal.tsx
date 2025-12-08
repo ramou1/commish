@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { X, Trash2, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { FluxoComissao } from '@/constants/fluxos-mock';
 import { useState } from 'react';
+import { ramos } from '@/constants/ramos';
 
 interface FluxoComissaoExtended extends FluxoComissao {
   cpf?: string;
@@ -229,7 +230,7 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
             <div className="space-y-1">
               <p className="text-sm text-gray-500">Ramo</p>
               <p className="text-base font-medium text-gray-900">
-                {fluxo.tipo === 'empresa' && fluxo.ramo ? fluxo.ramo : '---'}
+                {fluxo.ramo ? (ramos.find(r => r.value === fluxo.ramo)?.label || fluxo.ramo) : '---'}
               </p>
             </div>
             {fluxo.documentoNome && (
@@ -260,7 +261,7 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
         </div>
 
         {/* Footer Fixo */}
-        <div className="flex justify-between items-center px-6 py-3 border-t border-gray-200 bg-white flex-shrink-0 rounded-b-lg">
+        <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 bg-white flex-shrink-0 rounded-b-lg">
           {/* Botão de exclusão à esquerda */}
           {showDeleteButton && onDelete && (
             <Button 

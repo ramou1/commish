@@ -1,4 +1,4 @@
-// src/views/usuario/AgendaView.tsx
+// src/views/vendedor/AgendaView.tsx
 'use client'
 
 import { useState, useMemo, useEffect } from 'react';
@@ -156,7 +156,7 @@ export default function AgendaView() {
 
   const handleNovoFluxo = async (formData: NovoFluxoFormData) => {
     if (!user?.uid) {
-      console.error('Usuário não autenticado');
+      console.error('Vendedor não autenticado');
       return;
     }
 
@@ -190,14 +190,16 @@ export default function AgendaView() {
       } else {
         // Para fluxos recorrentes, criar um documento para cada parcela
         // Calcular valor por parcela
-        const valorNumerico = parseFloat(formData.valor.replace(/[^\d,]/g, '').replace(',', '.'));
+        // Extrair apenas os dígitos do valor formatado (já está em centavos no formato)
+        const valorEmCentavos = parseInt(formData.valor.replace(/\D/g, ''));
+        const valorNumerico = valorEmCentavos / 100; // Converter centavos para reais
         const valorPorParcela = valorNumerico / formData.quantidadeParcelas;
         
         // Criar formData com valor da parcela (passando valor em centavos para compatibilidade)
-        const valorEmCentavos = Math.round(valorPorParcela * 100);
+        const valorParcelaEmCentavos = Math.round(valorPorParcela * 100);
         const formDataComValorParcela = {
           ...formData,
-          valor: valorEmCentavos.toString() // Passar como string de centavos
+          valor: valorParcelaEmCentavos.toString() // Passar como string de centavos
         };
         
         for (let i = 0; i < datasPagamento.length; i++) {
@@ -222,7 +224,7 @@ export default function AgendaView() {
       setIsModalOpen(false);
     } catch (error) {
       console.error('Erro ao criar fluxo:', error);
-      // Aqui você pode adicionar uma notificação de erro para o usuário
+      // Aqui você pode adicionar uma notificação de erro para o vendedor
     } finally {
       setIsLoading(false);
     }
@@ -252,7 +254,7 @@ export default function AgendaView() {
       setSelectedFluxo(null);
     } catch (error) {
       console.error('Erro ao excluir fluxo:', error);
-      // Aqui você pode adicionar uma notificação de erro para o usuário
+      // Aqui você pode adicionar uma notificação de erro para o vendedor
     } finally {
       setIsLoading(false);
     }
@@ -472,3 +474,4 @@ export default function AgendaView() {
     </div>
   );
 }
+

@@ -151,106 +151,106 @@ export const clientesPagamento: ClientePagamento[] = [
   },
   
   // JANEIRO 2025 - EMPRESAS
-  {
-    id: '13',
-    nomeEmpresa: 'Desenvolvimento Iota Ltda',
-    cnpj: '90.123.456/0001-78',
-    valor: 8900.00,
-    dataVencimento: new Date(2025, 0, 10), // 10 de janeiro
-    dataInicio: new Date(2025, 0, 10),
-    dataFim: new Date(2025, 0, 10),
-    status: 'pendente',
-    ramo: 'Desenvolvimento Imobiliário',
-    color: colors[4],
-    descricao: 'Comissão de venda apartamento - Residencial Iota',
-    documentoNome: 'iota_contrato.pdf',
-    tipo: 'empresa'
-  },
-  {
-    id: '14',
-    nomeEmpresa: 'Construções Kappa S.A.',
-    cnpj: '01.234.567/0001-89',
-    valor: 10500.00,
-    dataVencimento: new Date(2025, 0, 18), // 18 de janeiro
-    dataInicio: new Date(2025, 0, 18),
-    dataFim: new Date(2025, 0, 18),
-    status: 'pendente',
-    ramo: 'Construção Civil',
-    color: colors[5],
-    descricao: 'Comissão de venda casa - Condomínio Kappa',
-    documentoNome: 'kappa_venda.pdf',
-    tipo: 'empresa'
-  },
+  // {
+  //   id: '13',
+  //   nomeEmpresa: 'Desenvolvimento Iota Ltda',
+  //   cnpj: '90.123.456/0001-78',
+  //   valor: 8900.00,
+  //   dataVencimento: new Date(2025, 0, 10), // 10 de janeiro
+  //   dataInicio: new Date(2025, 0, 10),
+  //   dataFim: new Date(2025, 0, 10),
+  //   status: 'pendente',
+  //   ramo: 'Desenvolvimento Imobiliário',
+  //   color: colors[4],
+  //   descricao: 'Comissão de venda apartamento - Residencial Iota',
+  //   documentoNome: 'iota_contrato.pdf',
+  //   tipo: 'empresa'
+  // },
+  // {
+  //   id: '14',
+  //   nomeEmpresa: 'Construções Kappa S.A.',
+  //   cnpj: '01.234.567/0001-89',
+  //   valor: 10500.00,
+  //   dataVencimento: new Date(2025, 0, 18), // 18 de janeiro
+  //   dataInicio: new Date(2025, 0, 18),
+  //   dataFim: new Date(2025, 0, 18),
+  //   status: 'pendente',
+  //   ramo: 'Construção Civil',
+  //   color: colors[5],
+  //   descricao: 'Comissão de venda casa - Condomínio Kappa',
+  //   documentoNome: 'kappa_venda.pdf',
+  //   tipo: 'empresa'
+  // },
   
   // FEVEREIRO 2025 - PAGAMENTOS SEMANAIS
-  {
-    id: '18',
-    nomeEmpresa: 'Consultoria Omega Ltda',
-    cnpj: '23.456.789/0001-91',
-    valor: 2500.00,
-    dataVencimento: new Date(2025, 1, 3), // 3 de fevereiro
-    dataInicio: new Date(2025, 1, 3),
-    dataFim: new Date(2025, 1, 24),
-    status: 'pendente',
-    ramo: 'Consultoria',
-    color: colors[1],
-    descricao: 'Comissão semanal - Projeto de consultoria (Semana 1)',
-    documentoNome: 'omega_semana1.pdf',
-    tipo: 'empresa',
-    recorrencia: 'semanal',
-    quantidadeParcelas: 4
-  },
-  {
-    id: '19',
-    nomeEmpresa: 'Consultoria Omega Ltda',
-    cnpj: '23.456.789/0001-91',
-    valor: 2500.00,
-    dataVencimento: new Date(2025, 1, 10), // 10 de fevereiro
-    dataInicio: new Date(2025, 1, 3),
-    dataFim: new Date(2025, 1, 24),
-    status: 'pendente',
-    ramo: 'Consultoria',
-    color: colors[1],
-    descricao: 'Comissão semanal - Projeto de consultoria (Semana 2)',
-    documentoNome: 'omega_semana2.pdf',
-    tipo: 'empresa',
-    recorrencia: 'semanal',
-    quantidadeParcelas: 4
-  },
-  {
-    id: '20',
-    nomeEmpresa: 'Consultoria Omega Ltda',
-    cnpj: '23.456.789/0001-91',
-    valor: 2500.00,
-    dataVencimento: new Date(2025, 1, 17), // 17 de fevereiro
-    dataInicio: new Date(2025, 1, 3),
-    dataFim: new Date(2025, 1, 24),
-    status: 'pendente',
-    ramo: 'Consultoria',
-    color: colors[1],
-    descricao: 'Comissão semanal - Projeto de consultoria (Semana 3)',
-    documentoNome: 'omega_semana3.pdf',
-    tipo: 'empresa',
-    recorrencia: 'semanal',
-    quantidadeParcelas: 4
-  },
-  {
-    id: '21',
-    nomeEmpresa: 'Consultoria Omega Ltda',
-    cnpj: '23.456.789/0001-91',
-    valor: 2500.00,
-    dataVencimento: new Date(2025, 1, 24), // 24 de fevereiro
-    dataInicio: new Date(2025, 1, 3),
-    dataFim: new Date(2025, 1, 24),
-    status: 'pendente',
-    ramo: 'Consultoria',
-    color: colors[1],
-    descricao: 'Comissão semanal - Projeto de consultoria (Semana 4)',
-    documentoNome: 'omega_semana4.pdf',
-    tipo: 'empresa',
-    recorrencia: 'semanal',
-    quantidadeParcelas: 4
-  }
+  // {
+  //   id: '18',
+  //   nomeEmpresa: 'Consultoria Omega Ltda',
+  //   cnpj: '23.456.789/0001-91',
+  //   valor: 2500.00,
+  //   dataVencimento: new Date(2025, 1, 3), // 3 de fevereiro
+  //   dataInicio: new Date(2025, 1, 3),
+  //   dataFim: new Date(2025, 1, 24),
+  //   status: 'pendente',
+  //   ramo: 'Consultoria',
+  //   color: colors[1],
+  //   descricao: 'Comissão semanal - Projeto de consultoria (Semana 1)',
+  //   documentoNome: 'omega_semana1.pdf',
+  //   tipo: 'empresa',
+  //   recorrencia: 'semanal',
+  //   quantidadeParcelas: 4
+  // },
+  // {
+  //   id: '19',
+  //   nomeEmpresa: 'Consultoria Omega Ltda',
+  //   cnpj: '23.456.789/0001-91',
+  //   valor: 2500.00,
+  //   dataVencimento: new Date(2025, 1, 10), // 10 de fevereiro
+  //   dataInicio: new Date(2025, 1, 3),
+  //   dataFim: new Date(2025, 1, 24),
+  //   status: 'pendente',
+  //   ramo: 'Consultoria',
+  //   color: colors[1],
+  //   descricao: 'Comissão semanal - Projeto de consultoria (Semana 2)',
+  //   documentoNome: 'omega_semana2.pdf',
+  //   tipo: 'empresa',
+  //   recorrencia: 'semanal',
+  //   quantidadeParcelas: 4
+  // },
+  // {
+  //   id: '20',
+  //   nomeEmpresa: 'Consultoria Omega Ltda',
+  //   cnpj: '23.456.789/0001-91',
+  //   valor: 2500.00,
+  //   dataVencimento: new Date(2025, 1, 17), // 17 de fevereiro
+  //   dataInicio: new Date(2025, 1, 3),
+  //   dataFim: new Date(2025, 1, 24),
+  //   status: 'pendente',
+  //   ramo: 'Consultoria',
+  //   color: colors[1],
+  //   descricao: 'Comissão semanal - Projeto de consultoria (Semana 3)',
+  //   documentoNome: 'omega_semana3.pdf',
+  //   tipo: 'empresa',
+  //   recorrencia: 'semanal',
+  //   quantidadeParcelas: 4
+  // },
+  // {
+  //   id: '21',
+  //   nomeEmpresa: 'Consultoria Omega Ltda',
+  //   cnpj: '23.456.789/0001-91',
+  //   valor: 2500.00,
+  //   dataVencimento: new Date(2025, 1, 24), // 24 de fevereiro
+  //   dataInicio: new Date(2025, 1, 3),
+  //   dataFim: new Date(2025, 1, 24),
+  //   status: 'pendente',
+  //   ramo: 'Consultoria',
+  //   color: colors[1],
+  //   descricao: 'Comissão semanal - Projeto de consultoria (Semana 4)',
+  //   documentoNome: 'omega_semana4.pdf',
+  //   tipo: 'empresa',
+  //   recorrencia: 'semanal',
+  //   quantidadeParcelas: 4
+  // }
 ];
 
 // Interface para fluxos pendentes de aprovação
