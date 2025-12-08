@@ -4,6 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, Timestamp } from 'firebase/firestore';
 import { FluxoFirebase } from '@/types/fluxo';
 import { getStorage } from 'firebase/storage';
+import { UserData } from '@/types/user';
 
 // Configuração do Firebase
 // IMPORTANTE: Substitua essas configurações pelas suas próprias do Firebase Console
@@ -155,16 +156,17 @@ export async function deleteFluxo(userId: string, fluxoId: string): Promise<void
 }
 
 // Função para buscar todos os usuários (apenas para admin)
-export async function getAllUsers(): Promise<any[]> {
+export async function getAllUsers(): Promise<UserData[]> {
   try {
     const querySnapshot = await getDocs(collection(db, 'users'));
-    const users: any[] = [];
+    const users: UserData[] = [];
     
     querySnapshot.forEach((doc) => {
+      const data = doc.data();
       users.push({
         uid: doc.id,
-        ...doc.data()
-      });
+        ...data
+      } as UserData);
     });
     
     return users;

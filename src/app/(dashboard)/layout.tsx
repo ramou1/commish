@@ -17,7 +17,7 @@ import {
   ChevronDown,
   UserIcon
 } from 'lucide-react';
-import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
+import { ProfileProvider } from '@/contexts/ProfileContext';
 // import { ProfileSelector } from '@/components/ui/profile-selector'; // COMENTADO: Seletor removido - perfil agora é automático
 import { useAuth } from '@/contexts/AuthContext';
 import { ExtendedUser, DadosVendedor, DadosEmpresa } from '@/types/user';
