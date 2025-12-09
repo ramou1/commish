@@ -187,4 +187,23 @@ export async function countFluxosByUserId(userId: string): Promise<number> {
   }
 }
 
+// Função para atualizar dados do usuário
+export async function updateUser(userId: string, updates: Partial<UserData>): Promise<void> {
+  try {
+    const { doc, updateDoc } = await import('firebase/firestore');
+    const userRef = doc(db, 'users', userId);
+    
+    // Adicionar updatedAt automaticamente
+    const updateData = {
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    
+    await updateDoc(userRef, updateData);
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    throw error;
+  }
+}
+
 export default app;

@@ -124,7 +124,7 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col">
         {/* Header Fixo */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 rounded-t-lg">
           <div className="flex items-center gap-3">
             <h3 className="text-xl font-semibold text-gray-900">Detalhes do Fluxo</h3>
             <Badge
@@ -261,7 +261,7 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
         </div>
 
         {/* Footer Fixo */}
-        <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 bg-white flex-shrink-0 rounded-b-lg">
+        <div className="flex justify-between items-center p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 rounded-b-lg">
           {/* Botão de exclusão à esquerda */}
           {showDeleteButton && onDelete && (
             <Button 

@@ -24,21 +24,21 @@ export interface ClientePagamento {
 
 export const clientesPagamento: ClientePagamento[] = [
   // EMPRESAS
-  {
-    id: '2',
-    nomeEmpresa: 'Imobiliária Beta S.A.',
-    cnpj: '23.456.789/0001-01',
-    valor: 4200.00,
-    dataVencimento: new Date(2024, 11, 20),
-    dataInicio: new Date(2024, 11, 20),
-    dataFim: new Date(2024, 11, 20),
-    status: 'pendente',
-    ramo: 'Imobiliário',
-    color: colors[1],
-    descricao: 'Comissão de venda casa - Residencial Verde',
-    documentoNome: 'venda_beta.docx',
-    tipo: 'empresa'
-  },
+  // {
+  //   id: '2',
+  //   nomeEmpresa: 'Imobiliária Beta S.A.',
+  //   cnpj: '23.456.789/0001-01',
+  //   valor: 4200.00,
+  //   dataVencimento: new Date(2024, 11, 20),
+  //   dataInicio: new Date(2024, 11, 20),
+  //   dataFim: new Date(2024, 11, 20),
+  //   status: 'pendente',
+  //   ramo: 'Imobiliário',
+  //   color: colors[1],
+  //   descricao: 'Comissão de venda casa - Residencial Verde',
+  //   documentoNome: 'venda_beta.docx',
+  //   tipo: 'empresa'
+  // },
   // {
   //   id: '3',
   //   nomeEmpresa: 'Desenvolvimento Gamma Ltda',
@@ -118,22 +118,22 @@ export const clientesPagamento: ClientePagamento[] = [
   //   documentoNome: 'venda_maria.pdf',
   //   tipo: 'pessoa'
   // },
-  {
-    id: '11',
-    nomeEmpresa: 'Ana Carolina Costa',
-    cpf: '456.789.123-03',
-    valor: 9200.00,
-    dataVencimento: new Date(2024, 10, 28), // 28 de novembro (atrasado)
-    dataInicio: new Date(2024, 10, 28),
-    dataFim: new Date(2024, 10, 28),
-    status: 'atrasado',
-    ramo: 'Pessoa Física',
-    color: colors[2],
-    descricao: 'Comissão de venda terreno - Loteamento Vista',
-    documentoNome: 'venda_ana.pdf',
-    observacoes: 'Aguardando documentação',
-    tipo: 'pessoa'
-  },
+  // {
+  //   id: '11',
+  //   nomeEmpresa: 'Ana Carolina Costa',
+  //   cpf: '456.789.123-03',
+  //   valor: 9200.00,
+  //   dataVencimento: new Date(2024, 10, 28), // 28 de novembro (atrasado)
+  //   dataInicio: new Date(2024, 10, 28),
+  //   dataFim: new Date(2024, 10, 28),
+  //   status: 'atrasado',
+  //   ramo: 'Pessoa Física',
+  //   color: colors[2],
+  //   descricao: 'Comissão de venda terreno - Loteamento Vista',
+  //   documentoNome: 'venda_ana.pdf',
+  //   observacoes: 'Aguardando documentação',
+  //   tipo: 'pessoa'
+  // },
   // {
   //   id: '12',
   //   nomeEmpresa: 'Carlos Eduardo Lima',

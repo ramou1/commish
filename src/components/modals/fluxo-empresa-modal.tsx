@@ -706,7 +706,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
       </div>
 
       {/* Botões - Rodapé fixo */}
-      <div className="flex justify-end items-center space-x-3 px-6 py-3 border-t border-gray-200 bg-white shrink-0 mt-auto rounded-b-lg">
+      <div className="flex justify-end items-center space-x-3 p-4 border-t border-gray-200 bg-gray-50 shrink-0 mt-auto rounded-b-lg">
         <Button 
           type="button"
           variant="outline" 

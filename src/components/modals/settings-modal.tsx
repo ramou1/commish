@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Upload, User, Mail, Building, Palette, Shield } from 'lucide-react';
+import { X, Upload, User, Mail, Building, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { DadosVendedor, DadosEmpresa } from '@/types/user';
+import { updateUser } from '@/lib/firebase';
 // Valores dos ramos conforme o tipo RamoNegocio
 const ramoOptions = [
   { value: 'imóveis', label: 'Imóveis' },
@@ -35,8 +36,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     email: '',
     cpfCnpj: '',
     ramo: '',
-    foto: null as File | null,
-    tema: 'claro' as 'claro' | 'escuro'
+    foto: null as File | null
   });
 
   // Inicializar dados do usuário
@@ -62,8 +62,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         email: user.email || '',
         cpfCnpj,
         ramo,
-        foto: null,
-        tema: 'claro'
+        foto: null
       });
     }
   }, [user]);
@@ -80,21 +79,75 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     handleInputChange('foto', file);
   };
 
+  const formatCNPJ = (value: string) => {
+    const numericValue = value.replace(/\D/g, '');
+    if (numericValue.length === 14) {
+      return numericValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    }
+    return value;
+  };
+
+  const formatCPF = (value: string) => {
+    const numericValue = value.replace(/\D/g, '');
+    if (numericValue.length === 11) {
+      return numericValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    return value;
+  };
+
+  const getFormattedCpfCnpj = () => {
+    if (!formData.cpfCnpj) return '';
+    const isEmpresa = user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais;
+    return isEmpresa ? formatCNPJ(formData.cpfCnpj) : formatCPF(formData.cpfCnpj);
+  };
+
   const handleSave = async () => {
+    if (!user?.uid) {
+      console.error('Usuário não encontrado');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // Simular salvamento (implementar lógica real depois)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Preparar dados para atualização
+      const updates: any = {
+        ramo: formData.ramo
+      };
+
+      // Atualizar dados pessoais (nome ou razaoSocial)
+      if (user.dadosPessoais) {
+        if ('nome' in user.dadosPessoais) {
+          // É vendedor - atualizar nome
+          updates.dadosPessoais = {
+            ...(user.dadosPessoais as DadosVendedor),
+            nome: formData.nome
+          };
+        } else if ('razaoSocial' in user.dadosPessoais) {
+          // É empresa - atualizar razaoSocial
+          updates.dadosPessoais = {
+            ...(user.dadosPessoais as DadosEmpresa),
+            razaoSocial: formData.nome
+          };
+        }
+      }
+
+      // Atualizar no Firestore
+      await updateUser(user.uid, updates);
       
       setShowSuccess(true);
+      
+      // Recarregar a página após 2 segundos para atualizar os dados
       setTimeout(() => {
         setShowSuccess(false);
         onClose();
+        // Recarregar a página para atualizar os dados do usuário
+        window.location.reload();
       }, 2000);
       
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);
+      alert('Erro ao salvar configurações. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +163,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         {/* Header Fixo */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 rounded-t-lg">
           <h2 className="text-xl font-semibold text-gray-900">Configurações</h2>
           <Button
             variant="ghost"
@@ -125,7 +178,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         {/* Conteúdo Scrollável */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Seção de Foto */}
-          <div className="space-y-4 pb-6 border-b border-gray-200">
+          <div className="space-y-4 pb-6 border-b border-gray-200 opacity-60">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
               <User className="w-5 h-5" />
               Foto do Perfil
@@ -150,8 +203,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2"
+                  disabled
+                  className="flex items-center gap-2 border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
                 >
                   <Upload className="w-4 h-4" />
                   {formData.foto ? 'Alterar Foto' : 'Adicionar Foto'}
@@ -162,9 +215,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   accept="image/*"
                   onChange={handleFileChange}
                   className="hidden"
+                  disabled
                 />
                 <p className="text-xs text-gray-500">
-                  JPG, PNG ou GIF (máx. 5MB)
+                  Funcionalidade em desenvolvimento
                 </p>
               </div>
             </div>
@@ -219,7 +273,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <Input
                   id="cpfCnpj"
                   type="text"
-                  value={formData.cpfCnpj}
+                  value={getFormattedCpfCnpj()}
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed"
                   placeholder={user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais ? '00.000.000/0000-00' : '000.000.000-00'}
@@ -280,41 +334,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          {/* Seção de Aparência */}
-          <div className="space-y-4 pb-6 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-              <Palette className="w-5 h-5" />
-              Aparência
-            </h3>
-            
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">
-                Tema da Interface
-              </Label>
-              <div className="flex gap-6">
-                <button
-                  type="button"
-                  onClick={() => handleInputChange('tema', 'claro')}
-                  className={`px-4 py-2 rounded-md border transition-colors ${
-                    formData.tema === 'claro'
-                      ? 'border-gray-300 bg-gray-50 text-gray-900'
-                      : 'border-gray-200 hover:bg-gray-50 text-gray-700'
-                  }`}
-                >
-                  Claro
-                </button>
-                
-                <button
-                  type="button"
-                  disabled
-                  className="px-4 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                >
-                  Escuro
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Informações Adicionais do Usuário */}
           {user && (
             <div className="space-y-4">
@@ -348,7 +367,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         {/* Footer Fixo */}
-        <div className="flex justify-end gap-3 p-6 pt-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 rounded-b-lg">
           <Button 
             type="button"
             variant="outline" 

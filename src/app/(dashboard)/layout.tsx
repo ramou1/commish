@@ -54,6 +54,13 @@ const allMenuItems: MenuItem[] = [
     visibleFor: 'all',
   },
   {
+    id: 'usuarios',
+    label: 'Usuários',
+    href: '/usuarios',
+    icon: Users,
+    visibleFor: 'admin', // Apenas para admin
+  },
+  {
     id: 'orcamento',
     label: 'Orçamento',
     href: '/orcamento',
@@ -84,13 +91,6 @@ const allMenuItems: MenuItem[] = [
     icon: Settings,
     disabled: true,
     visibleFor: 'empresa', // Apenas para empresas
-  },
-  {
-    id: 'usuarios',
-    label: 'Usuários',
-    href: '/usuarios',
-    icon: Users,
-    visibleFor: 'admin', // Apenas para admin
   },
 ];
 
@@ -365,7 +365,11 @@ export default function DashboardLayout({
               {/* <ProfileSelector /> */}
 
               {/* Notificações */}
-              <button className="text-gray-400 hover:text-gray-600 relative">
+              <button 
+                className="text-gray-400 opacity-50 cursor-not-allowed relative" 
+                disabled
+                title="Notificações em desenvolvimento"
+              >
                 <Bell className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
