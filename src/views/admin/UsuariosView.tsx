@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, Mail, User, Building, Calendar, X } from 'lucide-react';
+import { Users, Mail, Calendar, X } from 'lucide-react';
 import { getAllUsers, countFluxosByUserId } from '@/lib/firebase';
 import { UserData, DadosVendedor, DadosEmpresa } from '@/types/user';
 

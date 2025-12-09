@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Upload, User, Mail, Building, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { DadosVendedor, DadosEmpresa } from '@/types/user';
+import { DadosVendedor, DadosEmpresa, UserData, RamoNegocio } from '@/types/user';
 import { updateUser } from '@/lib/firebase';
 // Valores dos ramos conforme o tipo RamoNegocio
 const ramoOptions = [
@@ -111,8 +111,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     
     try {
       // Preparar dados para atualização
-      const updates: any = {
-        ramo: formData.ramo
+      const updates: Partial<UserData> = {
+        ramo: formData.ramo as RamoNegocio | ''
       };
 
       // Atualizar dados pessoais (nome ou razaoSocial)
@@ -188,6 +188,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               {/* Foto atual */}
               <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                 {formData.foto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={URL.createObjectURL(formData.foto)} 
                     alt="Nova foto" 

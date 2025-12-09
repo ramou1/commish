@@ -1,7 +1,5 @@
 // src/constants/empresa-mock.ts
 
-import { colors } from './fluxos-mock';
-
 export interface ClientePagamento {
   id: string;
   nomeEmpresa: string;
