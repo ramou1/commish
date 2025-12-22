@@ -7,7 +7,8 @@ import { FluxoComissao } from '@/constants/fluxos-mock';
 import { useState } from 'react';
 import { ramos } from '@/constants/ramos';
 
-interface FluxoComissaoExtended extends FluxoComissao {
+interface FluxoComissaoExtended extends Omit<FluxoComissao, 'status'> {
+  status: 'ativo' | 'pendente' | 'finalizado' | 'rejeitado' | 'atrasado';
   cpf?: string;
   tipo?: 'empresa' | 'pessoa';
 }
@@ -277,7 +278,7 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           
           {/* Botões à direita */}
           <div className="flex gap-2 ml-auto">
-            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'finalizado' && fluxo.status !== 'pago' && (
+            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'finalizado' && fluxo.status !== 'rejeitado' && (
               <Button 
                 className="bg-[var(--custom-green)] hover:bg-[var(--custom-green)]/90 text-white" 
                 onClick={onMarkAsPaid}
