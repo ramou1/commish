@@ -277,7 +277,7 @@ export function FluxoDetalhesModal({ fluxo, onClose, formatarMoeda, formatarData
           
           {/* Botões à direita */}
           <div className="flex gap-2 ml-auto">
-            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'finalizado' && (
+            {showMarkAsPaidButton && onMarkAsPaid && fluxo.status !== 'finalizado' && fluxo.status !== 'pago' && (
               <Button 
                 className="bg-[var(--custom-green)] hover:bg-[var(--custom-green)]/90 text-white" 
                 onClick={onMarkAsPaid}

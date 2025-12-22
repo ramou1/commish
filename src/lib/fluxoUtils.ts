@@ -81,21 +81,56 @@ export function convertFirebaseFluxosToComissao(firebaseFluxos: FluxoFirebase[])
 
 // Converter dados do Firebase para formato da empresa (ClientePagamento)
 export function convertFirebaseToClientePagamento(firebaseFluxo: FluxoFirebase): ClientePagamento {
+  const dataVencimento = (firebaseFluxo.proximoPagamento as FirebaseTimestamp).toDate();
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0); // Zerar horas para comparação apenas de data
+  
+  // Se já está finalizado, manter como pago
+  if (firebaseFluxo.status === 'finalizado') {
+    return {
+      id: firebaseFluxo.id || '',
+      nomeEmpresa: firebaseFluxo.nomeEmpresa,
+      valor: firebaseFluxo.valor,
+      dataVencimento,
+      dataInicio: (firebaseFluxo.dataInicio as FirebaseTimestamp).toDate(),
+      dataFim: (firebaseFluxo.dataFim as FirebaseTimestamp).toDate(),
+      status: 'pago',
+      ramo: firebaseFluxo.ramo || '',
+      color: firebaseFluxo.color || '#E5E7EB',
+      descricao: firebaseFluxo.descricao,
+      documentoNome: firebaseFluxo.documentoNome,
+      tipo: firebaseFluxo.tipo || 'empresa',
+      recorrencia: firebaseFluxo.recorrencia,
+      quantidadeParcelas: firebaseFluxo.quantidadeParcelas,
+      cnpj: firebaseFluxo.cnpj,
+    };
+  }
+  
+  // Se está ativo, verificar se está atrasado
+  const dataVencimentoComparacao = new Date(dataVencimento);
+  dataVencimentoComparacao.setHours(0, 0, 0, 0);
+  
+  let status: 'pendente' | 'pago' | 'atrasado';
+  if (firebaseFluxo.status === 'rejeitado') {
+    status = 'atrasado';
+  } else {
+    // Se está ativo, verificar se a data de vencimento já passou
+    status = dataVencimentoComparacao < hoje ? 'atrasado' : 'pendente';
+  }
+  
   return {
     id: firebaseFluxo.id || '',
     nomeEmpresa: firebaseFluxo.nomeEmpresa,
     valor: firebaseFluxo.valor,
-    dataVencimento: (firebaseFluxo.proximoPagamento as FirebaseTimestamp).toDate(),
+    dataVencimento,
     dataInicio: (firebaseFluxo.dataInicio as FirebaseTimestamp).toDate(),
     dataFim: (firebaseFluxo.dataFim as FirebaseTimestamp).toDate(),
-    status: firebaseFluxo.status === 'ativo' ? 'pendente' : 
-            firebaseFluxo.status === 'finalizado' ? 'pago' : 
-            firebaseFluxo.status === 'rejeitado' ? 'atrasado' : 'pendente',
+    status,
     ramo: firebaseFluxo.ramo || '',
     color: firebaseFluxo.color || '#E5E7EB',
     descricao: firebaseFluxo.descricao,
     documentoNome: firebaseFluxo.documentoNome,
-    tipo: firebaseFluxo.tipo || 'empresa', // Garantir que sempre tenha um valor
+    tipo: firebaseFluxo.tipo || 'empresa',
     recorrencia: firebaseFluxo.recorrencia,
     quantidadeParcelas: firebaseFluxo.quantidadeParcelas,
     cnpj: firebaseFluxo.cnpj,

@@ -23,7 +23,7 @@ import {
 
 import { ClientePagamento, fluxosPendentesAprovacao, FluxoPendenteAprovacao } from '@/constants/empresa-mock';
 import { useAuth } from '@/contexts/AuthContext';
-import { createFluxo, getFluxosByUserId, deleteFluxo } from '@/lib/firebase';
+import { createFluxo, getFluxosByUserId, deleteFluxo, updateFluxoStatus } from '@/lib/firebase';
 import { convertFirebaseFluxosToEmpresa, convertEmpresaFormDataToFirebase } from '@/lib/fluxoUtils';
 import { criarDataLocal, gerarDatasPagamento } from '@/lib/dateUtils';
 import { colors } from '@/constants/fluxos-mock';
@@ -189,6 +189,21 @@ export default function AgendaView() {
 
   // Converter ClientePagamento para formato do modal
   const converterParaFluxoModal = (cliente: ClientePagamento) => {
+    // Converter status: pago -> finalizado, atrasado -> atrasado, pendente -> ativo (mas será mostrado como atrasado se a data passou)
+    let status: 'ativo' | 'finalizado' | 'atrasado' | 'rejeitado';
+    if (cliente.status === 'pago') {
+      status = 'finalizado';
+    } else if (cliente.status === 'atrasado') {
+      status = 'atrasado';
+    } else {
+      // Verificar se está atrasado pela data
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const dataVencimento = new Date(cliente.dataVencimento);
+      dataVencimento.setHours(0, 0, 0, 0);
+      status = dataVencimento < hoje ? 'atrasado' : 'ativo';
+    }
+    
     return {
       id: cliente.id,
       nomeEmpresa: cliente.nomeEmpresa,
@@ -196,9 +211,7 @@ export default function AgendaView() {
       recorrencia: cliente.recorrencia || 'unica',
       dataInicio: cliente.dataInicio,
       dataFim: cliente.dataFim,
-      status: cliente.status === 'pago' ? 'finalizado' as const : 
-              cliente.status === 'atrasado' ? 'rejeitado' as const : 
-              'ativo' as const,
+      status,
       proximoPagamento: cliente.dataVencimento,
       quantidadeParcelas: cliente.quantidadeParcelas,
       color: cliente.color,
@@ -212,11 +225,29 @@ export default function AgendaView() {
   };
 
   // Função para marcar como pago
-  const handleMarkAsPaid = (clienteId: string) => {
-    // Aqui você implementaria a lógica para marcar como pago
-    // Por exemplo, fazer uma chamada para API ou atualizar o estado local
-    console.log('Marcando como pago:', clienteId);
-    setSelectedCliente(null);
+  const handleMarkAsPaid = async (clienteId: string) => {
+    if (!user?.uid) {
+      console.error('Usuário não autenticado');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      // Atualizar status do fluxo para finalizado
+      await updateFluxoStatus(user.uid, clienteId, 'finalizado');
+      
+      // Recarregar fluxos do Firebase
+      const firebaseData = await getFluxosByUserId(user.uid);
+      const convertedFluxos = convertFirebaseFluxosToEmpresa(firebaseData);
+      setFirebaseFluxos(convertedFluxos);
+      
+      setSelectedCliente(null);
+    } catch (error) {
+      console.error('Erro ao marcar como pago:', error);
+      alert('Erro ao marcar como pago. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Função para excluir fluxo
@@ -571,7 +602,9 @@ export default function AgendaView() {
                         clientesDoMes.map((cliente) => (
                           <div
                             key={cliente.id}
-                            className="rounded-md p-3 shadow-sm cursor-pointer hover:shadow-md transition"
+                            className={`rounded-md p-3 shadow-sm cursor-pointer hover:shadow-md transition ${
+                              cliente.status === 'pago' ? 'opacity-75' : ''
+                            }`}
                             onClick={() => setSelectedCliente(cliente)}
                             style={{ 
                               backgroundColor: cliente.color || '#f9fafb',
@@ -579,7 +612,9 @@ export default function AgendaView() {
                             }}
                           >
                             <div className="flex justify-between items-start mb-2">
-                              <span className="font-medium text-gray-900 text-sm">
+                              <span className={`font-medium text-sm ${
+                                cliente.status === 'pago' ? 'text-gray-600 line-through' : 'text-gray-900'
+                              }`}>
                                 {cliente.nomeEmpresa}
                               </span>
                               {getStatusIcon(cliente.status)}
@@ -588,7 +623,9 @@ export default function AgendaView() {
                               <span className="text-xs text-gray-600">
                                 {formatarData(cliente.dataVencimento)}
                               </span>
-                              <span className="font-semibold text-gray-900 text-sm">
+                              <span className={`font-semibold text-sm ${
+                                cliente.status === 'pago' ? 'text-gray-600 line-through' : 'text-gray-900'
+                              }`}>
                                 {formatarMoeda(cliente.valor)}
                               </span>
                             </div>

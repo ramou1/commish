@@ -155,6 +155,22 @@ export async function deleteFluxo(userId: string, fluxoId: string): Promise<void
   }
 }
 
+// Função para atualizar o status de um fluxo
+export async function updateFluxoStatus(userId: string, fluxoId: string, status: 'ativo' | 'finalizado' | 'rejeitado'): Promise<void> {
+  try {
+    const { doc, updateDoc, Timestamp } = await import('firebase/firestore');
+    const fluxoRef = doc(db, 'users', userId, 'fluxos', fluxoId);
+    
+    await updateDoc(fluxoRef, {
+      status,
+      updatedAt: Timestamp.now()
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar status do fluxo:', error);
+    throw error;
+  }
+}
+
 // Função para buscar todos os usuários (apenas para admin)
 export async function getAllUsers(): Promise<UserData[]> {
   try {

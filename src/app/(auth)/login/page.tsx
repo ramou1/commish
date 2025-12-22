@@ -1,7 +1,7 @@
 // src/app/(auth)/login/page.tsx
 'use client'
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,7 +19,7 @@ interface LoginData {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn, signInWithGoogle, user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState<LoginData>({
     email: '',
     senha: ''
@@ -29,6 +29,15 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Partial<LoginData>>({});
   const [authError, setAuthError] = useState('');
   const isSubmittingRef = useRef(false);
+
+  // Redirecionar quando o usuário estiver autenticado
+  useEffect(() => {
+    if (!authLoading && user) {
+      setIsLoading(false);
+      isSubmittingRef.current = false;
+      router.replace('/agenda');
+    }
+  }, [user, authLoading, router]);
 
   const handleInputChange = (field: keyof LoginData, value: string) => {
     setFormData(prev => ({
@@ -79,12 +88,10 @@ export default function LoginPage() {
 
     try {
       await signIn(formData.email, formData.senha);
-      console.log('Login bem-sucedido, redirecionando...');
+      console.log('Login bem-sucedido, aguardando atualização do estado...');
       
-      // Aguardar um pouco para garantir que o estado de auth seja atualizado
-      setTimeout(() => {
-        router.push('/agenda');
-      }, 100);
+      // O redirecionamento será feito pelo useEffect quando o user for atualizado
+      // Não precisamos fazer nada aqui, apenas aguardar
       
     } catch (error: unknown) {
       console.error('Erro no login:', error);
@@ -106,12 +113,10 @@ export default function LoginPage() {
 
     try {
       await signInWithGoogle();
-      console.log('Login com Google bem-sucedido, redirecionando...');
+      console.log('Login com Google bem-sucedido, aguardando atualização do estado...');
       
-      // Aguardar um pouco para garantir que o estado de auth seja atualizado
-      setTimeout(() => {
-        router.push('/agenda');
-      }, 100);
+      // O redirecionamento será feito pelo useEffect quando o user for atualizado
+      // Não precisamos fazer nada aqui, apenas aguardar
       
     } catch (error: unknown) {
       console.error('Erro no login com Google:', error);
