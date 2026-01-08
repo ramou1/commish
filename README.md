@@ -14,6 +14,7 @@ Sistema web para gestão e acompanhamento de fluxos de comissão, permitindo que
 - **Interface Intuitiva**: Design moderno e responsivo para melhor experiência
 - **Gestão por Parcelas**: Criação de fluxos recorrentes com cálculo automático de parcelas
 - **Sistema de Aprovação**: Estrutura preparada para aprovação de fluxos entre empresas e vendedores (em desenvolvimento)
+- **Central de Ajuda**: Sistema para usuários enviarem sugestões, dúvidas, problemas e melhorias
 
 ## 🏗️ Arquitetura do Projeto
 
@@ -27,7 +28,9 @@ src/
 │   ├── modals/           # Componentes de modal (formulários)
 │   │   ├── fluxo-new-modal.tsx        # Modal para criar novo fluxo
 │   │   ├── fluxo-details-modal.tsx    # Modal para exibir detalhes do fluxo
-│   │   └── fluxo-empresa-modal.tsx    # Modal para empresas
+│   │   ├── fluxo-empresa-modal.tsx    # Modal para empresas
+│   │   ├── settings-modal.tsx         # Modal de configurações do usuário
+│   │   └── ajuda-modal.tsx            # Modal de Central de Ajuda
 │   └── ui/               # Componentes base (botões, inputs, etc.)
 ├── constants/            # Dados mockados e constantes da aplicação
 ├── lib/                  # Utilitários e funções auxiliares
@@ -52,6 +55,7 @@ src/
 Firebase Firestore
 ├── users/{userId}/fluxos/{fluxoId}           # Fluxos aprovados por usuário
 ├── users/{userId}/fluxos_pendentes/{fluxoId} # Fluxos pendentes de aprovação
+├── ajuda_mensagens/{messageId}               # Mensagens de ajuda dos usuários
 └── empresas/{empresaId}/propostas/{propostaId} # Propostas de fluxos (futuro)
 ```
 
@@ -61,6 +65,7 @@ O sistema utiliza uma **estrutura de subcoleções** no Firebase Firestore para 
 
 - **`users/{userId}/fluxos/`**: Fluxos ativos do usuário (criados diretamente ou aprovados)
 - **`users/{userId}/fluxos_pendentes/`**: Fluxos pendentes de aprovação do usuário
+- **`ajuda_mensagens/`**: Mensagens de ajuda, sugestões, dúvidas e problemas dos usuários
 - **Isolamento por usuário**: Cada usuário só acessa seus próprios dados
 - **Performance otimizada**: Queries em coleções menores (~50 fluxos por usuário)
 - **Escalabilidade**: Estrutura cresce linearmente com o número de usuários
@@ -317,6 +322,51 @@ npm run dev:clean
 }
 ```
 
+#### **Coleção: ajuda_mensagens**
+```typescript
+// Mensagens de ajuda, sugestões, dúvidas e problemas dos usuários
+{
+  id: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  tipo: 'sugestao' | 'duvida' | 'problema' | 'melhoria' | 'outro';
+  descricao: string;
+  status: 'pendente' | 'respondido' | 'resolvido';
+  createdAt: Timestamp;
+}
+```
+
+### **Central de Ajuda**
+
+O sistema possui uma **Central de Ajuda** integrada que permite aos usuários enviarem mensagens de suporte, sugestões, dúvidas e reportar problemas:
+
+#### **Funcionalidades**
+- ✅ **Menu de acesso**: Item "Ajuda" disponível no menu dropdown do usuário (ao lado de "Configurações" e "Sair")
+- ✅ **Tipos de mensagem**: Usuários podem selecionar entre:
+  - **Sugestão**: Sugestões de melhorias e novas funcionalidades
+  - **Dúvida**: Perguntas sobre o uso do sistema
+  - **Problema**: Reportar bugs ou problemas encontrados
+  - **Melhoria**: Sugestões de aprimoramento de funcionalidades existentes
+  - **Outro**: Outros tipos de mensagens
+- ✅ **Campo de descrição**: Textarea ampla para descrição detalhada
+- ✅ **Armazenamento no Firebase**: Todas as mensagens são salvas na coleção `ajuda_mensagens` do Firestore
+- ✅ **Informações do usuário**: Cada mensagem inclui automaticamente:
+  - ID do usuário
+  - Email do usuário
+  - Nome do usuário (extraído dos dados pessoais)
+- ✅ **Feedback visual**: Confirmação de envio com mensagem de sucesso
+
+#### **Como acessar**
+1. Faça login no sistema
+2. No cabeçalho, passe o mouse sobre o nome do usuário
+3. Clique no item **"Ajuda"** no menu dropdown
+4. Preencha o formulário com tipo e descrição
+5. Clique em "Enviar Mensagem"
+
+#### **Estrutura de Dados**
+As mensagens são armazenadas no Firestore na coleção `ajuda_mensagens` com todos os metadados necessários para identificação e acompanhamento. O status padrão é `'pendente'`, podendo ser atualizado posteriormente para `'respondido'` ou `'resolvido'`.
+
 ### **Funcionalidades Implementadas**
 - ✅ **Autenticação completa** com Firebase Auth
 - ✅ **Cadastro de usuários** com dados adicionais
@@ -325,6 +375,7 @@ npm run dev:clean
 - ✅ **Validação de rotas** protegidas
 - ✅ **Mensagens de erro** em português
 - ✅ **Gestão de fluxos** de comissão
+- ✅ **Central de Ajuda** para suporte e feedback dos usuários
 
 ### **Funcionalidades Futuras**
 - 🔄 **Upload de documentos** para Cloud Storage

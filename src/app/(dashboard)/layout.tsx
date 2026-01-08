@@ -16,13 +16,15 @@ import {
   Bell,
   LogOut,
   ChevronDown,
-  UserIcon
+  UserIcon,
+  HelpCircle
 } from 'lucide-react';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 // import { ProfileSelector } from '@/components/ui/profile-selector'; // COMENTADO: Seletor removido - perfil agora é automático
 import { useAuth } from '@/contexts/AuthContext';
 import { ExtendedUser, DadosVendedor, DadosEmpresa } from '@/types/user';
 import { SettingsModal } from '@/components/modals/settings-modal';
+import { AjudaModal } from '@/components/modals/ajuda-modal';
 
 // Helper function to get user name from dadosPessoais
 function getUserName(user: ExtendedUser): string | undefined {
@@ -104,6 +106,7 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [ajudaModalOpen, setAjudaModalOpen] = useState(false);
   const { user, loading, logout } = useAuth();
 
   useEffect(() => {
@@ -398,6 +401,13 @@ export default function DashboardLayout({
                     Configurações
                   </button>
                   <button
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setAjudaModalOpen(true)}
+                  >
+                    <HelpCircle className="w-4 h-4 mr-3" />
+                    Ajuda
+                  </button>
+                  <button
                     onClick={handleLogout}
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
@@ -422,6 +432,12 @@ export default function DashboardLayout({
       <SettingsModal 
         isOpen={settingsModalOpen} 
         onClose={() => setSettingsModalOpen(false)} 
+      />
+      
+      {/* Modal de Ajuda */}
+      <AjudaModal 
+        isOpen={ajudaModalOpen} 
+        onClose={() => setAjudaModalOpen(false)} 
       />
       </div>
     </ProfileProvider>

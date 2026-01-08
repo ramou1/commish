@@ -222,4 +222,33 @@ export async function updateUser(userId: string, updates: Partial<UserData>): Pr
   }
 }
 
+// Interface para mensagens de ajuda
+export interface AjudaMessage {
+  userId: string;
+  userEmail: string;
+  userName: string;
+  tipo: 'sugestao' | 'duvida' | 'problema' | 'melhoria' | 'outro';
+  descricao: string;
+  createdAt: unknown; // Timestamp do Firebase
+  status?: 'pendente' | 'respondido' | 'resolvido';
+}
+
+// Função para salvar mensagem de ajuda
+export async function saveAjudaMessage(messageData: Omit<AjudaMessage, 'createdAt' | 'status'>): Promise<string> {
+  try {
+    const now = Timestamp.now();
+    
+    const docRef = await addDoc(collection(db, 'ajuda_mensagens'), {
+      ...messageData,
+      status: 'pendente',
+      createdAt: now,
+    });
+    
+    return docRef.id;
+  } catch (error) {
+    console.error('Erro ao salvar mensagem de ajuda:', error);
+    throw error;
+  }
+}
+
 export default app;
