@@ -5,6 +5,7 @@ import { getAllAjudaMessages, updateAjudaMessageStatus, AjudaMessage } from '@/l
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Timestamp } from 'firebase/firestore';
 import { 
   HelpCircle, 
   CheckCircle, 
@@ -82,9 +83,14 @@ export default function AjudaPage() {
   const formatarTimestamp = (timestamp: unknown) => {
     if (!timestamp) return 'N/A';
     try {
-      const { Timestamp } = require('firebase/firestore');
+      // Verificar se é uma instância de Timestamp do Firebase
       if (timestamp instanceof Timestamp) {
         return formatarDataBrasil(timestamp.toDate());
+      }
+      // Verificar se tem o método toDate (fallback)
+      if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp) {
+        const ts = timestamp as { toDate: () => Date };
+        return formatarDataBrasil(ts.toDate());
       }
       return 'N/A';
     } catch {
