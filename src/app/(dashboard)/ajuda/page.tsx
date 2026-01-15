@@ -5,7 +5,6 @@ import { getAllAjudaMessages, updateAjudaMessageStatus, AjudaMessage } from '@/l
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Timestamp } from 'firebase/firestore';
 import { 
   HelpCircle, 
   CheckCircle, 
@@ -14,7 +13,7 @@ import {
   Mail,
   Filter
 } from 'lucide-react';
-import { formatarDataBrasil } from '@/lib/dateUtils';
+import { formatarTimestamp } from '@/lib/timestampUtils';
 
 const tipoLabels: Record<string, string> = {
   sugestao: 'Sugestão',
@@ -82,23 +81,7 @@ export default function AjudaPage() {
     }
   };
 
-  const formatarTimestamp = (timestamp: unknown) => {
-    if (!timestamp) return 'N/A';
-    try {
-      // Verificar se é uma instância de Timestamp do Firebase
-      if (timestamp instanceof Timestamp) {
-        return formatarDataBrasil(timestamp.toDate());
-      }
-      // Verificar se tem o método toDate (fallback)
-      if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp) {
-        const ts = timestamp as { toDate: () => Date };
-        return formatarDataBrasil(ts.toDate());
-      }
-      return 'N/A';
-    } catch {
-      return 'N/A';
-    }
-  };
+  // Função formatarTimestamp agora vem de timestampUtils.ts (centralizada)
 
   // Filtrar mensagens
   const mensagensFiltradas = mensagens.filter(msg => {
