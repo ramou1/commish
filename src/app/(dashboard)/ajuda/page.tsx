@@ -67,7 +67,10 @@ export default function AjudaPage() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string | undefined) => {
+    if (!status) {
+      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pendente</Badge>;
+    }
     switch (status) {
       case 'pendente':
         return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Pendente</Badge>;
