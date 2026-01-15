@@ -9,11 +9,9 @@ import { Timestamp } from 'firebase/firestore';
 import { 
   FileText, 
   CheckCircle, 
-  Clock, 
   X, 
   Calendar,
   User,
-  Mail,
   Phone,
   MapPin,
   CreditCard
@@ -228,21 +226,21 @@ export default function BoletosPage() {
                   </div>
                 </div>
 
-                {solicitacao.status === 'boleto_gerado' && solicitacao.dataBoletoGerado && (
+                {solicitacao.status === 'boleto_gerado' && solicitacao.dataBoletoGerado ? (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <p className="text-sm text-blue-800">
                       <strong>Boleto gerado em:</strong> {formatarTimestamp(solicitacao.dataBoletoGerado)}
                     </p>
                   </div>
-                )}
+                ) : null}
 
-                {solicitacao.status === 'pago' && solicitacao.dataPagamento && (
+                {solicitacao.status === 'pago' && solicitacao.dataPagamento ? (
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                     <p className="text-sm text-green-800">
                       <strong>Pagamento confirmado em:</strong> {formatarTimestamp(solicitacao.dataPagamento)}
                     </p>
                   </div>
-                )}
+                ) : null}
 
                 <div className="flex gap-2 flex-wrap">
                   {solicitacao.status === 'pendente' && (

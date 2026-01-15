@@ -377,7 +377,7 @@ export async function updateBoletoRequestStatus(
     const { doc, updateDoc, Timestamp } = await import('firebase/firestore');
     const requestRef = doc(db, 'boleto_solicitacoes', requestId);
     
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       status,
       updatedAt: Timestamp.now()
     };

@@ -11,7 +11,6 @@ import {
   CheckCircle, 
   Clock, 
   MessageSquare,
-  User,
   Mail,
   Filter
 } from 'lucide-react';

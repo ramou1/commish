@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Mail, Lock, Eye, EyeOff, CreditCard, Copy, Check, Upload } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, User, Briefcase, Mail, Lock, Eye, EyeOff, CreditCard, Copy, Check } from 'lucide-react';
 import { TipoUsuario, RamoNegocio } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -35,7 +35,7 @@ function CadastroContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
-  const [comprovanteFile, setComprovanteFile] = useState<File | null>(null); // Inserção de comprovante removido
+  // const [comprovanteFile, setComprovanteFile] = useState<File | null>(null); // Inserção de comprovante removido - comentado
   const [metodoPagamento, setMetodoPagamento] = useState<'boleto' | 'pix'>('boleto'); // Boleto como padrão
   const [dadosBoleto, setDadosBoleto] = useState({
     cep: '',
@@ -159,13 +159,13 @@ function CadastroContent() {
     setTimeout(() => setCopiedPix(false), 2000);
   };
 
-  // Inserção de comprovante removido
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setComprovanteFile(file);
-    }
-  };
+  // Inserção de comprovante removido - função comentada
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setComprovanteFile(file);
+  //   }
+  // };
 
   const isStepValid = () => {
     switch (currentStep) {
