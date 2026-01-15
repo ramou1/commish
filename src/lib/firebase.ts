@@ -251,4 +251,105 @@ export async function saveAjudaMessage(messageData: Omit<AjudaMessage, 'createdA
   }
 }
 
+// Interface para solicitações de boleto
+export interface BoletoRequest {
+  userId: string;
+  userEmail: string;
+  userName: string;
+  userTipo: 'vendedor' | 'empresa';
+  cpfCnpj: string;
+  telefone: string;
+  planoId: string;
+  planoNome: string;
+  planoPreco: number;
+  endereco: {
+    cep: string;
+    rua: string;
+    numero: string;
+    complemento?: string;
+    bairro: string;
+    cidade: string;
+    estado: string;
+  };
+  status: 'pendente' | 'boleto_gerado' | 'pago' | 'cancelado';
+  dataPagamento?: unknown; // Timestamp do Firebase
+  dataBoletoGerado?: unknown; // Timestamp do Firebase
+  createdAt: unknown; // Timestamp do Firebase
+  updatedAt: unknown; // Timestamp do Firebase
+}
+
+// Função para salvar solicitação de boleto
+export async function saveBoletoRequest(requestData: Omit<BoletoRequest, 'status' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  try {
+    const now = Timestamp.now();
+    
+    const docRef = await addDoc(collection(db, 'boleto_solicitacoes'), {
+      ...requestData,
+      status: 'pendente',
+      createdAt: now,
+      updatedAt: now,
+    });
+    
+    return docRef.id;
+  } catch (error) {
+    console.error('Erro ao salvar solicitação de boleto:', error);
+    throw error;
+  }
+}
+
+// Função para buscar todas as solicitações de boleto (apenas para admin)
+export async function getAllBoletoRequests(): Promise<(BoletoRequest & { id: string })[]> {
+  try {
+    const q = query(
+      collection(db, 'boleto_solicitacoes'),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const requests: (BoletoRequest & { id: string })[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      requests.push({
+        id: doc.id,
+        ...doc.data()
+      } as BoletoRequest & { id: string });
+    });
+    
+    return requests;
+  } catch (error) {
+    console.error('Erro ao buscar solicitações de boleto:', error);
+    throw error;
+  }
+}
+
+// Função para atualizar status de solicitação de boleto
+export async function updateBoletoRequestStatus(
+  requestId: string, 
+  status: 'pendente' | 'boleto_gerado' | 'pago' | 'cancelado',
+  dataPagamento?: Date
+): Promise<void> {
+  try {
+    const { doc, updateDoc, Timestamp } = await import('firebase/firestore');
+    const requestRef = doc(db, 'boleto_solicitacoes', requestId);
+    
+    const updateData: any = {
+      status,
+      updatedAt: Timestamp.now()
+    };
+
+    if (status === 'pago' && dataPagamento) {
+      updateData.dataPagamento = Timestamp.fromDate(dataPagamento);
+    }
+
+    if (status === 'boleto_gerado') {
+      updateData.dataBoletoGerado = Timestamp.now();
+    }
+    
+    await updateDoc(requestRef, updateData);
+  } catch (error) {
+    console.error('Erro ao atualizar status da solicitação de boleto:', error);
+    throw error;
+  }
+}
+
 export default app;

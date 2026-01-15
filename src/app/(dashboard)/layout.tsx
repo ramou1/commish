@@ -17,7 +17,8 @@ import {
   LogOut,
   ChevronDown,
   UserIcon,
-  HelpCircle
+  HelpCircle,
+  CreditCard
 } from 'lucide-react';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 // import { ProfileSelector } from '@/components/ui/profile-selector'; // COMENTADO: Seletor removido - perfil agora é automático
@@ -60,6 +61,13 @@ const allMenuItems: MenuItem[] = [
     label: 'Usuários',
     href: '/usuarios',
     icon: Users,
+    visibleFor: 'admin', // Apenas para admin
+  },
+  {
+    id: 'boletos',
+    label: 'Boletos',
+    href: '/boletos',
+    icon: CreditCard,
     visibleFor: 'admin', // Apenas para admin
   },
   {

@@ -36,6 +36,16 @@ function CadastroContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
   const [comprovanteFile, setComprovanteFile] = useState<File | null>(null); // Inserção de comprovante removido
+  const [metodoPagamento, setMetodoPagamento] = useState<'boleto' | 'pix'>('boleto'); // Boleto como padrão
+  const [dadosBoleto, setDadosBoleto] = useState({
+    cep: '',
+    rua: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    estado: ''
+  });
   const isSubmittingRef = useRef(false);
 
   const totalSteps = 5;
@@ -87,6 +97,7 @@ function CadastroContent() {
         throw new Error('Plano selecionado não encontrado');
       }
 
+      // Criar usuário
       await signUp(formData.email, formData.senha, {
         tipo: formData.tipo,
         ramo: formData.ramo as RamoNegocio,
@@ -96,8 +107,40 @@ function CadastroContent() {
         planoId: formData.plano,
         planoNome: selectedPlan.name,
         planoPreco: selectedPlan.priceValue,
-        comprovanteFile: comprovanteFile || undefined // Inserção de comprovante removido
+        comprovanteFile: undefined // Comprovante removido temporariamente
       });
+
+      // Se for boleto, salvar solicitação de boleto após criar o usuário
+      if (metodoPagamento === 'boleto') {
+        const { saveBoletoRequest, auth } = await import('@/lib/firebase');
+        
+        // Aguardar um pouco para garantir que o usuário foi criado e autenticado
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const currentUser = auth.currentUser;
+        if (currentUser?.uid) {
+          await saveBoletoRequest({
+            userId: currentUser.uid,
+            userEmail: formData.email,
+            userName: formData.nome,
+            userTipo: formData.tipo,
+            cpfCnpj: formData.cpf,
+            telefone: formData.tel,
+            planoId: formData.plano,
+            planoNome: selectedPlan.name,
+            planoPreco: selectedPlan.priceValue,
+            endereco: {
+              cep: dadosBoleto.cep,
+              rua: dadosBoleto.rua,
+              numero: dadosBoleto.numero,
+              complemento: dadosBoleto.complemento,
+              bairro: dadosBoleto.bairro,
+              cidade: dadosBoleto.cidade,
+              estado: dadosBoleto.estado
+            }
+          });
+        }
+      }
       
       router.push('/agenda');
     } catch (error: unknown) {
@@ -135,7 +178,16 @@ function CadastroContent() {
       case 4:
         return formData.email.trim() !== '' && formData.senha.trim() !== '' && formData.senha.length >= 6;
       case 5:
-        return true; // REMOVIDO: comprovanteFile !== null;
+        if (metodoPagamento === 'boleto') {
+          // Validar campos de endereço para boleto
+          return dadosBoleto.cep.trim() !== '' && 
+                 dadosBoleto.rua.trim() !== '' && 
+                 dadosBoleto.numero.trim() !== '' && 
+                 dadosBoleto.bairro.trim() !== '' && 
+                 dadosBoleto.cidade.trim() !== '' && 
+                 dadosBoleto.estado.trim() !== '';
+        }
+        return true; // Para PIX, não precisa validar nada (comprovante foi removido)
       default:
         return false;
     }
@@ -497,82 +549,274 @@ function CadastroContent() {
                   <p className="text-sm text-white/80">{selectedPlan.description}</p>
                 </div>
 
-                {/* QR Code Pix */}
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-4">Escaneie o QR Code para pagar via Pix:</p>
-                  <div className="bg-white border-2 border-gray-200 rounded-lg p-4 inline-block">
-                    <Image 
-                      src="/images/pixqrcode.png" 
-                      alt="QR Code Pix" 
-                      width={192}
-                      height={192}
-                      className="mx-auto"
-                    />
-                  </div>
-                </div>
-
-                {/* Código Pix Copia e Cola (DESABILITADO) */}
-                <div className="opacity-50 cursor-not-allowed">
+                {/* Seleção de Método de Pagamento */}
+                <div className="space-y-4">
                   <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Ou use o código Pix copia e cola:
+                    Escolha o método de pagamento:
                   </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value="00020126580014br.gov.bcb.pix...6304ABCD"
-                      readOnly
-                      className="border-gray-200 text-xs bg-gray-50"
-                      disabled
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCopyPixCode}
-                      className="flex-shrink-0"
-                      disabled
+                  <div className="grid grid-cols-2 gap-4">
+                    <div 
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                        metodoPagamento === 'boleto' 
+                          ? 'bg-gray-900 border-gray-900 text-white' 
+                          : 'bg-white border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setMetodoPagamento('boleto')}
                     >
-                      {copiedPix ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
+                      <div className="text-center">
+                        <CreditCard className={`w-6 h-6 mx-auto mb-2 ${metodoPagamento === 'boleto' ? 'text-white' : 'text-gray-600'}`} />
+                        <h3 className="font-semibold mb-1">Boleto</h3>
+                        <p className="text-xs opacity-75">Pagamento via boleto bancário</p>
+                      </div>
+                    </div>
+
+                    <div 
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                        metodoPagamento === 'pix' 
+                          ? 'bg-gray-900 border-gray-900 text-white' 
+                          : 'bg-white border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setMetodoPagamento('pix')}
+                    >
+                      <div className="text-center">
+                        <CreditCard className={`w-6 h-6 mx-auto mb-2 ${metodoPagamento === 'pix' ? 'text-white' : 'text-gray-600'}`} />
+                        <h3 className="font-semibold mb-1">PIX</h3>
+                        <p className="text-xs opacity-75">Pagamento instantâneo</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Aviso */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-xs text-blue-800">
-                    Após o pagamento, envie o comprovante abaixo para que sua conta seja ativada.
-                  </p>
-                </div>
+                {/* Formulário de Dados para Boleto */}
+                {metodoPagamento === 'boleto' && (
+                  <div className="space-y-4 border-t pt-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <p className="text-xs text-blue-800">
+                        Confirme os dados abaixo que serão utilizados para gerar o boleto. Após a confirmação, nossa equipe irá gerar o boleto e enviar para você.
+                      </p>
+                    </div>
 
-                {/* Upload de Comprovante - Desabilitado */}
-                <div>
-                  <Label htmlFor="comprovante" className="text-sm font-medium text-gray-700 mb-2 block">
-                    Envie o comprovante de pagamento:
-                  </Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
-                    <input
-                      type="file"
-                      id="comprovante"
-                      accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                    <label htmlFor="comprovante" className="cursor-pointer">
-                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">
-                        {comprovanteFile ? (
-                          <span className="text-green-600 font-medium">
-                            Arquivo selecionado: {comprovanteFile.name}
-                          </span>
-                        ) : (
-                          <>Clique para selecionar o comprovante</>
-                        )}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Formatos aceitos: JPG, PNG, PDF, DOC (máx. 10MB)
-                      </p>
-                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="nomeBoleto" className="text-sm font-medium text-gray-700">
+                          {formData.tipo === 'vendedor' ? 'Nome Completo' : 'Razão Social'}
+                        </Label>
+                        <Input
+                          id="nomeBoleto"
+                          type="text"
+                          value={formData.nome}
+                          readOnly
+                          className="mt-2 border-gray-200 rounded-md h-10 bg-gray-50"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cpfCnpjBoleto" className="text-sm font-medium text-gray-700">
+                          {formData.tipo === 'vendedor' ? 'CPF' : 'CNPJ'}
+                        </Label>
+                        <Input
+                          id="cpfCnpjBoleto"
+                          type="text"
+                          value={formData.cpf}
+                          readOnly
+                          className="mt-2 border-gray-200 rounded-md h-10 bg-gray-50"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="emailBoleto" className="text-sm font-medium text-gray-700">Email</Label>
+                        <Input
+                          id="emailBoleto"
+                          type="email"
+                          value={formData.email}
+                          readOnly
+                          className="mt-2 border-gray-200 rounded-md h-10 bg-gray-50"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="telBoleto" className="text-sm font-medium text-gray-700">Telefone</Label>
+                        <Input
+                          id="telBoleto"
+                          type="tel"
+                          value={formData.tel}
+                          readOnly
+                          className="mt-2 border-gray-200 rounded-md h-10 bg-gray-50"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="cep" className="text-sm font-medium text-gray-700">CEP <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="cep"
+                          type="text"
+                          placeholder="00000-000"
+                          value={dadosBoleto.cep}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            const formatted = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+                            setDadosBoleto({ ...dadosBoleto, cep: formatted });
+                          }}
+                          maxLength={9}
+                          className="mt-2 border-gray-200 rounded-md h-10"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label htmlFor="rua" className="text-sm font-medium text-gray-700">Rua <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="rua"
+                          type="text"
+                          placeholder="Nome da rua"
+                          value={dadosBoleto.rua}
+                          onChange={(e) => setDadosBoleto({ ...dadosBoleto, rua: e.target.value })}
+                          className="mt-2 border-gray-200 rounded-md h-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="numero" className="text-sm font-medium text-gray-700">Número <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="numero"
+                          type="text"
+                          placeholder="123"
+                          value={dadosBoleto.numero}
+                          onChange={(e) => setDadosBoleto({ ...dadosBoleto, numero: e.target.value })}
+                          className="mt-2 border-gray-200 rounded-md h-10"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label htmlFor="complemento" className="text-sm font-medium text-gray-700">Complemento</Label>
+                        <Input
+                          id="complemento"
+                          type="text"
+                          placeholder="Apto, Bloco, etc."
+                          value={dadosBoleto.complemento}
+                          onChange={(e) => setDadosBoleto({ ...dadosBoleto, complemento: e.target.value })}
+                          className="mt-2 border-gray-200 rounded-md h-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="bairro" className="text-sm font-medium text-gray-700">Bairro <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="bairro"
+                          type="text"
+                          placeholder="Nome do bairro"
+                          value={dadosBoleto.bairro}
+                          onChange={(e) => setDadosBoleto({ ...dadosBoleto, bairro: e.target.value })}
+                          className="mt-2 border-gray-200 rounded-md h-10"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cidade" className="text-sm font-medium text-gray-700">Cidade <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="cidade"
+                          type="text"
+                          placeholder="Nome da cidade"
+                          value={dadosBoleto.cidade}
+                          onChange={(e) => setDadosBoleto({ ...dadosBoleto, cidade: e.target.value })}
+                          className="mt-2 border-gray-200 rounded-md h-10"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="estado" className="text-sm font-medium text-gray-700">Estado <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="estado"
+                          type="text"
+                          placeholder="UF"
+                          value={dadosBoleto.estado}
+                          onChange={(e) => setDadosBoleto({ ...dadosBoleto, estado: e.target.value.toUpperCase() })}
+                          maxLength={2}
+                          className="mt-2 border-gray-200 rounded-md h-10"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* QR Code Pix */}
+                {metodoPagamento === 'pix' && (
+                  <>
+                    <div className="text-center">
+                      <p className="text-sm text-gray-600 mb-4">Escaneie o QR Code para pagar via Pix:</p>
+                      <div className="bg-white border-2 border-gray-200 rounded-lg p-4 inline-block">
+                        <Image 
+                          src="/images/pixqrcode.png" 
+                          alt="QR Code Pix" 
+                          width={192}
+                          height={192}
+                          className="mx-auto"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Código Pix Copia e Cola (DESABILITADO) */}
+                    <div className="opacity-50 cursor-not-allowed">
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Ou use o código Pix copia e cola:
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value="00020126580014br.gov.bcb.pix...6304ABCD"
+                          readOnly
+                          className="border-gray-200 text-xs bg-gray-50"
+                          disabled
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleCopyPixCode}
+                          className="flex-shrink-0"
+                          disabled
+                        >
+                          {copiedPix ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Aviso PIX - Upload de comprovante comentado */}
+                    {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <p className="text-xs text-blue-800">
+                        Após o pagamento, envie o comprovante abaixo para que sua conta seja ativada.
+                      </p>
+                    </div> */}
+
+                    {/* Upload de Comprovante - COMENTADO TEMPORARIAMENTE */}
+                    {/* <div>
+                      <Label htmlFor="comprovante" className="text-sm font-medium text-gray-700 mb-2 block">
+                        Envie o comprovante de pagamento:
+                      </Label>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
+                        <input
+                          type="file"
+                          id="comprovante"
+                          accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                        <label htmlFor="comprovante" className="cursor-pointer">
+                          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-600">
+                            {comprovanteFile ? (
+                              <span className="text-green-600 font-medium">
+                                Arquivo selecionado: {comprovanteFile.name}
+                              </span>
+                            ) : (
+                              <>Clique para selecionar o comprovante</>
+                            )}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Formatos aceitos: JPG, PNG, PDF, DOC (máx. 10MB)
+                          </p>
+                        </label>
+                      </div>
+                    </div> */}
+                  </>
+                )}
                 
               </div>
             )}
