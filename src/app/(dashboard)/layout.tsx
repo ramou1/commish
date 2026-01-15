@@ -71,6 +71,13 @@ const allMenuItems: MenuItem[] = [
     visibleFor: 'admin', // Apenas para admin
   },
   {
+    id: 'ajuda',
+    label: 'Mensagens de Ajuda',
+    href: '/ajuda',
+    icon: HelpCircle,
+    visibleFor: 'admin', // Apenas para admin
+  },
+  {
     id: 'orcamento',
     label: 'Orçamento',
     href: '/orcamento',

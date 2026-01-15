@@ -230,6 +230,7 @@ export interface AjudaMessage {
   tipo: 'sugestao' | 'duvida' | 'problema' | 'melhoria' | 'outro';
   descricao: string;
   createdAt: unknown; // Timestamp do Firebase
+  updatedAt?: unknown; // Timestamp do Firebase
   status?: 'pendente' | 'respondido' | 'resolvido';
 }
 
@@ -247,6 +248,50 @@ export async function saveAjudaMessage(messageData: Omit<AjudaMessage, 'createdA
     return docRef.id;
   } catch (error) {
     console.error('Erro ao salvar mensagem de ajuda:', error);
+    throw error;
+  }
+}
+
+// Função para buscar todas as mensagens de ajuda (apenas para admin)
+export async function getAllAjudaMessages(): Promise<(AjudaMessage & { id: string })[]> {
+  try {
+    const q = query(
+      collection(db, 'ajuda_mensagens'),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const messages: (AjudaMessage & { id: string })[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      messages.push({
+        id: doc.id,
+        ...doc.data()
+      } as AjudaMessage & { id: string });
+    });
+    
+    return messages;
+  } catch (error) {
+    console.error('Erro ao buscar mensagens de ajuda:', error);
+    throw error;
+  }
+}
+
+// Função para atualizar status de mensagem de ajuda
+export async function updateAjudaMessageStatus(
+  messageId: string, 
+  status: 'pendente' | 'respondido' | 'resolvido'
+): Promise<void> {
+  try {
+    const { doc, updateDoc, Timestamp } = await import('firebase/firestore');
+    const messageRef = doc(db, 'ajuda_mensagens', messageId);
+    
+    await updateDoc(messageRef, {
+      status,
+      updatedAt: Timestamp.now()
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar status da mensagem de ajuda:', error);
     throw error;
   }
 }
