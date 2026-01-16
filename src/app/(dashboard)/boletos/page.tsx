@@ -23,6 +23,9 @@ export default function BoletosPage() {
   const [selectedRequest, setSelectedRequest] = useState<(BoletoRequest & { id: string }) | null>(null);
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
   const [dataPagamento, setDataPagamento] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelConfirmText, setCancelConfirmText] = useState('');
+  const [cancelRequestId, setCancelRequestId] = useState<string | null>(null);
 
   useEffect(() => {
     loadSolicitacoes();
@@ -72,14 +75,26 @@ export default function BoletosPage() {
     }
   };
 
-  const handleCancel = async (requestId: string) => {
-    if (!confirm('Tem certeza que deseja cancelar esta solicitação?')) {
+  const handleCancelClick = (requestId: string) => {
+    setCancelRequestId(requestId);
+    setCancelConfirmText('');
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (cancelConfirmText !== 'CANCELAR') {
+      alert('Por favor, digite "CANCELAR" para confirmar o cancelamento');
       return;
     }
 
+    if (!cancelRequestId) return;
+
     try {
-      await updateBoletoRequestStatus(requestId, 'cancelado');
+      await updateBoletoRequestStatus(cancelRequestId, 'cancelado');
       await loadSolicitacoes();
+      setShowCancelModal(false);
+      setCancelRequestId(null);
+      setCancelConfirmText('');
       alert('Solicitação cancelada');
     } catch (error) {
       console.error('Erro ao cancelar:', error);
@@ -240,6 +255,10 @@ export default function BoletosPage() {
                     <Button
                       onClick={() => {
                         setSelectedRequest(solicitacao);
+                        // Definir data padrão como hoje
+                        const hoje = new Date();
+                        const dataFormatada = hoje.toISOString().split('T')[0];
+                        setDataPagamento(dataFormatada);
                         setShowMarkPaidModal(true);
                       }}
                       className="bg-green-600 hover:bg-green-700 text-white"
@@ -251,7 +270,7 @@ export default function BoletosPage() {
                   )}
                   {solicitacao.status !== 'cancelado' && solicitacao.status !== 'pago' && (
                     <Button
-                      onClick={() => handleCancel(solicitacao.id)}
+                      onClick={() => handleCancelClick(solicitacao.id)}
                       variant="outline"
                       className="border-red-200 text-red-600 hover:bg-red-50"
                       size="sm"
@@ -305,6 +324,58 @@ export default function BoletosPage() {
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
                     Confirmar Pagamento
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para confirmar cancelamento */}
+      {showCancelModal && cancelRequestId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <X className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Cancelar Solicitação</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Tem certeza que deseja cancelar esta solicitação de boleto? Esta ação não pode ser desfeita.
+              </p>
+              <p className="text-sm font-medium text-gray-700 mb-2">
+                Para confirmar, digite <strong className="text-red-600">CANCELAR</strong>:
+              </p>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  value={cancelConfirmText}
+                  onChange={(e) => setCancelConfirmText(e.target.value)}
+                  placeholder="Digite CANCELAR"
+                  maxLength={50}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 uppercase"
+                  autoFocus
+                />
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCancelModal(false);
+                      setCancelRequestId(null);
+                      setCancelConfirmText('');
+                    }}
+                  >
+                    Voltar
+                  </Button>
+                  <Button
+                    onClick={handleConfirmCancel}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    disabled={cancelConfirmText !== 'CANCELAR'}
+                  >
+                    Confirmar Cancelamento
                   </Button>
                 </div>
               </div>

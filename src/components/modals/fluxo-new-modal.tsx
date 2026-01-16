@@ -398,6 +398,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
             placeholder="00.000.000/0000-00"
             value={formData.cnpj}
             onChange={(e) => handleCNPJChange(e.target.value)}
+            maxLength={50}
             className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
               errors.cnpj ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
             }`}
@@ -428,6 +429,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
           placeholder="Ex: Imobiliária Santos Ltda"
           value={formData.nomeEmpresa}
           onChange={(e) => handleInputChange('nomeEmpresa', e.target.value)}
+          maxLength={50}
           className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
             errors.nomeEmpresa ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
           }`}
@@ -631,6 +633,7 @@ export function NovoFluxoForm({ onSubmit, onCancel, isLoading = false }: NovoFlu
           placeholder="Ex: Comissão de venda do apartamento XYZ"
           value={formData.descricao}
           onChange={(e) => handleInputChange('descricao', e.target.value)}
+          maxLength={50}
           className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
           disabled={isLoading}
         />

@@ -423,6 +423,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
               placeholder="00.000.000/0000-00"
               value={formData.cnpj || ''}
               onChange={(e) => handleCNPJChange(e.target.value)}
+              maxLength={50}
               className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
                 errors.cnpj ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
               }`}
@@ -444,6 +445,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
               placeholder="Ex: Empresa Ltda"
               value={formData.razaoSocial || ''}
               onChange={(e) => handleInputChange('razaoSocial', e.target.value)}
+              maxLength={50}
               className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
                 errors.razaoSocial ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
               }`}
@@ -467,6 +469,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
               placeholder="000.000.000-00"
               value={formData.cpf || ''}
               onChange={(e) => handleCPFChange(e.target.value)}
+              maxLength={50}
               className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
                 errors.cpf ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
               }`}
@@ -488,6 +491,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
               placeholder="Ex: João Silva Santos"
               value={formData.nomeCompleto || ''}
               onChange={(e) => handleInputChange('nomeCompleto', e.target.value)}
+              maxLength={50}
               className={`bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500 ${
                 errors.nomeCompleto ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
               }`}
@@ -695,6 +699,7 @@ export function NovoFluxoEmpresaForm({ onSubmit, onCancel, isLoading = false }: 
           placeholder="Ex: Comissão de venda do apartamento XYZ"
           value={formData.descricao || ''}
           onChange={(e) => handleInputChange('descricao', e.target.value)}
+          maxLength={50}
           className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
           disabled={isLoading}
         />

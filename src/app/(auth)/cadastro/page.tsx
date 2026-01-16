@@ -15,6 +15,7 @@ import { TipoUsuario, RamoNegocio } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { plans } from '@/constants/plans-mock';
+import { sanitizeEndereco } from '@/lib/validationUtils';
 
 function CadastroContent() {
   const router = useRouter();
@@ -119,6 +120,17 @@ function CadastroContent() {
         
         const currentUser = auth.currentUser;
         if (currentUser?.uid) {
+          // Sanitizar dados de endereço antes de salvar (prevenção de segurança)
+          const enderecoSanitizado = sanitizeEndereco({
+            cep: dadosBoleto.cep,
+            rua: dadosBoleto.rua,
+            numero: dadosBoleto.numero,
+            complemento: dadosBoleto.complemento,
+            bairro: dadosBoleto.bairro,
+            cidade: dadosBoleto.cidade,
+            estado: dadosBoleto.estado
+          });
+          
           await saveBoletoRequest({
             userId: currentUser.uid,
             userEmail: formData.email,
@@ -129,15 +141,7 @@ function CadastroContent() {
             planoId: formData.plano,
             planoNome: selectedPlan.name,
             planoPreco: selectedPlan.priceValue,
-            endereco: {
-              cep: dadosBoleto.cep,
-              rua: dadosBoleto.rua,
-              numero: dadosBoleto.numero,
-              complemento: dadosBoleto.complemento,
-              bairro: dadosBoleto.bairro,
-              cidade: dadosBoleto.cidade,
-              estado: dadosBoleto.estado
-            }
+            endereco: enderecoSanitizado
           });
         }
       }
@@ -427,6 +431,7 @@ function CadastroContent() {
                         placeholder="Digite seu nome completo"
                         value={formData.nome}
                         onChange={(e) => handleInputChange('nome', e.target.value)}
+                        maxLength={50}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
@@ -438,6 +443,7 @@ function CadastroContent() {
                         placeholder="000.000.000-00"
                         value={formData.cpf}
                         onChange={(e) => handleCPFChange(e.target.value)}
+                        maxLength={50}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
@@ -449,6 +455,7 @@ function CadastroContent() {
                         placeholder="(00) 00000-0000"
                         value={formData.tel}
                         onChange={(e) => handleTelefoneChange(e.target.value)}
+                        maxLength={50}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
@@ -463,6 +470,7 @@ function CadastroContent() {
                         placeholder="Digite a razão social da empresa"
                         value={formData.nome}
                         onChange={(e) => handleInputChange('nome', e.target.value)}
+                        maxLength={50}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
@@ -474,6 +482,7 @@ function CadastroContent() {
                         placeholder="00.000.000/0000-00"
                         value={formData.cpf}
                         onChange={(e) => handleCNPJChange(e.target.value)}
+                        maxLength={50}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
@@ -485,6 +494,7 @@ function CadastroContent() {
                         placeholder="(00) 00000-0000"
                         value={formData.tel}
                         onChange={(e) => handleTelefoneChange(e.target.value)}
+                        maxLength={50}
                         className="mt-2 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                       />
                     </div>
@@ -506,6 +516,7 @@ function CadastroContent() {
                       placeholder="seu@email.com"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
+                      maxLength={50}
                       className="mt-2 pl-10 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                     />
                   </div>
@@ -520,6 +531,7 @@ function CadastroContent() {
                       placeholder="••••••••"
                       value={formData.senha}
                       onChange={(e) => handleInputChange('senha', e.target.value)}
+                      maxLength={50}
                       className="mt-2 pl-10 pr-10 border-gray-200 rounded-md h-10 focus:border-gray-400 focus:ring-0"
                     />
                     <button
@@ -668,6 +680,7 @@ function CadastroContent() {
                           placeholder="Nome da rua"
                           value={dadosBoleto.rua}
                           onChange={(e) => setDadosBoleto({ ...dadosBoleto, rua: e.target.value })}
+                          maxLength={100}
                           className="mt-2 border-gray-200 rounded-md h-10"
                         />
                       </div>
@@ -682,6 +695,7 @@ function CadastroContent() {
                           placeholder="123"
                           value={dadosBoleto.numero}
                           onChange={(e) => setDadosBoleto({ ...dadosBoleto, numero: e.target.value })}
+                          maxLength={10}
                           className="mt-2 border-gray-200 rounded-md h-10"
                         />
                       </div>
@@ -693,6 +707,7 @@ function CadastroContent() {
                           placeholder="Apto, Bloco, etc."
                           value={dadosBoleto.complemento}
                           onChange={(e) => setDadosBoleto({ ...dadosBoleto, complemento: e.target.value })}
+                          maxLength={100}
                           className="mt-2 border-gray-200 rounded-md h-10"
                         />
                       </div>
@@ -707,6 +722,7 @@ function CadastroContent() {
                           placeholder="Nome do bairro"
                           value={dadosBoleto.bairro}
                           onChange={(e) => setDadosBoleto({ ...dadosBoleto, bairro: e.target.value })}
+                          maxLength={50}
                           className="mt-2 border-gray-200 rounded-md h-10"
                         />
                       </div>
@@ -718,6 +734,7 @@ function CadastroContent() {
                           placeholder="Nome da cidade"
                           value={dadosBoleto.cidade}
                           onChange={(e) => setDadosBoleto({ ...dadosBoleto, cidade: e.target.value })}
+                          maxLength={50}
                           className="mt-2 border-gray-200 rounded-md h-10"
                         />
                       </div>

@@ -171,6 +171,7 @@ export default function EsqueciSenhaPage() {
                     placeholder="seu@email.com"
                     value={email}
                     onChange={(e) => handleInputChange(e.target.value)}
+                    maxLength={50}
                     className="pl-10 h-10 border-gray-200 rounded-md focus:border-gray-400 focus:ring-0"
                     disabled={isLoading}
                   />

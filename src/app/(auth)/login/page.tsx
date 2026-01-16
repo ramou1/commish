@@ -176,6 +176,7 @@ export default function LoginPage() {
                     placeholder="seu@email.com"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                    maxLength={50}
                     className={`pl-10 h-10 border-gray-200 rounded-md focus:border-gray-400 focus:ring-0 ${errors.email ? 'border-red-300' : ''}`}
                     disabled={isLoading}
                   />
@@ -196,6 +197,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     value={formData.senha}
                     onChange={(e) => handleInputChange('senha', e.target.value)}
+                    maxLength={50}
                     className={`pl-10 pr-10 h-10 border-gray-200 rounded-md focus:border-gray-400 focus:ring-0 ${errors.senha ? 'border-red-300' : ''}`}
                     disabled={isLoading}
                   />

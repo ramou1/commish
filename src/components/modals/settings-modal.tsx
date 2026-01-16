@@ -244,6 +244,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   value={formData.nome}
                   onChange={(e) => handleInputChange('nome', e.target.value)}
                   placeholder={user?.dadosPessoais && 'razaoSocial' in user.dadosPessoais ? 'Razão social da empresa' : 'Seu nome completo'}
+                  maxLength={50}
                   className="bg-white border-gray-300 focus:border-gray-500 focus:ring-gray-500"
                 />
               </div>

@@ -176,6 +176,7 @@ export function AjudaModal({ isOpen, onClose }: AjudaModalProps) {
                     placeholder="Descreva sua sugestão, dúvida, problema ou melhoria com o máximo de detalhes possível..."
                     value={formData.descricao}
                     onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                    maxLength={50}
                   />
                   <p className="text-xs text-gray-500">
                     {formData.descricao.length} caracteres
